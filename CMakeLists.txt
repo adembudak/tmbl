@@ -14,8 +14,12 @@ enable_testing()
 
 option(TOMBUL_BUILD_TESTS "Build tests" ON)
 
+find_package(Boost QUIET REQUIRED)
+
 add_executable(output main.cpp)
 target_include_directories(output PUBLIC include/)
+
+target_link_libraries(output PUBLIC Boost::headers)
 
 add_definitions(-Wall -Werror -fpermissive)
 

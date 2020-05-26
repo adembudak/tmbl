@@ -1,13 +1,14 @@
 #pragma once
+#include <boost/safe_numerics/safe_integer.hpp>
 #include <cstdint>
 #include <type_traits>
 
 namespace tmbl {
 
-using uint8 = std::uint8_t;
-using uint16 = std::uint16_t;
-using byte = char;
-using flag = const bool;
+using uint8 = boost::safe_numerics::safe<std::uint8_t>;
+using uint16 = boost::safe_numerics::safe<std::uint16_t>;
+using byte = boost::safe_numerics::safe<char>;
+using flag = boost::safe_numerics::safe<const bool>;
 
 template <typename T>
 struct is_regular
