@@ -1,16 +1,20 @@
-#pragma once
+#ifndef MEMORY_H
+#define MEMORY_H
+
 #include "../config.h"
 #include <array>
 
-namespace tmbl {
+namespace tmbl::memory {
 
 class memory {
-
+public:
   [[nodiscard]] bool dumpROM(const char *romfile);
-  byte data() const noexcept;
+  [[nodiscard]] const byte data() const noexcept;
 
 private:
-  std::array<byte, 32 * 1024> ram;
+  std::array<byte, 64 * 1024> ram{};
 };
 
-} // namespace tbl
+}
+
+#endif
