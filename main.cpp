@@ -2,10 +2,12 @@
 #include <iostream>
 
 int main(int argc, char *argv[]) {
-  if (argc < 1)
-    std::cout << "Usage --- ./exe rom\n";
-  else {
-    tmbl::Gameboy g;
-    g.run();
-  }
+  /*
+if (argc < 1)
+std::cout << "Usage --- ./executable rom\n";
+else {
+tmbl::Gameboy g;
+ g.run();
+}
+*/
 }
