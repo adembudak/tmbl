@@ -1,8 +1,8 @@
 #pragma once
-#include "registers/reg.h"
+#include "registers/reg16.h"
+#include "registers/reg8.h"
 
-namespace tmbl {
-namespace cpu {
+namespace tmbl::cpu {
 
 class cpu {
 public:
@@ -14,30 +14,11 @@ public:
 private:
   // 8 bit transfer and I/O instructions
   //
-  void LD(reg8 r1, reg8 r2) {
-    r1 = r2;
-    PC += 1;
-  }
-
-  void LD(reg8 r, uint8 n) {
-    r = n;
-    PC += 2;
-  }
-
-  void LD(reg8 r1, reg16 r2) {
-    r1 = r2;
-    PC += 2;
-  }
-
-  void LD(reg16 r1, reg8 r2) {
-    r1 = r2;
-    PC += 2;
-  }
-
-  void LD(reg16 r, uint8 n) {
-    r = n;
-    PC += 3;
-  }
+  void LD(reg8 r1, reg8 r2);
+  void LD(reg8 r, uint8 n);
+  void LD(reg8 r1, reg16 r2);
+  void LD(reg16 r1, reg8 r2);
+  void LD(reg16 r, uint8 n);
 
 private:
   reg16 PC;
@@ -51,5 +32,4 @@ private:
   reg16 HL;
 };
 
-}
 }
