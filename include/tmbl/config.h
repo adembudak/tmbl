@@ -1,4 +1,6 @@
-#pragma once
+#ifndef CONFIG_H
+#define CONFIG_H
+
 #include <boost/safe_numerics/safe_integer.hpp>
 #include <cstdint>
 #include <type_traits>
@@ -22,3 +24,5 @@ template <typename T>
 static constexpr const bool is_regular_v = is_regular<T>::value;
 
 }
+
+#endif

@@ -1,4 +1,6 @@
-#pragma once
+#ifndef GAMEBOY_HPP
+#define GAMEBOY_HPP
+
 #include "cpu/cpu.h"
 #include "memory/memory.h"
 
@@ -13,3 +15,5 @@ public:
 };
 
 }
+
+#endif
