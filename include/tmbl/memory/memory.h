@@ -6,15 +6,16 @@
 
 namespace tmbl::memory {
 
-class memory {
+class memory final {
 public:
   [[nodiscard]] bool dumpROM(const char *romfile);
-  [[nodiscard]] const byte data() const noexcept;
+  [[nodiscard]] byte *data() const noexcept;
 
 private:
-  std::array<byte, 64 * 1024> ram{};
+  mutable std::array<byte, 64 * 1024> ram{};
 };
 
+static_assert(is_regular_v<memory>);
 }
 
 #endif
