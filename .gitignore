@@ -570,4 +570,8 @@ healthchecksdb
 # Backup folder for Package Reference Convert tool in Visual Studio 2017
 MigrationBackup/
 
+### build directories  ###
+*[Bb]uild
+
+
 # End of https://www.gitignore.io/api/vim,c++,code,cmake,clion,emacs,visualstudio
