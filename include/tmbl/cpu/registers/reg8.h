@@ -30,26 +30,27 @@ class reg16;
 
 class reg8 final {
 public:
-  reg8() = default;
-  explicit reg8(const uint8 val_) noexcept;
+  reg8 &operator=(const uint8 val_) noexcept;
+  reg8 &operator=(const reg16 r_) noexcept;
 
   void Z(flag val_ = true) noexcept;
   void N(flag val_ = true) noexcept;
   void H(flag val_ = true) noexcept;
   void C(flag val_ = true) noexcept;
 
-  reg8 &operator=(const uint8 val_);
-  reg8 &operator=(const reg16 r16_);
-
-  [[nodiscard]] bool operator==(const uint8 val_);
-  [[nodiscard]] bool operator==(const reg8 r8_);
-
-  [[nodiscard]] const uint8 data() const noexcept;
+  [[nodiscard]] uint8 data() const noexcept;
 
 private:
   mutable uint8 m_data = 0b0000'0000;
 };
 
+bool operator==(const reg8 r_, const uint8 val_);
+bool operator==(const reg8 r1_, const reg8 r2_);
+
+bool operator==(const reg16 r1_, const reg8 r2_);
+bool operator==(const reg8 r1_, const reg16 r2_);
+
+static_assert(is_regular_v<reg8>);
 }
 
 #endif

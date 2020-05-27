@@ -8,18 +8,18 @@ namespace tmbl::cpu {
 
 class cpu final {
 public:
-  int fetch();
-  void decode();
-  void execute();
+  //  int fetch();
+  // void decode();
+  // void execute();
 
 private:
   // 8 bit transfer and I/O instructions
   //
-  void LD(reg8 r1, reg8 r2);
-  void LD(reg8 r, uint8 n);
-  void LD(reg8 r1, reg16 r2);
-  void LD(reg16 r1, reg8 r2);
-  void LD(reg16 r, uint8 n);
+  void LD(reg8 r1, reg8 r2) noexcept;
+  void LD(reg8 r, uint8 n) noexcept;
+  void LD(reg8 r1, reg16 r2) noexcept;
+  void LD(reg16 r1, reg8 r2) noexcept;
+  void LD(reg16 r, uint8 n) noexcept;
   // void LD(reg8 r, C) // port register or mode register in ram
 
 private:
@@ -34,6 +34,7 @@ private:
   mutable reg16 HL;
 };
 
+static_assert(is_regular_v<cpu>);
 }
 
 #endif
