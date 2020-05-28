@@ -28,6 +28,8 @@ private:
   mutable uint16 m_data = 0b0000'0000'0000'0000;
 };
 
+bool operator==(const reg16 r1_, const reg16 r2_);
+
 static_assert(is_regular_v<reg16>);
 }
 

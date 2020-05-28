@@ -24,28 +24,30 @@ reg16 &reg16::operator+=(const std::size_t n_) {
 }
 
 void reg16::lo(const reg8 val_) {
-  m_data = (m_data & ~zeroed_lower_byte_mask) |
-           (val_.data() & zeroed_lower_byte_mask);
+  m_data = (m_data & zeroed_lower_byte_mask) | val_.data();
 }
 
 [[nodiscard]] reg8 reg16::lo() const noexcept {
   reg8 tmp;
-  tmp = static_cast<uint8>(m_data & zeroed_lower_byte_mask);
+  tmp = static_cast<uint8>(m_data & zeroed_upper_byte_mask);
   return tmp;
 }
 
 void reg16::hi(const reg8 val_) {
-  m_data = (m_data & ~zeroed_upper_byte_mask) |
-           (val_.data() & zeroed_upper_byte_mask);
+  m_data = (m_data & zeroed_upper_byte_mask) | (val_.data() << 8);
 }
 
 [[nodiscard]] reg8 reg16::hi() const noexcept {
   reg8 tmp;
-  tmp = static_cast<uint8>((m_data & zeroed_upper_byte_mask) >> 8);
+  tmp = static_cast<uint8>((m_data & zeroed_lower_byte_mask) >> 8);
 
   return tmp;
 }
 
 [[nodiscard]] uint16 reg16::data() const noexcept { return m_data; }
+
+bool operator==(const reg16 r1_, const reg16 r2_) {
+  return r1_.data() == r2_.data();
+}
 
 }
