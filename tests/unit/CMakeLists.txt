@@ -1,11 +1,16 @@
-add_executable(reg8_test reg8_test.cpp)
+function (register_test test_name)
+  add_executable(${test_name} "${test_name}.cpp")
 
-target_include_directories(reg8_test PUBLIC ../../include)
-target_link_directories(reg8_test PUBLIC ../../include)
+  target_include_directories(${test_name} PUBLIC ../../include)
+  target_link_directories(${test_name} PUBLIC ../../include)
 
-target_link_libraries(reg8_test PUBLIC reg8 reg16 GTest::gtest_main)
+  target_link_libraries(${test_name} PUBLIC reg8 reg16 GTest::gtest_main)
 
-gtest_discover_tests(
-  reg8_test
+  gtest_discover_tests(
+  ${test_name} 
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-  TEST_LIST reg8_test)
+  TEST_LIST ${test_name})
+endfunction()
+
+register_test(reg8_test)
+register_test(reg16_test)
