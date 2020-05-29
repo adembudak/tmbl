@@ -21,6 +21,7 @@ target_include_directories(output PUBLIC include/)
 
 add_subdirectory(include)
 target_link_libraries(output PUBLIC Gameboy Boost::headers)
+target_compile_definitions(output PUBLIC cxx_std_20)
 
 add_definitions(-Wall -Werror -fpermissive)
 
