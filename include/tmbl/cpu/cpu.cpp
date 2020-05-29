@@ -1,29 +1,15 @@
 #include "cpu.h"
 namespace tmbl::cpu {
 
-void cpu::LD(reg8 r1, reg8 r2) noexcept {
-  r1 = r2;
-  PC += 1;
+void cpu::run() {
+  for (;;) {
+
+    //    switch (byte addr = fetch(); addr) {
+    // decode and execute
+    //    case 0x00:
+    //     NOP();
+    //   case 0x01:
+  }
+};
 }
 
-void cpu::LD(reg8 r, uint8 n) noexcept {
-  r = n;
-  PC += 2;
-}
-
-void cpu::LD(reg8 r1, reg16 r2) noexcept {
-  r1 = r2;
-  PC += 2;
-}
-
-void cpu::LD(reg16 r1, reg8 r2) noexcept {
-  r1 = r2;
-  PC += 2;
-}
-
-void cpu::LD(reg16 r, uint8 n) noexcept {
-  r = n;
-  PC += 3;
-}
-
-}
