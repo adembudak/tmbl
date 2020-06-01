@@ -16,6 +16,11 @@ include(CTest)
 enable_testing()
 find_package(Boost QUIET REQUIRED)
 
+find_program(CCACHE ccache)
+if(CCACHE)
+  set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+endif()
+
 add_executable(output main.cpp)
 target_include_directories(output PUBLIC include/)
 
@@ -23,8 +28,8 @@ add_subdirectory(include)
 target_link_libraries(output PUBLIC Gameboy Boost::headers)
 target_compile_definitions(output PUBLIC cxx_std_20)
 
-add_definitions(-Wall -Werror -fpermissive)
+add_definitions(-Wall -Werror -fpermissive -Wconversion)
 
 if(TOMBUL_BUILD_TESTS)
-  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tests)
+  add_subdirectory(tests)
 endif()
