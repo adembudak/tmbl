@@ -1,1 +1,1 @@
-add_tombul_test(LD_test)
+add_tombul_test(LD_test cpu)
