@@ -7,39 +7,38 @@
 
 namespace tmbl::cpu {
 
-template <typename T> struct is_register : std::false_type {};
-template <> struct is_register<reg8> : std::true_type {};
-template <> struct is_register<reg16> : std::true_type {};
+template <typename T> struct is_8bit_register : std::false_type {};
+template <> struct is_8bit_register<reg8> : std::true_type {};
 
-template <typename T> static constexpr bool is_register_v = is_register<T>::value;
-template <typename T> concept Register = is_register_v<T>;
-
-template <typename T> struct is_intermediate_data : std::false_type {};
-template <> struct is_intermediate_data<uint8> : std::true_type {};
-template <> struct is_intermediate_data<uint16> : std::true_type {};
+template <typename T> struct is_16bit_register : std::false_type {};
+template <> struct is_16bit_register<reg16> : std::true_type {};
 
 template <typename T>
-static constexpr bool is_intermidate_data_v = is_intermediate_data<T>::value;
-template <typename T> concept IntermediateData = is_intermidate_data_v<T>;
+concept Register = is_8bit_register<T>::value || is_16bit_register<T>::value;
+
+template <typename T> struct is_intermediate_data : std::false_type {};
+template <> struct is_intermediate_data<u8> : std::true_type {};
+template <> struct is_intermediate_data<u16> : std::true_type {};
+
+template <typename T> concept IntermediateData = is_intermediate_data<T>::value;
 
 class cpu final {
 public:
-  void LD(Register auto &r1, Register auto &r2, uint8 CY) noexcept {
-    r1 = r2;
-    PC += CY;
-  }
-
-  void LD(Register auto &r, IntermediateData auto n, uint8 CY) noexcept {
-    r = n;
-    PC += CY;
-  }
-
-  void NOP() noexcept;
-  void PUSH(reg16 r);
-  void POP(reg16 r);
-
-  void LDHL(uint8 n);
-  void LD(reg16 r) noexcept;
+  void LD(reg8 &r, reg16 &rr, u8 CY) noexcept;
+  void LD(reg16 &rr, reg8 &r, u8 CY) noexcept;
+  void LD(reg16 &rr, u8 n, u8 CY) noexcept;
+  // TODO: Resolve the redefinition problem
+  // int dummy parameter used as a workaround
+  void LD(reg8 &r1, reg8 &r2, u8 CY, int dummy) noexcept;
+  void LD(reg8 &r1, reg8 &r2, u8 CY) noexcept;
+  void LD(reg8 &r, u8 n, u8 CY, int dummy) noexcept;
+  void LD(reg8 &r, u8 n, u8 CY) noexcept;
+  void LD(u8 n, reg8 r, u8 CY) noexcept;
+  void LD(reg8 &r, u16 nn, u8 CY) noexcept;
+  void LD(u16 nn, reg8 &r, u8 CY) noexcept;
+  void LD(u16 nn, reg16 &rr, u8 CY) noexcept;
+  void LD(reg16 &rr1, reg16 &rr2, u8 CY) noexcept;
+  void LD(reg16 &rr1, u16 nn, u8 CY) noexcept;
 
   void run();
 
