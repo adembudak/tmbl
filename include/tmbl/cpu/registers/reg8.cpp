@@ -1,15 +1,9 @@
 #include "reg8.h"
-#include "reg16.h"
 
 namespace tmbl::cpu {
 
-reg8 &reg8::operator=(const uint8 val_) noexcept {
-  m_data = val_;
-  return *this;
-}
-
-reg8 &reg8::operator=(const reg16 r_) noexcept {
-  m_data = static_cast<uint8>(r_.data() & zeroed_upper_byte_mask);
+reg8 &reg8::operator=(const u8 n) noexcept {
+  m_data = n;
   return *this;
 }
 
@@ -29,19 +23,6 @@ void reg8::C(flag val_) noexcept {
   val_ ? m_data |= 0b0001'0000 : m_data &= 0b1110'1111;
 }
 
-[[nodiscard]] uint8 reg8::data() const noexcept { return m_data; }
-
-bool operator==(const reg8 r_, const uint8 val_) { return r_.data() == val_; }
-bool operator==(const reg8 r1_, const reg8 r2_) {
-  return r1_.data() == r2_.data();
-}
-
-bool operator==(const reg16 r1_, const reg8 r2_) {
-  return r1_.data() == r2_.data();
-}
-
-bool operator==(const reg8 r1_, const reg16 r2_) {
-  return r1_.data() == r2_.data();
-}
+[[nodiscard]] u8 reg8::data() const noexcept { return m_data; }
 
 }

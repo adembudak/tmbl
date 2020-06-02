@@ -1,53 +1,25 @@
 #include "reg16.h"
-#include "reg8.h"
 
 namespace tmbl::cpu {
 
-reg16 &reg16::operator=(const reg8 r8_) noexcept {
-  m_data = r8_.data();
+reg16 &reg16::operator=(const u16 nn) {
+  m_data = nn;
   return *this;
 }
 
-reg16 &reg16::operator=(const uint16 val_) {
-  m_data = val_;
+reg16 &reg16::operator+=(const u8 n) {
+  m_data += n;
   return *this;
 }
 
-reg16 &reg16::operator=(const uint8 val_) {
-  m_data = val_;
-  return *this;
+byte reg16::lo() const noexcept {
+  return static_cast<byte>(m_data & reg16::zeroed_upper_byte_mask);
 }
 
-reg16 &reg16::operator+=(const std::size_t n_) {
-  m_data += n_;
-  return *this;
+byte reg16::hi() const noexcept {
+  return static_cast<byte>((m_data & reg16::zeroed_lower_byte_mask) >> 8);
 }
 
-void reg16::lo(const reg8 val_) {
-  m_data = (m_data & zeroed_lower_byte_mask) | val_.data();
-}
-
-[[nodiscard]] reg8 reg16::lo() const noexcept {
-  reg8 tmp;
-  tmp = static_cast<uint8>(m_data & zeroed_upper_byte_mask);
-  return tmp;
-}
-
-void reg16::hi(const reg8 val_) {
-  m_data = (m_data & zeroed_upper_byte_mask) | (val_.data() << 8);
-}
-
-[[nodiscard]] reg8 reg16::hi() const noexcept {
-  reg8 tmp;
-  tmp = static_cast<uint8>((m_data & zeroed_lower_byte_mask) >> 8);
-
-  return tmp;
-}
-
-[[nodiscard]] uint16 reg16::data() const noexcept { return m_data; }
-
-bool operator==(const reg16 r1_, const reg16 r2_) {
-  return r1_.data() == r2_.data();
-}
+[[nodiscard]] u16 reg16::data() const noexcept { return m_data; }
 
 }

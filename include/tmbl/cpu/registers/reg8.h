@@ -5,8 +5,6 @@
 
 namespace tmbl::cpu {
 
-class reg16;
-
 // clang-format off
 
 /*!
@@ -30,25 +28,18 @@ class reg16;
 
 class reg8 final {
 public:
-  reg8 &operator=(const uint8 val_) noexcept;
-  reg8 &operator=(const reg16 r_) noexcept;
+  reg8 &operator=(const u8 n) noexcept;
 
   void Z(flag val_ = true) noexcept;
   void N(flag val_ = true) noexcept;
   void H(flag val_ = true) noexcept;
   void C(flag val_ = true) noexcept;
 
-  [[nodiscard]] uint8 data() const noexcept;
+  [[nodiscard]] u8 data() const noexcept;
 
 private:
-  mutable uint8 m_data = 0b0000'0000;
+  mutable u8 m_data = 0b0000'0000;
 };
-
-bool operator==(const reg8 r_, const uint8 val_);
-bool operator==(const reg8 r1_, const reg8 r2_);
-
-bool operator==(const reg16 r1_, const reg8 r2_);
-bool operator==(const reg8 r1_, const reg16 r2_);
 
 static_assert(is_regular_v<reg8>);
 }
