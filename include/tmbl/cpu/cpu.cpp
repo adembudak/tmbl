@@ -69,10 +69,18 @@ void cpu::LD(reg16 &rr1, u16 nn, u8 CY) noexcept {
 
 void cpu::PUSH(const reg16 rr) {
   m[SP - 1] = rr.lo();
-  m[SP - 2] = rr.lo();
+  m[SP - 2] = rr.hi();
   SP -= 2;
 
   PC += 4;
+}
+
+void cpu::POP(reg16 rr) {
+  rr.lo() = m[SP];
+  rr.hi() = m[SP + 1];
+  SP += 2;
+
+  PC += 3;
 }
 
 void cpu::run() {

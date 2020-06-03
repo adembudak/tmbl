@@ -25,6 +25,7 @@ public:
   void LD(reg16 &rr1, u16 nn, u8 CY) noexcept;
 
   void PUSH(const reg16 rr);
+  void POP(reg16 rr);
 
   void run();
 
