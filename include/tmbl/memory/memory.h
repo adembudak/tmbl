@@ -4,7 +4,6 @@
 #include "../config.h"
 #include "../cpu/registers/reg16.h"
 #include "../cpu/registers/reg8.h"
-#
 #include <array>
 
 namespace tmbl::memory {
@@ -25,7 +24,6 @@ private:
   mutable std::array<byte, 64 * 1024> ram{};
 };
 
-static_assert(is_regular_v<memory>);
 }
 
 #endif

@@ -24,7 +24,6 @@ private:
 
 bool operator==(const reg16 r1_, const reg16 r2_);
 
-static_assert(is_regular_v<reg16>);
 }
 
 #endif
