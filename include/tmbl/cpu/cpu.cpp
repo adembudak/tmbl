@@ -67,6 +67,14 @@ void cpu::LD(reg16 &rr1, u16 nn, u8 CY) noexcept {
   PC += CY;
 }
 
+void cpu::PUSH(const reg16 rr) {
+  m[SP - 1] = rr.lo();
+  m[SP - 2] = rr.lo();
+  SP -= 2;
+
+  PC += 4;
+}
+
 void cpu::run() {
   for (;;) {
 

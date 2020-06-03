@@ -24,6 +24,8 @@ public:
   void LD(reg16 &rr1, reg16 &rr2, u8 CY) noexcept;
   void LD(reg16 &rr1, u16 nn, u8 CY) noexcept;
 
+  void PUSH(const reg16 rr);
+
   void run();
 
 private:
