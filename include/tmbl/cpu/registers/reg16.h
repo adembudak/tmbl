@@ -9,6 +9,7 @@ class reg16 final {
 public:
   reg16 &operator=(const u16 nn);
   reg16 &operator+=(const u8 n);
+  reg16 &operator-=(const u8 n);
 
   byte lo() const noexcept;
   byte hi() const noexcept;
@@ -22,9 +23,8 @@ private:
   static constexpr u16 zeroed_lower_byte_mask = 0b1111'1111'0000'0000;
 };
 
-bool operator==(const reg16 r1_, const reg16 r2_);
+[[nodiscard]] u16 operator-(const reg16 rr, const int i);
 
 }
-
 #endif
 
