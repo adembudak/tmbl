@@ -29,5 +29,7 @@ byte reg16::hi() const noexcept {
 
 [[nodiscard]] u16 operator-(const reg16 rr, const int i) { return rr.data() - i; }
 
+[[nodiscard]] u16 operator+(const reg16 rr, const int i) { return rr.data() + i; }
+
 }
 
