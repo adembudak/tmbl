@@ -2,6 +2,7 @@
 #define REG8_H
 
 #include "../../config.h"
+#include <cstddef>
 
 namespace tmbl::cpu {
 
@@ -29,6 +30,10 @@ namespace tmbl::cpu {
 class reg8 final {
 public:
   reg8 &operator=(const u8 n) noexcept;
+  reg8 &operator=(byte b) noexcept {
+    m_data = std::to_integer<int>(b);
+    return *this;
+  }
 
   void Z(flag val_ = true) noexcept;
   void N(flag val_ = true) noexcept;
@@ -41,7 +46,6 @@ private:
   mutable u8 m_data = 0b0000'0000;
 };
 
-static_assert(is_regular_v<reg8>);
 }
 
 #endif

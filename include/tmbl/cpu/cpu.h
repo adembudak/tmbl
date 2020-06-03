@@ -3,32 +3,16 @@
 
 #include "registers/reg16.h"
 #include "registers/reg8.h"
+#include "../memory/memory.h"
 #include "../config.h"
 
 namespace tmbl::cpu {
-
-template <typename T> struct is_8bit_register : std::false_type {};
-template <> struct is_8bit_register<reg8> : std::true_type {};
-
-template <typename T> struct is_16bit_register : std::false_type {};
-template <> struct is_16bit_register<reg16> : std::true_type {};
-
-template <typename T>
-concept Register = is_8bit_register<T>::value || is_16bit_register<T>::value;
-
-template <typename T> struct is_intermediate_data : std::false_type {};
-template <> struct is_intermediate_data<u8> : std::true_type {};
-template <> struct is_intermediate_data<u16> : std::true_type {};
-
-template <typename T> concept IntermediateData = is_intermediate_data<T>::value;
 
 class cpu final {
 public:
   void LD(reg8 &r, reg16 &rr, u8 CY) noexcept;
   void LD(reg16 &rr, reg8 &r, u8 CY) noexcept;
   void LD(reg16 &rr, u8 n, u8 CY) noexcept;
-  // TODO: Resolve the redefinition problem
-  // int dummy parameter used as a workaround
   void LD(reg8 &r1, reg8 &r2, u8 CY, int dummy) noexcept;
   void LD(reg8 &r1, reg8 &r2, u8 CY) noexcept;
   void LD(reg8 &r, u8 n, u8 CY, int dummy) noexcept;
@@ -43,9 +27,8 @@ public:
   void run();
 
 private:
-  byte fetch() { return {}; }
-  void decode();
-  void execute();
+  byte fetch(reg16 rr) { return m[rr]; }
+  int decode(byte b) { return std::to_integer<int>(b); }
 
 private:
   mutable reg16 PC;
@@ -57,9 +40,10 @@ private:
   mutable reg16 BC;
   mutable reg16 DE;
   mutable reg16 HL;
+
+  memory::memory m;
 };
 
-static_assert(is_regular_v<cpu>);
 }
 
 #endif

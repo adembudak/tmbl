@@ -3,22 +3,22 @@
 namespace tmbl::cpu {
 
 void cpu::LD(reg8 &r, reg16 &rr, u8 CY) noexcept {
-  //    r = m[rr];
+  r = m[rr];
   PC += CY;
 }
 
 void cpu::LD(reg16 &rr, reg8 &r, u8 CY) noexcept {
-  //     m[rr] = r;
+  m[rr] = r.data();
   PC += CY;
 }
 
 void cpu::LD(reg16 &rr, u8 n, u8 CY) noexcept {
-  //     m[rr] = n;
+  m[rr] = n;
   PC += CY;
 }
 
 void cpu::LD(reg8 &r1, reg8 &r2, u8 CY, int dummy) noexcept {
-  // m[r] = r;
+  m[r1] = r2.data();
   PC += CY;
 }
 
@@ -28,7 +28,7 @@ void cpu::LD(reg8 &r1, reg8 &r2, u8 CY) noexcept {
 }
 
 void cpu::LD(reg8 &r, u8 n, u8 CY, int dummy) noexcept {
-  // r = r[n];
+  r = m[n];
   PC += CY;
 }
 
@@ -38,22 +38,22 @@ void cpu::LD(reg8 &r, u8 n, u8 CY) noexcept {
 }
 
 void cpu::LD(u8 n, reg8 r, u8 CY) noexcept {
-  //    m[n] = r;
+  m[n] = r.data();
   PC += CY;
 }
 
 void cpu::LD(reg8 &r, u16 nn, u8 CY) noexcept {
-  //    r = m[nn];
+  r = m[nn];
   PC += CY;
 }
 
 void cpu::LD(u16 nn, reg8 &r, u8 CY) noexcept {
-  //    m[nn] = r;
+  m[nn] = r.data();
   PC += CY;
 }
 
 void cpu::LD(u16 nn, reg16 &rr, u8 CY) noexcept {
-  //    m[nn] = rr;
+  m[nn] = rr.data();
   PC += CY;
 }
 
