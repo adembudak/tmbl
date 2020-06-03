@@ -80,7 +80,8 @@ TEST(EightBitRegisterType, Allofthem) {
 TEST(EightBitRegisterType, AssignReg8toAnIntermediateValue) {
   reg8 A;
 
-  A = 0b0000'1010;
+  u8 n = 0b0000'1010;
+  A = n;
   ASSERT_EQ(A.data(), 0b0000'1010);
 }
 
