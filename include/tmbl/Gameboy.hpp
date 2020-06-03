@@ -15,8 +15,6 @@ public:
   void run();
 };
 
-static_assert(is_regular_v<Gameboy>);
-
 }
 
 #endif
