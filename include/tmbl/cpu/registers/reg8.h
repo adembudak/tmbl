@@ -64,10 +64,9 @@ private:
 
 [[nodiscard]] reg8 operator+(const reg8 r1, const reg8 r2);
 [[nodiscard]] reg8 operator-(const reg8 r1, const reg8 r2);
-
 [[nodiscard]] reg8 operator&(const reg8 r1, const reg8 r2);
-
 [[nodiscard]] reg8 operator|(const reg8 r1, const reg8 r2);
+[[nodiscard]] reg8 operator^(const reg8 r1, const reg8 r2);
 }
 
 #endif
