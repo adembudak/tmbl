@@ -43,6 +43,10 @@ public:
   void SBC(const u8 n);
   void SBC(const reg16 rr);
 
+  void AND(const reg8 r);
+  void AND(const u8 n);
+  void AND(const reg16 rr);
+
   void run();
 
 private:
