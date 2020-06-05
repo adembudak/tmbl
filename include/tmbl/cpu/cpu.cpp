@@ -210,6 +210,54 @@ void cpu::SUB(const reg16 rr) {
   PC += 2;
 }
 
+void cpu::SBC(const reg8 r) {
+  if (F.C()) {
+    A -= 1;
+  }
+  ((A.data() - r.data()) == reg8::min()) ? F.Z(set) : F.Z(reset);
+  ((A.loNibble() < r.loNibble())) ? F.H(set) : F.H(reset);
+  F.N(set);
+  (A.data() < r.data()) ? F.C(set) : F.C(reset);
+
+  A = A - r;
+  PC += 1;
+}
+
+void cpu::SBC(const u8 n) {
+  if (F.C()) {
+    A -= 1;
+  }
+
+  ((A.data() - n) == reg8::min()) ? F.Z(set) : F.Z(reset);
+  (A.loNibble() < n) ? F.H(set) : F.H(reset);
+  F.N(set);
+  (A.data() < n) ? F.C(set) : F.C(reset);
+
+  reg8 tmp;
+  tmp = n;
+
+  A = A - tmp;
+  PC += 2;
+}
+
+void cpu::SBC(const reg16 rr) {
+  if (F.C()) {
+    A -= 1;
+  }
+
+  u8 n = std::to_integer<int>(m[rr]);
+  ((A.data() - n) == reg8::min()) ? F.Z(set) : F.Z(reset);
+  (A.loNibble() < n) ? F.H(set) : F.H(reset);
+  F.N(set);
+  (A.data() < n) ? F.C(set) : F.C(reset);
+
+  reg8 tmp;
+  tmp = m[rr];
+
+  A = A - tmp;
+  PC += 2;
+}
+
 void cpu::run() {
   for (;;) {
 

@@ -39,6 +39,10 @@ public:
   void SUB(const u8 n);
   void SUB(const reg16 rr);
 
+  void SBC(const reg8 r);
+  void SBC(const u8 n);
+  void SBC(const reg16 rr);
+
   void run();
 
 private:
