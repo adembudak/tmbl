@@ -12,6 +12,8 @@ using u16 = boost::safe_numerics::safe<std::uint16_t>;
 using byte = boost::safe_numerics::safe<std::byte>;
 using flag = boost::safe_numerics::safe<const bool>;
 
+constexpr flag set = true;
+constexpr flag reset = false;
 }
 
 #endif
