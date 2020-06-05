@@ -199,13 +199,15 @@ void cpu::SUB(const reg16 rr) {
 
   u8 n = std::to_integer<int>(m[rr]);
   ((A.data() - n) == reg8::min()) ? F.Z(set) : F.Z(reset);
-  ((n + A.loNibble()) > 0b0000'1111) ? F.H(set) : F.H(reset);
-  F.N(reset);
-  (n + A.data() > reg8::max()) ? F.C(set) : F.C(reset);
+  (A.loNibble() < n) ? F.H(set) : F.H(reset);
+  F.N(set);
+  (A.data() < n) ? F.C(set) : F.C(reset);
 
   reg8 tmp;
   tmp = m[rr];
+
   A = A - tmp;
+  PC += 2;
 }
 
 void cpu::run() {
