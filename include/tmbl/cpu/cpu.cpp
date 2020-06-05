@@ -104,7 +104,7 @@ void cpu::ADD(const u8 n) {
 
   A = A + tmp;
 
-  PC += 1;
+  PC += 2;
 }
 
 void cpu::ADD(const reg16 rr) {
@@ -169,6 +169,43 @@ void cpu::ADC(const reg16 rr) {
 
   A = A + tmp;
   PC += 2;
+}
+
+void cpu::SUB(const reg8 r) {
+  ((A.data() - r.data()) == reg8::min()) ? F.Z(set) : F.Z(reset);
+  ((A.loNibble() < r.loNibble())) ? F.H(set) : F.H(reset);
+  F.N(set);
+  (A.data() < r.data()) ? F.C(set) : F.C(reset);
+
+  A = A - r;
+  PC += 1;
+}
+
+void cpu::SUB(const u8 n) {
+
+  ((A.data() - n) == reg8::min()) ? F.Z(set) : F.Z(reset);
+  (A.loNibble() < n) ? F.H(set) : F.H(reset);
+  F.N(set);
+  (A.data() < n) ? F.C(set) : F.C(reset);
+
+  reg8 tmp;
+  tmp = n;
+
+  A = A - tmp;
+  PC += 2;
+}
+
+void cpu::SUB(const reg16 rr) {
+
+  u8 n = std::to_integer<int>(m[rr]);
+  ((A.data() - n) == reg8::min()) ? F.Z(set) : F.Z(reset);
+  ((n + A.loNibble()) > 0b0000'1111) ? F.H(set) : F.H(reset);
+  F.N(reset);
+  (n + A.data() > reg8::max()) ? F.C(set) : F.C(reset);
+
+  reg8 tmp;
+  tmp = m[rr];
+  A = A - tmp;
 }
 
 void cpu::run() {

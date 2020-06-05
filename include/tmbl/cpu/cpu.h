@@ -35,6 +35,10 @@ public:
   void ADC(const u8 n);
   void ADC(const reg16 rr);
 
+  void SUB(const reg8 r);
+  void SUB(const u8 n);
+  void SUB(const reg16 rr);
+
   void run();
 
 private:
