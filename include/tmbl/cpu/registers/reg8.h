@@ -30,21 +30,33 @@ namespace tmbl::cpu {
 class reg8 final {
 public:
   reg8 &operator=(const u8 n) noexcept;
-  reg8 &operator=(byte b) noexcept {
-    m_data = std::to_integer<int>(b);
-    return *this;
-  }
+  reg8 &operator=(byte b) noexcept;
+  reg8 &operator+=(const u8 n) noexcept;
 
-  void Z(flag val_ = true) noexcept;
-  void N(flag val_ = true) noexcept;
-  void H(flag val_ = true) noexcept;
-  void C(flag val_ = true) noexcept;
+  void Z(flag val_ = set) noexcept;
+  void N(flag val_ = set) noexcept;
+  void H(flag val_ = set) noexcept;
+  void C(flag val_ = set) noexcept;
+
+  u8 loNibble() const noexcept;
+  u8 hiNibble() const noexcept;
+
+  static u8 min() noexcept;
+  static u8 max() noexcept;
 
   [[nodiscard]] u8 data() const noexcept;
 
 private:
   mutable u8 m_data = 0b0000'0000;
+
+  static constexpr u8 min_u8_val = 0b0000'0000;
+  static constexpr u8 max_u8_val = 0b1111'1111;
+
+  static constexpr u8 zeroed_upper_byte_mask = 0b0000'1111;
+  static constexpr u8 zeroed_lower_byte_mask = 0b1111'0000;
 };
+
+[[nodiscard]] reg8 operator+(const reg8 r1, const reg8 r2);
 
 }
 
