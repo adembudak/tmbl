@@ -330,6 +330,42 @@ void cpu::OR(const reg16 rr) {
   PC += 2;
 }
 
+void cpu::XOR(const reg8 r) {
+  F.C(reset);
+  F.H(reset);
+  F.N(reset);
+  (A.data() == r.data()) ? F.Z(set) : F.Z(reset);
+
+  A = A ^ r;
+  PC += 1;
+}
+
+void cpu::XOR(const u8 n) {
+  F.C(reset);
+  F.H(reset);
+  F.N(reset);
+  (A.data() == n) ? F.Z(set) : F.Z(reset);
+
+  reg8 tmp;
+  tmp = n;
+
+  A = A ^ tmp;
+  PC += 2;
+}
+
+void cpu::XOR(const reg16 rr) {
+  F.C(reset);
+  F.H(reset);
+  F.N(reset);
+  (A.data() == std::to_integer<int>(m[rr])) ? F.Z(set) : F.Z(reset);
+
+  reg8 tmp;
+  tmp = m[rr];
+
+  A = A ^ tmp;
+  PC += 2;
+}
+
 void cpu::run() {
   for (;;) {
 

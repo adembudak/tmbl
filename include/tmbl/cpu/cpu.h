@@ -51,6 +51,10 @@ public:
   void OR(const u8 n);
   void OR(const reg16 rr);
 
+  void XOR(const reg8 r);
+  void XOR(const u8 n);
+  void XOR(const reg16 rr);
+
   void run();
 
 private:
