@@ -63,4 +63,13 @@ u8 reg8::max() noexcept { return max_u8_val; }
 
   return tmp;
 }
+
+[[nodiscard]] reg8 operator|(const reg8 r1, const reg8 r2) {
+  reg8 tmp;
+  u8 result = r1.data() | r2.data();
+  tmp = result;
+
+  return tmp;
+}
+
 }
