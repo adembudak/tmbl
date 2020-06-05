@@ -294,6 +294,42 @@ void cpu::AND(const reg16 rr) {
   PC += 2;
 }
 
+void cpu::OR(const reg8 r) {
+  F.C(reset);
+  F.H(reset);
+  F.N(reset);
+  (A.data() == 0 && r.data() == 0) ? F.Z(set) : F.Z(reset);
+
+  A = A | r;
+  PC += 1;
+}
+void cpu::OR(const u8 n) {
+  F.C(reset);
+  F.H(reset);
+  F.N(reset);
+
+  (A.data() == 0 || n == 0) ? F.Z(set) : F.Z(reset);
+
+  reg8 tmp;
+  tmp = n;
+
+  A = A | tmp;
+  PC += 2;
+}
+
+void cpu::OR(const reg16 rr) {
+  F.C(reset);
+  F.H(reset);
+  F.N(reset);
+  (A.data() == 0 || std::to_integer<int>(m[rr]) == 0) ? F.Z(set) : F.Z(reset);
+
+  reg8 tmp;
+  tmp = m[rr];
+
+  A = A | tmp;
+  PC += 2;
+}
+
 void cpu::run() {
   for (;;) {
 

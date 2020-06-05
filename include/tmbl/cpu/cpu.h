@@ -47,6 +47,10 @@ public:
   void AND(const u8 n);
   void AND(const reg16 rr);
 
+  void OR(const reg8 r);
+  void OR(const u8 n);
+  void OR(const reg16 rr);
+
   void run();
 
 private:
