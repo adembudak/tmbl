@@ -32,6 +32,7 @@ public:
   reg8 &operator=(const u8 n) noexcept;
   reg8 &operator=(byte b) noexcept;
   reg8 &operator+=(const u8 n) noexcept;
+  reg8 &operator-=(const u8 n) noexcept;
 
   void Z(flag val_) noexcept;
   void N(flag val_) noexcept;
