@@ -13,9 +13,9 @@ public:
   void LD(reg8 &r, reg16 &rr, u8 CY) noexcept;
   void LD(reg16 &rr, reg8 &r, u8 CY) noexcept;
   void LD(reg16 &rr, u8 n, u8 CY) noexcept;
-  void LD(reg8 &r1, reg8 &r2, u8 CY, int dummy) noexcept;
+  void LD(reg8 &r1, reg8 &r2, u8 CY, [[maybe_unused]] int dummy) noexcept;
   void LD(reg8 &r1, reg8 &r2, u8 CY) noexcept;
-  void LD(reg8 &r, u8 n, u8 CY, int dummy) noexcept;
+  void LD(reg8 &r, u8 n, u8 CY, [[maybe_unused]] int dummy) noexcept;
   void LD(reg8 &r, u8 n, u8 CY) noexcept;
   void LD(u8 n, reg8 r, u8 CY) noexcept;
   void LD(reg8 &r, u16 nn, u8 CY) noexcept;
@@ -26,6 +26,10 @@ public:
 
   void PUSH(const reg16 rr);
   void POP(reg16 rr);
+
+  void ADD(const reg8 r);
+  void ADD(const u8 n);
+  void ADD(const reg16 rr);
 
   void run();
 
