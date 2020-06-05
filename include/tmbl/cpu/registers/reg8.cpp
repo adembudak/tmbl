@@ -22,6 +22,11 @@ void reg8::N(flag val_) noexcept { val_ ? m_data |= 0b0100'0000 : m_data &= 0b10
 void reg8::H(flag val_) noexcept { val_ ? m_data |= 0b0010'0000 : m_data &= 0b1101'1111; }
 void reg8::C(flag val_) noexcept { val_ ? m_data |= 0b0001'0000 : m_data &= 0b1110'1111; }
 
+flag reg8::Z() const noexcept { return (((m_data & 0b1000'0000) >> 8) == 1) ? set : reset; }
+flag reg8::N() const noexcept { return (((m_data & 0b0100'0000) >> 7) == 1) ? set : reset; }
+flag reg8::H() const noexcept { return (((m_data & 0b0010'0000) >> 6) == 1) ? set : reset; }
+flag reg8::C() const noexcept { return (((m_data & 0b0001'0000) >> 5) == 1) ? set : reset; }
+
 u8 reg8::loNibble() const noexcept { return m_data & zeroed_upper_byte_mask; }
 u8 reg8::hiNibble() const noexcept { return (m_data & zeroed_lower_byte_mask) >> 4; };
 

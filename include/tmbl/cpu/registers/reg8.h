@@ -33,10 +33,15 @@ public:
   reg8 &operator=(byte b) noexcept;
   reg8 &operator+=(const u8 n) noexcept;
 
-  void Z(flag val_ = set) noexcept;
-  void N(flag val_ = set) noexcept;
-  void H(flag val_ = set) noexcept;
-  void C(flag val_ = set) noexcept;
+  void Z(flag val_) noexcept;
+  void N(flag val_) noexcept;
+  void H(flag val_) noexcept;
+  void C(flag val_) noexcept;
+
+  flag Z() const noexcept;
+  flag N() const noexcept;
+  flag H() const noexcept;
+  flag C() const noexcept;
 
   u8 loNibble() const noexcept;
   u8 hiNibble() const noexcept;
