@@ -366,6 +366,39 @@ void cpu::XOR(const reg16 rr) {
   PC += 2;
 }
 
+void cpu::CP(const reg8 r) {
+  (r.data() > A.data()) ? F.C(set) : F.C(reset);
+  (r.loNibble() > A.loNibble()) ? F.H(set) : F.H(reset);
+  F.N(set);
+  (r.data() == A.data()) ? F.Z(set) : F.Z(reset);
+
+  PC += 1;
+}
+
+void cpu::CP(const u8 n) {
+  reg8 tmp;
+  tmp = n;
+
+  (tmp.data() > A.data()) ? F.C(set) : F.C(reset);
+  (tmp.loNibble() > A.loNibble()) ? F.H(set) : F.H(reset);
+  F.N(set);
+  (tmp.data() == A.data()) ? F.Z(set) : F.Z(reset);
+
+  PC += 2;
+}
+
+void cpu::CP(const reg16 rr) {
+  reg8 tmp;
+  tmp = m[rr];
+
+  (tmp.data() > A.data()) ? F.C(set) : F.C(reset);
+  (tmp.loNibble() > A.loNibble()) ? F.H(set) : F.H(reset);
+  F.N(set);
+  (tmp.data() == A.data()) ? F.Z(set) : F.Z(reset);
+
+  PC += 2;
+}
+
 void cpu::run() {
   for (;;) {
 

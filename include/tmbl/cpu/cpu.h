@@ -55,6 +55,10 @@ public:
   void XOR(const u8 n);
   void XOR(const reg16 rr);
 
+  void CP(const reg8 r);
+  void CP(const u8 n);
+  void CP(const reg16 rr);
+
   void run();
 
 private:
