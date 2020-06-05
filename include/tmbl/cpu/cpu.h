@@ -31,6 +31,10 @@ public:
   void ADD(const u8 n);
   void ADD(const reg16 rr);
 
+  void ADC(const reg8 r);
+  void ADC(const u8 n);
+  void ADC(const reg16 rr);
+
   void run();
 
 private:

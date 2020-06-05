@@ -121,6 +121,56 @@ void cpu::ADD(const reg16 rr) {
   PC += 2;
 }
 
+void cpu::ADC(const reg8 r) {
+
+  if (A.C()) {
+    A += 1;
+  }
+
+  ((r.data() + A.data()) == (reg8::max() + 1)) ? F.Z(set) : F.Z(reset);
+  ((r.loNibble() + A.loNibble()) > 0b0000'1111) ? F.H(set) : F.H(reset);
+  F.N(reset);
+  (r.data() + A.data() > reg8::max()) ? F.C(set) : F.C(reset);
+
+  A = A + r;
+  PC += 1;
+}
+
+void cpu::ADC(const u8 n) {
+  if (F.C()) {
+    A += 1;
+  }
+
+  ((n + A.data()) == (reg8::max() + 1)) ? F.Z(set) : F.Z(reset);
+  ((n + A.loNibble()) > 0b0000'1111) ? F.H(set) : F.H(reset);
+  F.N(reset);
+  (n + A.data() > reg8::max()) ? F.C(set) : F.C(reset);
+
+  reg8 tmp;
+  tmp = n;
+
+  A = A + tmp;
+  PC += 2;
+}
+
+void cpu::ADC(const reg16 rr) {
+  if (F.C()) {
+    A += 1;
+  }
+
+  u8 n = std::to_integer<int>(m[rr]);
+  ((n + A.data()) == (reg8::max() + 1)) ? F.Z(set) : F.Z(reset);
+  ((n + A.loNibble()) > 0b0000'1111) ? F.H(set) : F.H(reset);
+  F.N(reset);
+  (n + A.data() > reg8::max()) ? F.C(set) : F.C(reset);
+
+  reg8 tmp;
+  tmp = m[rr];
+
+  A = A + tmp;
+  PC += 2;
+}
+
 void cpu::run() {
   for (;;) {
 
