@@ -10,7 +10,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-option(TOMBUL_BUILD_TESTS "Build tests" ON)
+option(TOMBUL_BUILD_TESTS "Build tests" OFF)
 
 include(CTest)
 enable_testing()
