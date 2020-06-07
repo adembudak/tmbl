@@ -400,20 +400,42 @@ void cpu::CP(const reg16 rr) {
 }
 
 void cpu::INC(reg8 r) {
-  ((1 + A.loNibble()) > 0b0000'1111) ? F.H(set) : F.H(reset);
+  (r.loNibble() == 0b0000'1111) ? F.H(set) : F.H(reset);
   F.N(reset);
-  ((1 + A.data()) == (reg8::max() + 1)) ? F.Z(set) : F.Z(reset);
+  (r.data() == 0b1111'1111) ? F.Z(set) : F.Z(reset);
 
   r += 1;
   c.tick(1);
 }
 
 void cpu::INC(reg16 rr) {
-  ((std::to_integer<unsigned>(m[rr]) | (0b0000'1111U)) + 1) > 0b0000'1111 ? F.H(set) : F.H(reset);
+  u8 lower_nibble = std::to_integer<unsigned>(m[rr]) | (0b0000'1111U);
+
+  (lower_nibble == 0b0000'1111) ? F.H(set) : F.H(reset);
   F.N(reset);
-  ((std::to_integer<unsigned>(m[rr]) + 1) == (reg8::max() + 1)) ? F.H(set) : F.H(reset);
+  (std::to_integer<unsigned>(m[rr]) == 0b1111'1111) ? F.Z(set) : F.Z(reset);
 
   m[rr] = byte(std::to_integer<unsigned>(m[rr]) + 1);
+  c.tick(3);
+}
+
+void cpu::DEC(reg8 r) {
+  (r.loNibble() == 0) ? F.H(set) : F.H(reset);
+  F.N(set);
+  (r.data() == 1) ? F.Z(set) : F.Z(reset);
+
+  r -= 1;
+  c.tick(1);
+}
+
+void cpu::DEC(reg16 rr) {
+  u8 lower_nibble = std::to_integer<unsigned>(m[rr]) | (0b0000'1111U);
+
+  (lower_nibble == 0) ? F.H(set) : F.H(reset);
+  F.N(set);
+  (std::to_integer<unsigned>(m[rr]) == 1) ? F.Z(set) : F.Z(reset);
+
+  m[rr] = byte(std::to_integer<unsigned>(m[rr]) - 1);
   c.tick(3);
 }
 

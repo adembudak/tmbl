@@ -63,6 +63,9 @@ public:
   void INC(reg8 r);
   void INC(reg16 rr);
 
+  void DEC(reg8 r);
+  void DEC(reg16 rr);
+
   void run();
 
 private:
