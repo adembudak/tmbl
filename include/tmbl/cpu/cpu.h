@@ -60,6 +60,9 @@ public:
   void CP(const u8 n);
   void CP(const reg16 rr);
 
+  void INC(reg8 r);
+  void INC(reg16 rr);
+
   void run();
 
 private:

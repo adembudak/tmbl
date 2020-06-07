@@ -108,7 +108,7 @@ void cpu::ADD(const u8 n) {
 }
 
 void cpu::ADD(const reg16 rr) {
-  u8 n = std::to_integer<int>(m[rr]);
+  u8 n = std::to_integer<unsigned>(m[rr]);
   ((n + A.data()) == (reg8::max() + 1)) ? F.Z(set) : F.Z(reset);
   ((n + A.loNibble()) > 0b0000'1111) ? F.H(set) : F.H(reset);
   F.N(reset);
@@ -158,7 +158,7 @@ void cpu::ADC(const reg16 rr) {
     A += 1;
   }
 
-  u8 n = std::to_integer<int>(m[rr]);
+  u8 n = std::to_integer<unsigned>(m[rr]);
   ((n + A.data()) == (reg8::max() + 1)) ? F.Z(set) : F.Z(reset);
   ((n + A.loNibble()) > 0b0000'1111) ? F.H(set) : F.H(reset);
   F.N(reset);
@@ -197,7 +197,7 @@ void cpu::SUB(const u8 n) {
 
 void cpu::SUB(const reg16 rr) {
 
-  u8 n = std::to_integer<int>(m[rr]);
+  u8 n = std::to_integer<unsigned>(m[rr]);
   ((A.data() - n) == reg8::min()) ? F.Z(set) : F.Z(reset);
   (A.loNibble() < n) ? F.H(set) : F.H(reset);
   F.N(set);
@@ -245,7 +245,7 @@ void cpu::SBC(const reg16 rr) {
     A -= 1;
   }
 
-  u8 n = std::to_integer<int>(m[rr]);
+  u8 n = std::to_integer<unsigned>(m[rr]);
   ((A.data() - n) == reg8::min()) ? F.Z(set) : F.Z(reset);
   (A.loNibble() < n) ? F.H(set) : F.H(reset);
   F.N(set);
@@ -285,7 +285,7 @@ void cpu::AND(const reg16 rr) {
   F.C(reset);
   F.H(set);
   F.N(reset);
-  (A.data() == 0 || std::to_integer<int>(m[rr]) == 0) ? F.Z(set) : F.Z(reset);
+  (A.data() == 0 || std::to_integer<unsigned>(m[rr]) == 0) ? F.Z(set) : F.Z(reset);
 
   reg8 tmp;
   tmp = m[rr];
@@ -321,7 +321,7 @@ void cpu::OR(const reg16 rr) {
   F.C(reset);
   F.H(reset);
   F.N(reset);
-  (A.data() == 0 || std::to_integer<int>(m[rr]) == 0) ? F.Z(set) : F.Z(reset);
+  (A.data() == 0 || std::to_integer<unsigned>(m[rr]) == 0) ? F.Z(set) : F.Z(reset);
 
   reg8 tmp;
   tmp = m[rr];
@@ -357,7 +357,7 @@ void cpu::XOR(const reg16 rr) {
   F.C(reset);
   F.H(reset);
   F.N(reset);
-  (A.data() == std::to_integer<int>(m[rr])) ? F.Z(set) : F.Z(reset);
+  (A.data() == std::to_integer<unsigned>(m[rr])) ? F.Z(set) : F.Z(reset);
 
   reg8 tmp;
   tmp = m[rr];
@@ -397,6 +397,24 @@ void cpu::CP(const reg16 rr) {
   (tmp.data() == A.data()) ? F.Z(set) : F.Z(reset);
 
   c.tick(2);
+}
+
+void cpu::INC(reg8 r) {
+  ((1 + A.loNibble()) > 0b0000'1111) ? F.H(set) : F.H(reset);
+  F.N(reset);
+  ((1 + A.data()) == (reg8::max() + 1)) ? F.Z(set) : F.Z(reset);
+
+  r += 1;
+  c.tick(1);
+}
+
+void cpu::INC(reg16 rr) {
+  ((std::to_integer<unsigned>(m[rr]) | (0b0000'1111U)) + 1) > 0b0000'1111 ? F.H(set) : F.H(reset);
+  F.N(reset);
+  ((std::to_integer<unsigned>(m[rr]) + 1) == (reg8::max() + 1)) ? F.H(set) : F.H(reset);
+
+  m[rr] = byte(std::to_integer<unsigned>(m[rr]) + 1);
+  c.tick(3);
 }
 
 void cpu::run() {
