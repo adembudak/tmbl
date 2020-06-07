@@ -3,6 +3,7 @@
 
 #include "registers/reg16.h"
 #include "registers/reg8.h"
+#include "clock/clock.h"
 #include "../memory/memory.h"
 #include "../config.h"
 
@@ -77,6 +78,7 @@ private:
   mutable reg16 HL;
 
   memory::memory m;
+  clock c;
 };
 
 }
