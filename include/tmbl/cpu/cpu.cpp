@@ -471,6 +471,11 @@ void cpu::INC(reg16 rr, [[maybe_unused]] int dummy) {
   c.tick(2);
 }
 
+void cpu::DEC(reg16 rr, [[maybe_unused]] int dummy) {
+  rr -= 1;
+  c.tick(2);
+}
+
 void cpu::run() {
   for (;;) {
 

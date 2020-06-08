@@ -70,6 +70,7 @@ public:
   void ADD(const u8 n, [[maybe_unused]] int dummy);
 
   void INC(reg16 rr, [[maybe_unused]] int dummy);
+  void DEC(reg16 rr, [[maybe_unused]] int dummy);
 
   void run();
 
