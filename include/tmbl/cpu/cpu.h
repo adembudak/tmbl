@@ -73,6 +73,7 @@ public:
   void DEC(reg16 rr, [[maybe_unused]] int dummy);
 
   void RLCA();
+  void RLA();
 
   void run();
 

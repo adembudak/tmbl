@@ -446,7 +446,7 @@ void cpu::ADD(reg16 rr1, reg16 rr2) {
   // zero the 4th nibble of both register to check H flag state;
   // if the sume of first 3rd nibble values bigger than 4096, then H flag set
   // TODO: write a helper function check H value state;
-  ((rr1.data() & 0b0000'1111'1111'1111) + (rr2.data() & 0b0000'1111'1111'1111) > 4095U)
+  ((rr1.data() & 0b0000'1111'1111'1111U) + (rr2.data() & 0b0000'1111'1111'1111U) > 4095U)
       ? F.H(set)
       : F.H(reset);
 
@@ -458,7 +458,7 @@ void cpu::ADD(reg16 rr1, reg16 rr2) {
 
 void cpu::ADD(const u8 n, [[maybe_unused]] int dummy) {
   ((SP.data() + n) > reg16::max()) ? F.C(set) : F.C(reset);
-  (((SP.data() & 0b0000'1111'1111'1111) + n) > 4095U) ? F.H(set) : F.H(reset);
+  (((SP.data() & 0b0000'1111'1111'1111U) + n) > 4095U) ? F.H(set) : F.H(reset);
 
   F.N(reset);
   F.Z(reset);
@@ -479,8 +479,25 @@ void cpu::DEC(reg16 rr, [[maybe_unused]] int dummy) {
 
 void cpu::RLCA() {
   (A.msb() == 1) ? F.C(set) : F.C(reset);
+  F.H(reset);
+  F.N(reset);
+  F.Z(reset);
 
   A = std::rotl(A.data(), 1);
+  c.tick(1);
+}
+
+void cpu::RLA() {
+  u8 old_carry_flag_value = F.C() ? 1 : 0;
+
+  F.H(reset);
+  F.N(reset);
+  F.Z(reset);
+
+  A = std::rotl(A.data(), 1);
+  (A.msb() == 1) ? F.C(set) : F.C(reset);
+
+  A = A.data() | old_carry_flag_value;
   c.tick(1);
 }
 
