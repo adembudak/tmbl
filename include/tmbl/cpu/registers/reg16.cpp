@@ -18,9 +18,7 @@ reg16 &reg16::operator-=(const u8 n) {
 }
 
 byte reg16::lo() const noexcept { return byte(m_data & reg16::zeroed_upper_byte_mask); }
-byte reg16::hi() const noexcept {
-  return byte((m_data & reg16::zeroed_lower_byte_mask) >> 8);
-}
+byte reg16::hi() const noexcept { return byte((m_data & reg16::zeroed_lower_byte_mask) >> 8); }
 
 void reg16::lo(const byte b) {
   m_data = (m_data & zeroed_lower_byte_mask) | std::to_integer<int>(b);
@@ -33,6 +31,12 @@ void reg16::hi(const byte b) {
 [[nodiscard]] u16 reg16::data() const noexcept { return m_data; }
 [[nodiscard]] u16 operator-(const reg16 rr, const int i) { return rr.data() - i; }
 [[nodiscard]] u16 operator+(const reg16 rr, const int i) { return rr.data() + i; }
+
+[[nodiscard]] reg16 operator+(const reg16 rr1, const reg16 rr2) {
+  reg16 tmp;
+  tmp = rr1.data() + rr2.data();
+  return tmp;
+}
 
 }
 

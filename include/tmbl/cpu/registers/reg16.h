@@ -35,6 +35,8 @@ private:
 [[nodiscard]] u16 operator-(const reg16 rr, const int i);
 [[nodiscard]] u16 operator+(const reg16 rr, const int i);
 
+[[nodiscard]] reg16 operator+(const reg16 rr1, const reg16 rr2);
+
 }
 #endif
 
