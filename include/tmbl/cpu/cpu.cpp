@@ -455,6 +455,17 @@ void cpu::ADD(reg16 rr1, reg16 rr2) {
   c.tick(2);
 }
 
+void cpu::ADD(const u8 n, [[maybe_unused]] int dummy) {
+  ((SP.data() + n) > reg16::max()) ? F.C(set) : F.C(reset);
+  (((SP.data() & 0b0000'1111'1111'1111) + n) > 4095U) ? F.H(set) : F.H(reset);
+
+  F.N(reset);
+  F.Z(reset);
+
+  SP += n;
+  c.tick(4);
+}
+
 void cpu::run() {
   for (;;) {
 

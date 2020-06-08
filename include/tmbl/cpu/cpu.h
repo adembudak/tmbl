@@ -67,6 +67,7 @@ public:
   void DEC(reg16 rr);
 
   void ADD(reg16 rr1, reg16 rr2);
+  void ADD(const u8 n, [[maybe_unused]] int dummy);
 
   void run();
 
