@@ -478,12 +478,13 @@ void cpu::DEC(reg16 rr, [[maybe_unused]] int dummy) {
 }
 
 void cpu::RLCA() {
-  (A.msb() == 1) ? F.C(set) : F.C(reset);
   F.H(reset);
   F.N(reset);
   F.Z(reset);
 
   A = std::rotl(A.data(), 1);
+  (A.msb() == 1) ? F.C(set) : F.C(reset);
+
   c.tick(1);
 }
 
@@ -498,6 +499,17 @@ void cpu::RLA() {
   (A.msb() == 1) ? F.C(set) : F.C(reset);
 
   A = A.data() | old_carry_flag_value;
+  c.tick(1);
+}
+
+void cpu::RRCA() {
+  F.H(reset);
+  F.N(reset);
+  F.Z(reset);
+
+  A = std::rotr(A.data(), 1);
+  (A.msb() == 1) ? F.C(set) : F.C(reset);
+
   c.tick(1);
 }
 
