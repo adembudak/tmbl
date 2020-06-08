@@ -69,6 +69,8 @@ public:
   void ADD(reg16 rr1, reg16 rr2);
   void ADD(const u8 n, [[maybe_unused]] int dummy);
 
+  void INC(reg16 rr, [[maybe_unused]] int dummy);
+
   void run();
 
 private:

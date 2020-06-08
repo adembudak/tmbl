@@ -466,6 +466,11 @@ void cpu::ADD(const u8 n, [[maybe_unused]] int dummy) {
   c.tick(4);
 }
 
+void cpu::INC(reg16 rr, [[maybe_unused]] int dummy) {
+  rr += 1;
+  c.tick(2);
+}
+
 void cpu::run() {
   for (;;) {
 
