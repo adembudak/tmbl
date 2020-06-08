@@ -7,10 +7,10 @@
 
 namespace tmbl {
 
-using u8 = boost::safe_numerics::safe<std::uint_fast8_t>;
-using u16 = boost::safe_numerics::safe<std::uint_fast16_t>;
-using byte = boost::safe_numerics::safe<std::byte>;
-using flag = boost::safe_numerics::safe<const bool>;
+using u8 = std::uint_fast8_t;
+using u16 = std::uint_fast16_t;
+using byte = std::byte;
+using flag = const bool;
 
 constexpr flag set = true;
 constexpr flag reset = false;
