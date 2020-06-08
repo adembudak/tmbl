@@ -508,8 +508,22 @@ void cpu::RRCA() {
   F.Z(reset);
 
   A = std::rotr(A.data(), 1);
-  (A.msb() == 1) ? F.C(set) : F.C(reset);
+  (A.lsb() == 1) ? F.C(set) : F.C(reset);
 
+  c.tick(1);
+}
+
+void cpu::RRA() {
+  u8 old_carry_flag_value = F.C() ? 1 : 0;
+
+  F.H(reset);
+  F.N(reset);
+  F.Z(reset);
+
+  A = std::rotr(A.data(), 1);
+  (A.lsb() == 1) ? F.C(set) : F.C(reset);
+
+  A = A.data() | old_carry_flag_value;
   c.tick(1);
 }
 

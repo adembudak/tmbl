@@ -76,6 +76,7 @@ public:
   void RLA();
 
   void RRCA();
+  void RRA();
 
   void run();
 
