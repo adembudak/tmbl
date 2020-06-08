@@ -47,6 +47,9 @@ public:
   u8 loNibble() const noexcept;
   u8 hiNibble() const noexcept;
 
+  u8 lsb() const noexcept;
+  u8 msb() const noexcept;
+
   static u8 min() noexcept;
   static u8 max() noexcept;
 

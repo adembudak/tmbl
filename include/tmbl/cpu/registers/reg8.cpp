@@ -35,6 +35,9 @@ flag reg8::C() const noexcept { return (((m_data & 0b0001'0000) >> 5) == 1) ? se
 u8 reg8::loNibble() const noexcept { return m_data & zeroed_upper_byte_mask; }
 u8 reg8::hiNibble() const noexcept { return (m_data & zeroed_lower_byte_mask) >> 4; };
 
+u8 reg8::lsb() const noexcept { return m_data & 0b0000'00001; }
+u8 reg8::msb() const noexcept { return (m_data & 0b1000'0000) >> 8; }
+
 u8 reg8::min() noexcept { return min_u8_val; }
 u8 reg8::max() noexcept { return max_u8_val; }
 
