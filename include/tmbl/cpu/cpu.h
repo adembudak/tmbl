@@ -66,6 +66,8 @@ public:
   void DEC(reg8 r);
   void DEC(reg16 rr);
 
+  void ADD(reg16 rr1, reg16 rr2);
+
   void run();
 
 private:

@@ -439,6 +439,22 @@ void cpu::DEC(reg16 rr) {
   c.tick(3);
 }
 
+void cpu::ADD(reg16 rr1, reg16 rr2) {
+  (rr1.data() + rr2.data() > reg16::max()) ? F.C(set) : F.C(reset);
+
+  // zero the 4th nibble of both register to check H flag state;
+  // if the sume of first 3rd nibble values bigger than 4096, then H flag set
+  // TODO: write a helper function check H value state;
+  ((rr1.data() & 0b0000'1111'1111'1111) + (rr2.data() & 0b0000'1111'1111'1111) > 4095U)
+      ? F.H(set)
+      : F.H(reset);
+
+  F.N(reset);
+
+  rr1 = rr1 + rr2;
+  c.tick(2);
+}
+
 void cpu::run() {
   for (;;) {
 
