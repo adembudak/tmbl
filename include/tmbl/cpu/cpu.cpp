@@ -1,4 +1,5 @@
 #include "cpu.h"
+#include <bit>
 
 namespace tmbl::cpu {
 
@@ -474,6 +475,13 @@ void cpu::INC(reg16 rr, [[maybe_unused]] int dummy) {
 void cpu::DEC(reg16 rr, [[maybe_unused]] int dummy) {
   rr -= 1;
   c.tick(2);
+}
+
+void cpu::RLCA() {
+  (A.msb() == 1) ? F.C(set) : F.C(reset);
+
+  A = std::rotl(A.data(), 1);
+  c.tick(1);
 }
 
 void cpu::run() {
