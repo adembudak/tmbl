@@ -13,7 +13,6 @@ public:
   [[nodiscard]] bool dumpROM(const char *romfile);
   [[nodiscard]] byte *data() const noexcept;
 
-  [[nodiscard]] byte &operator[](std::size_t index);
   [[nodiscard]] byte &operator[](cpu::reg8 r);
   [[nodiscard]] byte &operator[](cpu::reg16 rr);
 
