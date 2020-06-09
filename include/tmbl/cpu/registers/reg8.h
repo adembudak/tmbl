@@ -34,6 +34,8 @@ public:
   reg8 &operator+=(const u8 n) noexcept;
   reg8 &operator-=(const u8 n) noexcept;
 
+  bool test(size_t pos) const;
+
   void Z(flag val_) noexcept;
   void N(flag val_) noexcept;
   void H(flag val_) noexcept;

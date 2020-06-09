@@ -1,4 +1,5 @@
 #include "reg8.h"
+#include <stdexcept>
 
 namespace tmbl::cpu {
 
@@ -20,6 +21,14 @@ reg8 &reg8::operator+=(const u8 n) noexcept {
 reg8 &reg8::operator-=(const u8 n) noexcept {
   m_data -= n;
   return *this;
+}
+
+bool reg8::test(size_t pos) const {
+  if (pos < 0 || pos > 7) {
+    throw std::out_of_range("Reg8: Attempt to reach out of range\n");
+  }
+
+  return ((m_data & (1U << pos)) == 0) ? false : true;
 }
 
 void reg8::Z(flag val_) noexcept { val_ ? m_data |= 0b1000'0000 : m_data &= 0b0111'1111; }
