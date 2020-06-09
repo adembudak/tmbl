@@ -699,6 +699,7 @@ void cpu::SRA(reg16 rr) {
   (tmp.lsb() == 1) ? F.C(set) : F.C(reset);
 
   m[rr] >>= 1;
+  m[rr] |= byte(old_msb_mask);
   (std::to_integer<unsigned>(m[rr]) == 0U) ? F.Z(set) : F.Z(reset);
 
   c.tick(4);
