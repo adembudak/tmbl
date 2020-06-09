@@ -87,6 +87,9 @@ public:
   void RRC(reg8 r);
   void RRC(reg16 rr);
 
+  void RR(reg8 r);
+  void RR(reg16 rr);
+
   void run();
 
 private:

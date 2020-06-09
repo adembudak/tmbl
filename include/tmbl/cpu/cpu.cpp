@@ -490,7 +490,7 @@ void cpu::RLCA() {
 }
 
 void cpu::RLA() {
-  u8 old_carry_flag_value = F.C() ? 1 : 0;
+  u8 mask_for_0th_bit = F.C() ? 1 : 0;
 
   F.H(reset);
   F.N(reset);
@@ -499,7 +499,7 @@ void cpu::RLA() {
   A = std::rotl(A.data(), 1);
   (A.msb() == 1) ? F.C(set) : F.C(reset);
 
-  A = A.data() | old_carry_flag_value;
+  A = A.data() | mask_for_0th_bit;
   c.tick(1);
 }
 
@@ -515,7 +515,7 @@ void cpu::RRCA() {
 }
 
 void cpu::RRA() {
-  u8 old_carry_flag_value = F.C() ? 1 : 0;
+  u8 mask_for_7th_bit = F.C() ? 0b1000'0000 : 0b0000'0000;
 
   F.H(reset);
   F.N(reset);
@@ -524,7 +524,7 @@ void cpu::RRA() {
   A = std::rotr(A.data(), 1);
   (A.lsb() == 1) ? F.C(set) : F.C(reset);
 
-  A = A.data() | old_carry_flag_value;
+  A = A.data() | mask_for_7th_bit;
   c.tick(1);
 }
 
@@ -558,14 +558,14 @@ void cpu::RL(reg8 r) {
   F.H(reset);
   F.N(reset);
 
-  u8 old_carry_flag_value = F.C() ? 1 : 0;
+  u8 mask_for_0th_bit = F.C() ? 1 : 0;
 
   r = std::rotl(r.data(), 1);
 
   (r.msb() == 1) ? F.C(set) : F.C(reset);
   (r.data() == r.min()) ? F.Z(set) : F.Z(reset);
 
-  r = r.data() | old_carry_flag_value;
+  r = r.data() | mask_for_0th_bit;
 
   c.tick(2);
 }
@@ -574,7 +574,7 @@ void cpu::RL(reg16 rr) {
   F.H(reset);
   F.N(reset);
 
-  u8 old_carry_flag_value = F.C() ? 1 : 0;
+  u8 mask_for_0th_bit = F.C() ? 1 : 0;
   m[rr] = byte(std::rotl(std::to_integer<unsigned>(m[rr]), 1));
 
   reg8 tmp;
@@ -583,7 +583,7 @@ void cpu::RL(reg16 rr) {
   (tmp.msb() == 1) ? F.C(set) : F.C(reset);
   (tmp.data() == tmp.min()) ? F.Z(set) : F.Z(reset);
 
-  m[rr] = m[rr] | byte(old_carry_flag_value);
+  m[rr] = m[rr] | byte(mask_for_0th_bit);
 
   c.tick(4);
 }
@@ -611,6 +611,41 @@ void cpu::RRC(reg16 rr) {
   tmp = m[rr];
   (tmp.msb() == 1) ? F.C(set) : F.C(reset);
   (tmp.data() == 0) ? F.Z(set) : F.Z(reset);
+
+  c.tick(4);
+}
+
+void cpu::RR(reg8 r) {
+  F.H(reset);
+  F.N(reset);
+
+  u8 mask_for_7th_bit = F.C() ? 0b1000'0000 : 0b0000'0000;
+
+  r = std::rotr(r.data(), 1);
+
+  (r.lsb() == 1) ? F.C(set) : F.C(reset);
+  (r.data() == r.min()) ? F.Z(set) : F.Z(reset);
+
+  r = r.data() | mask_for_7th_bit;
+
+  c.tick(2);
+}
+
+void cpu::RR(reg16 rr) {
+  F.H(reset);
+  F.N(reset);
+
+  u8 mask_for_7th_bit = F.C() ? 0b1000'0000 : 0b0000'0000;
+
+  m[rr] = byte(std::rotr(std::to_integer<unsigned>(m[rr]), 1));
+
+  reg8 tmp;
+  tmp = m[rr];
+
+  (tmp.lsb() == 1) ? F.C(set) : F.C(reset);
+  (tmp.data() == tmp.min()) ? F.Z(set) : F.Z(reset);
+
+  m[rr] = m[rr] | byte(mask_for_7th_bit);
 
   c.tick(4);
 }
