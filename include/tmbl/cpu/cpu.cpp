@@ -675,6 +675,35 @@ void cpu::SLA(reg16 rr) {
   c.tick(4);
 }
 
+void cpu::SRA(reg8 r) {
+  F.H(reset);
+  F.N(reset);
+
+  u8 old_msb_mask = (r.msb() == 1) ? 0b1000'0000 : 0b0000'0000;
+
+  r = r.data() >> 1U;
+  r = r.data() | old_msb_mask;
+  (r.lsb() == 1) ? F.C(set) : F.C(reset);
+  (r.data() == 0) ? F.Z(set) : F.Z(reset);
+
+  c.tick(2);
+}
+
+void cpu::SRA(reg16 rr) {
+  F.H(reset);
+  F.N(reset);
+
+  reg8 tmp;
+  tmp = m[rr];
+  u8 old_msb_mask = (tmp.msb() == 1) ? 0b1000'0000 : 0b0000'0000;
+  (tmp.lsb() == 1) ? F.C(set) : F.C(reset);
+
+  m[rr] >>= 1;
+  (std::to_integer<unsigned>(m[rr]) == 0U) ? F.Z(set) : F.Z(reset);
+
+  c.tick(4);
+}
+
 void cpu::run() {
   for (;;) {
 

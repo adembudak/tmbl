@@ -93,6 +93,9 @@ public:
   void SLA(reg8 r);
   void SLA(reg16 rr);
 
+  void SRA(reg8 r);
+  void SRA(reg16 rr);
+
   void run();
 
 private:
