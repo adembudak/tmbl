@@ -483,7 +483,7 @@ void cpu::RLCA() {
   F.Z(reset);
 
   // rotate left
-  A = std::rotl(A.data(), /*rotote 1 times=*/1);
+  A = std::rotl(A.data(), /*rotate 1 times=*/1);
   (A.msb() == 1) ? F.C(set) : F.C(reset);
 
   c.tick(1);
@@ -646,6 +646,31 @@ void cpu::RR(reg16 rr) {
   (tmp.data() == tmp.min()) ? F.Z(set) : F.Z(reset);
 
   m[rr] = m[rr] | byte(mask_for_7th_bit);
+
+  c.tick(4);
+}
+
+void cpu::SLA(reg8 r) {
+  F.H(reset);
+  F.N(reset);
+
+  (r.msb() == 1) ? F.C(set) : F.C(reset);
+  r = r.data() << 1U;
+  (r.data() == r.min()) ? F.Z(set) : F.Z(reset);
+
+  c.tick(2);
+}
+
+void cpu::SLA(reg16 rr) {
+  F.H(reset);
+  F.N(reset);
+
+  reg8 tmp;
+  tmp = m[rr];
+  (tmp.msb() == 1) ? F.C(set) : F.C(reset);
+
+  m[rr] <<= 1;
+  (std::to_integer<unsigned>(m[rr]) == 0U) ? F.Z(set) : F.Z(reset);
 
   c.tick(4);
 }

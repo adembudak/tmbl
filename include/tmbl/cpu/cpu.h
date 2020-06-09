@@ -90,6 +90,9 @@ public:
   void RR(reg8 r);
   void RR(reg16 rr);
 
+  void SLA(reg8 r);
+  void SLA(reg16 rr);
+
   void run();
 
 private:
