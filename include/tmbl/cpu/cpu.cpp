@@ -588,6 +588,33 @@ void cpu::RL(reg16 rr) {
   c.tick(4);
 }
 
+void cpu::RRC(reg8 r) {
+  F.H(reset);
+  F.N(reset);
+
+  r = std::rotr(r.data(), 1);
+  (r.lsb() == 1) ? F.C(set) : F.C(reset);
+  (r.data() == r.min()) ? F.Z(set) : F.Z(reset);
+
+  c.tick(2);
+}
+
+void cpu::RRC(reg16 rr) {
+  F.H(reset);
+  F.N(reset);
+
+  m[rr] = byte(std::rotr(std::to_integer<unsigned>(m[rr]), 1));
+
+  // create a temporary reg8 to reach individual bits of the byte
+  // more easily, and set flags via it.
+  reg8 tmp;
+  tmp = m[rr];
+  (tmp.msb() == 1) ? F.C(set) : F.C(reset);
+  (tmp.data() == 0) ? F.Z(set) : F.Z(reset);
+
+  c.tick(4);
+}
+
 void cpu::run() {
   for (;;) {
 
