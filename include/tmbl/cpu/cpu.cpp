@@ -534,7 +534,7 @@ void cpu::RLC(reg8 r) {
 
   r = std::rotl(r.data(), 1);
   (A.msb() == 1) ? F.C(set) : F.C(reset);
-  (A.data() == A.min()) ? F.Z(set) : F.Z(reset);
+  (A.data() == reg8::min()) ? F.Z(set) : F.Z(reset);
 
   c.tick(2);
 }
@@ -549,7 +549,7 @@ void cpu::RLC(reg16 rr) {
   tmp = m[rr];
 
   (tmp.msb() == 1) ? F.C(set) : F.C(reset);
-  (tmp.data() == tmp.min()) ? F.Z(set) : F.Z(reset);
+  (tmp.data() == reg8::min()) ? F.Z(set) : F.Z(reset);
 
   c.tick(4);
 }
@@ -563,7 +563,7 @@ void cpu::RL(reg8 r) {
   r = std::rotl(r.data(), 1);
 
   (r.msb() == 1) ? F.C(set) : F.C(reset);
-  (r.data() == r.min()) ? F.Z(set) : F.Z(reset);
+  (r.data() == reg8::min()) ? F.Z(set) : F.Z(reset);
 
   r = r.data() | mask_for_0th_bit;
 
@@ -581,7 +581,7 @@ void cpu::RL(reg16 rr) {
   tmp = m[rr];
 
   (tmp.msb() == 1) ? F.C(set) : F.C(reset);
-  (tmp.data() == tmp.min()) ? F.Z(set) : F.Z(reset);
+  (tmp.data() == reg8::min()) ? F.Z(set) : F.Z(reset);
 
   m[rr] = m[rr] | byte(mask_for_0th_bit);
 
@@ -594,7 +594,7 @@ void cpu::RRC(reg8 r) {
 
   r = std::rotr(r.data(), 1);
   (r.lsb() == 1) ? F.C(set) : F.C(reset);
-  (r.data() == r.min()) ? F.Z(set) : F.Z(reset);
+  (r.data() == reg8::min()) ? F.Z(set) : F.Z(reset);
 
   c.tick(2);
 }
@@ -624,7 +624,7 @@ void cpu::RR(reg8 r) {
   r = std::rotr(r.data(), 1);
 
   (r.lsb() == 1) ? F.C(set) : F.C(reset);
-  (r.data() == r.min()) ? F.Z(set) : F.Z(reset);
+  (r.data() == reg8::min()) ? F.Z(set) : F.Z(reset);
 
   r = r.data() | mask_for_7th_bit;
 
@@ -643,7 +643,7 @@ void cpu::RR(reg16 rr) {
   tmp = m[rr];
 
   (tmp.lsb() == 1) ? F.C(set) : F.C(reset);
-  (tmp.data() == tmp.min()) ? F.Z(set) : F.Z(reset);
+  (tmp.data() == reg8::min()) ? F.Z(set) : F.Z(reset);
 
   m[rr] = m[rr] | byte(mask_for_7th_bit);
 
@@ -656,7 +656,7 @@ void cpu::SLA(reg8 r) {
 
   (r.msb() == 1) ? F.C(set) : F.C(reset);
   r = r.data() << 1U;
-  (r.data() == r.min()) ? F.Z(set) : F.Z(reset);
+  (r.data() == reg8::min()) ? F.Z(set) : F.Z(reset);
 
   c.tick(2);
 }
@@ -705,6 +705,30 @@ void cpu::SRA(reg16 rr) {
   c.tick(4);
 }
 
+void cpu::SRL(reg8 r) {
+  F.H(reset);
+  F.N(reset);
+
+  (r.lsb() == 1) ? F.C(set) : F.C(reset);
+  r = r.data() >> 1;
+  (r.data() == reg8::min()) ? F.Z(set) : F.Z(reset);
+
+  c.tick(2);
+}
+
+void cpu::SRL(reg16 rr) {
+  F.H(reset);
+  F.N(reset);
+
+  reg8 tmp;
+  tmp = m[rr];
+  (tmp.lsb() == 1) ? F.C(set) : F.C(reset);
+
+  m[rr] >>= 1;
+  (std::to_integer<unsigned>(m[rr]) == 0U) ? F.Z(set) : F.Z(reset);
+
+  c.tick(4);
+}
 void cpu::run() {
   for (;;) {
 

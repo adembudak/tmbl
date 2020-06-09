@@ -96,6 +96,9 @@ public:
   void SRA(reg8 r);
   void SRA(reg16 rr);
 
+  void SRL(reg8 r);
+  void SRL(reg16 rr);
+
   void run();
 
 private:
