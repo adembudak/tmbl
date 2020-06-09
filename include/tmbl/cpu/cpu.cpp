@@ -729,6 +729,31 @@ void cpu::SRL(reg16 rr) {
 
   c.tick(4);
 }
+
+void cpu::SWAP(reg8 &r) {
+  F.C(reset);
+  F.H(reset);
+  F.N(reset);
+
+  r = std::rotl(r.data(), 4);
+
+  (r.data() == reg8::min()) ? F.Z(set) : F.Z(reset);
+
+  c.tick(2);
+}
+
+void cpu::SWAP(reg16 &rr) {
+  F.C(reset);
+  F.H(reset);
+  F.N(reset);
+
+  m[rr] = byte(std::rotl(std::to_integer<unsigned>(m[rr]), 4));
+
+  (std::to_integer<unsigned>(m[rr]) == 0U) ? F.Z(set) : F.Z(reset);
+
+  c.tick(4);
+}
+
 void cpu::run() {
   for (;;) {
 

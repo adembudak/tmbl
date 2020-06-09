@@ -99,6 +99,9 @@ public:
   void SRL(reg8 r);
   void SRL(reg16 rr);
 
+  void SWAP(reg8 &r);
+  void SWAP(reg16 &rr);
+
   void run();
 
 private:
