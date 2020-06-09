@@ -78,6 +78,9 @@ public:
   void RRCA();
   void RRA();
 
+  void RLC(reg8 r);
+  void RLC(reg16 rr);
+
   void run();
 
 private:

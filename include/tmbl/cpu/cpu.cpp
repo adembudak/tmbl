@@ -482,7 +482,8 @@ void cpu::RLCA() {
   F.N(reset);
   F.Z(reset);
 
-  A = std::rotl(A.data(), 1);
+  // rotate left
+  A = std::rotl(A.data(), /*rotote 1 times=*/1);
   (A.msb() == 1) ? F.C(set) : F.C(reset);
 
   c.tick(1);
@@ -525,6 +526,32 @@ void cpu::RRA() {
 
   A = A.data() | old_carry_flag_value;
   c.tick(1);
+}
+
+void cpu::RLC(reg8 r) {
+  F.H(reset);
+  F.N(reset);
+
+  r = std::rotl(r.data(), 1);
+  (A.msb() == 1) ? F.C(set) : F.C(reset);
+  (A.data() == A.min()) ? F.Z(set) : F.Z(reset);
+
+  c.tick(2);
+}
+
+void cpu::RLC(reg16 rr) {
+  F.H(reset);
+  F.N(reset);
+
+  m[rr] = byte(std::rotl(std::to_integer<unsigned>(m[rr]), 1));
+
+  reg8 tmp;
+  tmp = m[rr];
+
+  (tmp.msb() == 1) ? F.C(set) : F.C(reset);
+  (tmp.data() == tmp.min()) ? F.Z(set) : F.Z(reset);
+
+  c.tick(4);
 }
 
 void cpu::run() {
