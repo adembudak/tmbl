@@ -554,6 +554,40 @@ void cpu::RLC(reg16 rr) {
   c.tick(4);
 }
 
+void cpu::RL(reg8 r) {
+  F.H(reset);
+  F.N(reset);
+
+  u8 old_carry_flag_value = F.C() ? 1 : 0;
+
+  r = std::rotl(r.data(), 1);
+
+  (r.msb() == 1) ? F.C(set) : F.C(reset);
+  (r.data() == r.min()) ? F.Z(set) : F.Z(reset);
+
+  r = r.data() | old_carry_flag_value;
+
+  c.tick(2);
+}
+
+void cpu::RL(reg16 rr) {
+  F.H(reset);
+  F.N(reset);
+
+  u8 old_carry_flag_value = F.C() ? 1 : 0;
+  m[rr] = byte(std::rotl(std::to_integer<unsigned>(m[rr]), 1));
+
+  reg8 tmp;
+  tmp = m[rr];
+
+  (tmp.msb() == 1) ? F.C(set) : F.C(reset);
+  (tmp.data() == tmp.min()) ? F.Z(set) : F.Z(reset);
+
+  m[rr] = m[rr] | byte(old_carry_flag_value);
+
+  c.tick(4);
+}
+
 void cpu::run() {
   for (;;) {
 
