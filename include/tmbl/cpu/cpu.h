@@ -102,6 +102,9 @@ public:
   void SWAP(reg8 &r);
   void SWAP(reg16 &rr);
 
+  void BIT(reg8 r, u8 pos);
+  void BIT(reg16 rr, u8 pos);
+
   void run();
 
 private:

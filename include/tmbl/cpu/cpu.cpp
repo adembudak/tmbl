@@ -754,6 +754,27 @@ void cpu::SWAP(reg16 &rr) {
   c.tick(4);
 }
 
+void cpu::BIT(reg8 r, u8 pos) {
+  F.H(set);
+  F.N(reset);
+
+  r.test(pos) ? F.Z(reset) : F.Z(set);
+
+  c.tick(2);
+}
+
+void cpu::BIT(reg16 rr, u8 pos) {
+  F.H(set);
+  F.N(reset);
+
+  reg8 tmp;
+  tmp = m[rr];
+
+  tmp.test(pos) ? F.Z(reset) : F.Z(set);
+
+  c.tick(3);
+}
+
 void cpu::run() {
   for (;;) {
 
