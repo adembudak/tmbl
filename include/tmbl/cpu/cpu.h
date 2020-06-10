@@ -132,6 +132,7 @@ public:
   void CCF() noexcept;
   void SCF() noexcept;
   void DI() noexcept;
+  void EI() noexcept;
 
   void run();
 
@@ -155,7 +156,6 @@ private:
 
   flag IME = false;
 };
-
 }
 
 #endif

@@ -989,6 +989,11 @@ void cpu::DI() noexcept {
   c.tick(1);
 }
 
+void cpu::EI() noexcept {
+  IME = set;
+  c.tick(1);
+}
+
 void cpu::run() {
   for (;;) {
 
