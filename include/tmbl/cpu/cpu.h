@@ -111,6 +111,10 @@ public:
   void RES(reg8 &r, u8 pos);
   void RES(reg16 rr, u8 pos);
 
+  void JP(u16 nn) noexcept;
+  void JP(u8 cc, u16 nn) noexcept;
+  void JP(reg16 rr) noexcept;
+
   void run();
 
 private:

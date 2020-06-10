@@ -837,6 +837,27 @@ void cpu::RES(reg16 rr, u8 pos) {
   c.tick(4);
 }
 
+void cpu::JP(u16 nn) noexcept {
+  PC = nn;
+
+  c.tick(4);
+}
+
+void cpu::JP(u8 cc, u16 nn) noexcept {
+  if ((cc == 0 && !F.Z()) || (cc == 1 && F.Z()) || (cc == 2 && !F.C()) || (cc == 3 && F.C())) {
+    PC = nn;
+    c.tick(4);
+  } else {
+    c.tick(3);
+  }
+}
+
+void cpu::JP(reg16 rr) noexcept {
+  PC = rr;
+
+  c.tick(1);
+}
+
 void cpu::run() {
   for (;;) {
 
