@@ -957,6 +957,14 @@ void cpu::RST(u8 t) noexcept {
   c.tick(4);
 }
 
+void cpu::CPL() noexcept {
+  F.H(set);
+  F.N(set);
+
+  A = ~A.data();
+  c.tick(1);
+}
+
 void cpu::run() {
   for (;;) {
 

@@ -127,6 +127,8 @@ public:
 
   void RST(u8 t) noexcept;
 
+  void CPL() noexcept;
+
   void run();
 
 private:
