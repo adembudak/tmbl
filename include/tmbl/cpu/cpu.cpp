@@ -858,6 +858,21 @@ void cpu::JP(reg16 rr) noexcept {
   c.tick(1);
 }
 
+void cpu::JR(i8 e) noexcept {
+  PC += e;
+
+  c.tick(3);
+}
+
+void cpu::JR(u8 cc, i8 e) noexcept {
+  if ((cc == 0 && !F.Z()) || (cc == 1 && F.Z()) || (cc == 2 && !F.C()) || (cc == 3 && F.C())) {
+    PC += e;
+    c.tick(3);
+  } else {
+    c.tick(2);
+  }
+}
+
 void cpu::run() {
   for (;;) {
 
