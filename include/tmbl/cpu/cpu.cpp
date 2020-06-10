@@ -984,6 +984,11 @@ void cpu::SCF() noexcept {
   c.tick(1);
 }
 
+void cpu::DI() noexcept {
+  IME = reset;
+  c.tick(1);
+}
+
 void cpu::run() {
   for (;;) {
 

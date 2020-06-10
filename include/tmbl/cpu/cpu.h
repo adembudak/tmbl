@@ -131,6 +131,7 @@ public:
   void NOP() noexcept;
   void CCF() noexcept;
   void SCF() noexcept;
+  void DI() noexcept;
 
   void run();
 
