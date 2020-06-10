@@ -965,6 +965,8 @@ void cpu::CPL() noexcept {
   c.tick(1);
 }
 
+void cpu::NOP() noexcept { c.tick(1); }
+
 void cpu::run() {
   for (;;) {
 
