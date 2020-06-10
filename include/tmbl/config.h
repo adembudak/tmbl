@@ -9,6 +9,8 @@ namespace tmbl {
 
 using u8 = std::uint_fast8_t;
 using u16 = std::uint_fast16_t;
+using i8 = std::int_fast16_t;
+
 using byte = std::byte;
 using flag = const bool;
 
