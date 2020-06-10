@@ -13,7 +13,7 @@ CheckOptions:
   - key:             bugprone-argument-comment.CommentFloatLiterals
     value:           '1'
   - key:             bugprone-argument-comment.CommentIntegerLiterals
-    value:           '1'
+    value:           '0'
   - key:             bugprone-argument-comment.CommentNullPtrs
     value:           '1'
   - key:             bugprone-argument-comment.CommentStringLiterals
