@@ -121,6 +121,10 @@ public:
   void CALL(u16 nn) noexcept;
   void CALL(u8 cc, u16 nn) noexcept;
 
+  void RET() noexcept;
+  void RETI() noexcept;
+  void RET(u8 cc) noexcept;
+
   void run();
 
 private:
@@ -140,6 +144,8 @@ private:
 
   memory::memory m;
   clock c;
+
+  flag IME = false;
 };
 
 }

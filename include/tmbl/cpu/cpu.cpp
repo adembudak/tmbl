@@ -895,6 +895,36 @@ void cpu::CALL(u8 cc, u16 nn) noexcept {
   }
 }
 
+void cpu::RET() noexcept {
+  PC.lo(m[SP]);
+  PC.hi(m[SP + 1]);
+  SP = SP + 2;
+
+  c.tick(4);
+}
+
+void cpu::RETI() noexcept {
+  PC.lo(m[SP]);
+  PC.hi(m[SP + 1]);
+  SP = SP + 2;
+
+  IME = set;
+
+  c.tick(4);
+}
+
+void cpu::RET(u8 cc) noexcept {
+  if ((cc == 0 && !F.Z()) || (cc == 1 && F.Z()) || (cc == 2 && !F.C()) || (cc == 3 && F.C())) {
+    PC.lo(m[SP]);
+    PC.hi(m[SP + 1]);
+    SP = SP + 2;
+
+    c.tick(5);
+  } else {
+    c.tick(2);
+  }
+}
+
 void cpu::run() {
   for (;;) {
 
