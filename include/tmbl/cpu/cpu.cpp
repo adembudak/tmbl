@@ -1,5 +1,7 @@
 #include "cpu.h"
+
 #include <bit>
+#include <stdexcept>
 
 namespace tmbl::cpu {
 
@@ -923,6 +925,36 @@ void cpu::RET(u8 cc) noexcept {
   } else {
     c.tick(2);
   }
+}
+
+void cpu::RST(u8 t) noexcept {
+  m[SP - 1] = PC.hi();
+  m[SP - 2] = PC.lo();
+  SP = SP - 2;
+
+  PC.lo(byte(0b0000'0000));
+
+  if (t == 0) {
+    PC.hi(byte(0));
+  } else if (t == 1) {
+    PC.hi(byte(8));
+  } else if (t == 2) {
+    PC.hi(byte(10));
+  } else if (t == 3) {
+    PC.hi(byte(18));
+  } else if (t == 4) {
+    PC.hi(byte(20));
+  } else if (t == 5) {
+    PC.hi(byte(28));
+  } else if (t == 6) {
+    PC.hi(byte(30));
+  } else if (t == 7) {
+    PC.hi(byte(38));
+  } else {
+    /* (_8(|) -- D'oh! */
+  }
+
+  c.tick(4);
 }
 
 void cpu::run() {

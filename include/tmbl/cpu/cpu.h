@@ -125,6 +125,8 @@ public:
   void RETI() noexcept;
   void RET(u8 cc) noexcept;
 
+  void RST(u8 t) noexcept;
+
   void run();
 
 private:
