@@ -118,6 +118,9 @@ public:
   void JR(i8 e) noexcept;
   void JR(u8 cc, i8 e) noexcept;
 
+  void CALL(u16 nn) noexcept;
+  void CALL(u8 cc, u16 nn) noexcept;
+
   void run();
 
 private:

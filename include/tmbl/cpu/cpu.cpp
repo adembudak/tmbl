@@ -873,6 +873,28 @@ void cpu::JR(u8 cc, i8 e) noexcept {
   }
 }
 
+void cpu::CALL(u16 nn) noexcept {
+  m[SP - 1] = PC.hi();
+  m[SP - 2] = PC.lo();
+  PC = nn;
+  SP = SP - 2;
+
+  c.tick(6);
+}
+
+void cpu::CALL(u8 cc, u16 nn) noexcept {
+  if ((cc == 0 && !F.Z()) || (cc == 1 && F.Z()) || (cc == 2 && !F.C()) || (cc == 3 && F.C())) {
+    m[SP - 1] = PC.hi();
+    m[SP - 2] = PC.lo();
+    PC = nn;
+    SP = SP - 2;
+
+    c.tick(6);
+  } else {
+    c.tick(3);
+  }
+}
+
 void cpu::run() {
   for (;;) {
 
