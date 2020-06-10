@@ -967,6 +967,15 @@ void cpu::CPL() noexcept {
 
 void cpu::NOP() noexcept { c.tick(1); }
 
+void cpu::CCF() noexcept {
+  F.H(reset);
+  F.N(reset);
+
+  (F.C() == set) ? F.C(reset) : F.C(set);
+
+  c.tick(1);
+}
+
 void cpu::run() {
   for (;;) {
 
