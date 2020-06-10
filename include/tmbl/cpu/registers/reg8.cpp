@@ -23,7 +23,7 @@ reg8 &reg8::operator-=(const u8 n) noexcept {
   return *this;
 }
 
-bool reg8::test(size_t pos) const {
+bool reg8::test(std::size_t pos) const {
   if (pos < 0 || pos > 7) {
     throw std::out_of_range("Reg8: Attempt to reach out of range\n");
   }
