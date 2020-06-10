@@ -817,6 +817,26 @@ void cpu::SET(reg16 rr, u8 pos) {
   c.tick(4);
 }
 
+void cpu::RES(reg8 &r, u8 pos) {
+  if (pos < 0 || pos > 7) {
+    throw std::out_of_range("reg8");
+  }
+
+  r = r.data() & ~(1U << pos);
+
+  c.tick(2);
+}
+
+void cpu::RES(reg16 rr, u8 pos) {
+  if (pos < 0 || pos > 7) {
+    throw std::out_of_range("reg8");
+  }
+
+  m[rr] = m[rr] & ~byte((1U << pos));
+
+  c.tick(4);
+}
+
 void cpu::run() {
   for (;;) {
 

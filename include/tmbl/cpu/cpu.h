@@ -108,6 +108,9 @@ public:
   void SET(reg8 &r, u8 pos);
   void SET(reg16 rr, u8 pos);
 
+  void RES(reg8 &r, u8 pos);
+  void RES(reg16 rr, u8 pos);
+
   void run();
 
 private:
