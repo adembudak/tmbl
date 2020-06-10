@@ -130,6 +130,7 @@ public:
   void CPL() noexcept;
   void NOP() noexcept;
   void CCF() noexcept;
+  void SCF() noexcept;
 
   void run();
 

@@ -976,6 +976,14 @@ void cpu::CCF() noexcept {
   c.tick(1);
 }
 
+void cpu::SCF() noexcept {
+  F.H(reset);
+  F.N(reset);
+
+  F.C(set);
+  c.tick(1);
+}
+
 void cpu::run() {
   for (;;) {
 
