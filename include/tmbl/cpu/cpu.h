@@ -25,85 +25,85 @@ public:
   void LD(reg16 &rr1, reg16 &rr2, u8 CY) noexcept;
   void LD(reg16 &rr1, u16 nn, u8 CY) noexcept;
 
-  void PUSH(const reg16 rr);
-  void POP(reg16 rr);
+  void PUSH(const reg16 rr) noexcept;
+  void POP(reg16 rr) noexcept;
 
-  void ADD(const reg8 r);
-  void ADD(const u8 n);
-  void ADD(const reg16 rr);
+  void ADD(const reg8 r) noexcept;
+  void ADD(const u8 n) noexcept;
+  void ADD(const reg16 rr) noexcept;
 
-  void ADC(const reg8 r);
-  void ADC(const u8 n);
-  void ADC(const reg16 rr);
+  void ADC(const reg8 r) noexcept;
+  void ADC(const u8 n) noexcept;
+  void ADC(const reg16 rr) noexcept;
 
-  void SUB(const reg8 r);
-  void SUB(const u8 n);
-  void SUB(const reg16 rr);
+  void SUB(const reg8 r) noexcept;
+  void SUB(const u8 n) noexcept;
+  void SUB(const reg16 rr) noexcept;
 
-  void SBC(const reg8 r);
-  void SBC(const u8 n);
-  void SBC(const reg16 rr);
+  void SBC(const reg8 r) noexcept;
+  void SBC(const u8 n) noexcept;
+  void SBC(const reg16 rr) noexcept;
 
-  void AND(const reg8 r);
-  void AND(const u8 n);
-  void AND(const reg16 rr);
+  void AND(const reg8 r) noexcept;
+  void AND(const u8 n) noexcept;
+  void AND(const reg16 rr) noexcept;
 
-  void OR(const reg8 r);
-  void OR(const u8 n);
-  void OR(const reg16 rr);
+  void OR(const reg8 r) noexcept;
+  void OR(const u8 n) noexcept;
+  void OR(const reg16 rr) noexcept;
 
-  void XOR(const reg8 r);
-  void XOR(const u8 n);
-  void XOR(const reg16 rr);
+  void XOR(const reg8 r) noexcept;
+  void XOR(const u8 n) noexcept;
+  void XOR(const reg16 rr) noexcept;
 
-  void CP(const reg8 r);
-  void CP(const u8 n);
-  void CP(const reg16 rr);
+  void CP(const reg8 r) noexcept;
+  void CP(const u8 n) noexcept;
+  void CP(const reg16 rr) noexcept;
 
-  void INC(reg8 r);
-  void INC(reg16 rr);
+  void INC(reg8 r) noexcept;
+  void INC(reg16 rr) noexcept;
 
-  void DEC(reg8 r);
-  void DEC(reg16 rr);
+  void DEC(reg8 r) noexcept;
+  void DEC(reg16 rr) noexcept;
 
-  void ADD(reg16 rr1, reg16 rr2);
-  void ADD(const u8 n, [[maybe_unused]] int dummy);
+  void ADD(reg16 rr1, reg16 rr2) noexcept;
+  void ADD(const u8 n, [[maybe_unused]] int dummy) noexcept;
 
-  void INC(reg16 rr, [[maybe_unused]] int dummy);
-  void DEC(reg16 rr, [[maybe_unused]] int dummy);
+  void INC(reg16 rr, [[maybe_unused]] int dummy) noexcept;
+  void DEC(reg16 rr, [[maybe_unused]] int dummy) noexcept;
 
-  void RLCA();
-  void RLA();
+  void RLCA() noexcept;
+  void RLA() noexcept;
 
-  void RRCA();
-  void RRA();
+  void RRCA() noexcept;
+  void RRA() noexcept;
 
-  void RLC(reg8 r);
-  void RLC(reg16 rr);
+  void RLC(reg8 r) noexcept;
+  void RLC(reg16 rr) noexcept;
 
-  void RL(reg8 r);
-  void RL(reg16 rr);
+  void RL(reg8 r) noexcept;
+  void RL(reg16 rr) noexcept;
 
-  void RRC(reg8 r);
-  void RRC(reg16 rr);
+  void RRC(reg8 r) noexcept;
+  void RRC(reg16 rr) noexcept;
 
-  void RR(reg8 r);
-  void RR(reg16 rr);
+  void RR(reg8 r) noexcept;
+  void RR(reg16 rr) noexcept;
 
-  void SLA(reg8 r);
-  void SLA(reg16 rr);
+  void SLA(reg8 r) noexcept;
+  void SLA(reg16 rr) noexcept;
 
-  void SRA(reg8 r);
-  void SRA(reg16 rr);
+  void SRA(reg8 r) noexcept;
+  void SRA(reg16 rr) noexcept;
 
-  void SRL(reg8 r);
-  void SRL(reg16 rr);
+  void SRL(reg8 r) noexcept;
+  void SRL(reg16 rr) noexcept;
 
-  void SWAP(reg8 &r);
-  void SWAP(reg16 &rr);
+  void SWAP(reg8 &r) noexcept;
+  void SWAP(reg16 &rr) noexcept;
 
-  void BIT(reg8 r, u8 pos);
-  void BIT(reg16 rr, u8 pos);
+  void BIT(reg8 r, u8 pos) noexcept;
+  void BIT(reg16 rr, u8 pos) noexcept;
 
   void run();
 

@@ -68,7 +68,7 @@ void cpu::LD(reg16 &rr1, u16 nn, u8 CY) noexcept {
   c.tick(CY);
 }
 
-void cpu::PUSH(const reg16 rr) {
+void cpu::PUSH(const reg16 rr) noexcept {
   m[SP - 1] = rr.lo();
   m[SP - 2] = rr.hi();
   SP -= 2;
@@ -76,14 +76,14 @@ void cpu::PUSH(const reg16 rr) {
   c.tick(4);
 }
 
-void cpu::POP(reg16 rr) {
+void cpu::POP(reg16 rr) noexcept {
   rr.lo(m[SP]);
   rr.hi(m[SP + 1]);
   SP += 2;
 
   c.tick(3);
 }
-void cpu::ADD(const reg8 r) {
+void cpu::ADD(const reg8 r) noexcept {
   F.N(reset);
   ((r.data() + A.data()) == (reg8::max() + 1)) ? F.Z(set) : F.Z(reset);
   ((r.loNibble() + A.loNibble()) > 0b0000'1111) ? F.H(set) : F.H(reset);
@@ -94,7 +94,7 @@ void cpu::ADD(const reg8 r) {
   c.tick(1);
 }
 
-void cpu::ADD(const u8 n) {
+void cpu::ADD(const u8 n) noexcept {
   F.N(reset);
   ((n + A.data()) == (reg8::max() + 1)) ? F.Z(set) : F.Z(reset);
   ((n + A.loNibble()) > 0b0000'1111) ? F.H(set) : F.H(reset);
@@ -108,7 +108,7 @@ void cpu::ADD(const u8 n) {
   c.tick(2);
 }
 
-void cpu::ADD(const reg16 rr) {
+void cpu::ADD(const reg16 rr) noexcept {
   F.N(reset);
   u8 n = std::to_integer<unsigned>(m[rr]);
   ((n + A.data()) == (reg8::max() + 1)) ? F.Z(set) : F.Z(reset);
@@ -122,7 +122,7 @@ void cpu::ADD(const reg16 rr) {
   c.tick(2);
 }
 
-void cpu::ADC(const reg8 r) {
+void cpu::ADC(const reg8 r) noexcept {
   F.N(reset);
 
   if (A.C()) {
@@ -137,7 +137,7 @@ void cpu::ADC(const reg8 r) {
   c.tick(1);
 }
 
-void cpu::ADC(const u8 n) {
+void cpu::ADC(const u8 n) noexcept {
   F.N(reset);
 
   if (F.C()) {
@@ -155,7 +155,7 @@ void cpu::ADC(const u8 n) {
   c.tick(2);
 }
 
-void cpu::ADC(const reg16 rr) {
+void cpu::ADC(const reg16 rr) noexcept {
   F.N(reset);
 
   if (F.C()) {
@@ -174,7 +174,7 @@ void cpu::ADC(const reg16 rr) {
   c.tick(2);
 }
 
-void cpu::SUB(const reg8 r) {
+void cpu::SUB(const reg8 r) noexcept {
   F.N(set);
 
   ((A.data() - r.data()) == reg8::min()) ? F.Z(set) : F.Z(reset);
@@ -185,7 +185,7 @@ void cpu::SUB(const reg8 r) {
   c.tick(1);
 }
 
-void cpu::SUB(const u8 n) {
+void cpu::SUB(const u8 n) noexcept {
   F.N(set);
 
   ((A.data() - n) == reg8::min()) ? F.Z(set) : F.Z(reset);
@@ -199,7 +199,7 @@ void cpu::SUB(const u8 n) {
   c.tick(2);
 }
 
-void cpu::SUB(const reg16 rr) {
+void cpu::SUB(const reg16 rr) noexcept {
   F.N(set);
 
   u8 n = std::to_integer<unsigned>(m[rr]);
@@ -214,7 +214,7 @@ void cpu::SUB(const reg16 rr) {
   c.tick(2);
 }
 
-void cpu::SBC(const reg8 r) {
+void cpu::SBC(const reg8 r) noexcept {
   F.N(set);
 
   if (F.C()) {
@@ -228,7 +228,7 @@ void cpu::SBC(const reg8 r) {
   c.tick(1);
 }
 
-void cpu::SBC(const u8 n) {
+void cpu::SBC(const u8 n) noexcept {
   F.N(set);
 
   if (F.C()) {
@@ -246,7 +246,7 @@ void cpu::SBC(const u8 n) {
   c.tick(2);
 }
 
-void cpu::SBC(const reg16 rr) {
+void cpu::SBC(const reg16 rr) noexcept {
   F.N(set);
 
   if (F.C()) {
@@ -265,7 +265,7 @@ void cpu::SBC(const reg16 rr) {
   c.tick(2);
 }
 
-void cpu::AND(const reg8 r) {
+void cpu::AND(const reg8 r) noexcept {
   F.C(reset);
   F.H(set);
   F.N(reset);
@@ -275,7 +275,7 @@ void cpu::AND(const reg8 r) {
   A = A & r;
   c.tick(1);
 }
-void cpu::AND(const u8 n) {
+void cpu::AND(const u8 n) noexcept {
   F.C(reset);
   F.H(set);
   F.N(reset);
@@ -289,7 +289,7 @@ void cpu::AND(const u8 n) {
   c.tick(2);
 }
 
-void cpu::AND(const reg16 rr) {
+void cpu::AND(const reg16 rr) noexcept {
   F.C(reset);
   F.H(set);
   F.N(reset);
@@ -303,7 +303,7 @@ void cpu::AND(const reg16 rr) {
   c.tick(2);
 }
 
-void cpu::OR(const reg8 r) {
+void cpu::OR(const reg8 r) noexcept {
   F.C(reset);
   F.H(reset);
   F.N(reset);
@@ -313,7 +313,7 @@ void cpu::OR(const reg8 r) {
   A = A | r;
   c.tick(1);
 }
-void cpu::OR(const u8 n) {
+void cpu::OR(const u8 n) noexcept {
   F.C(reset);
   F.H(reset);
   F.N(reset);
@@ -327,7 +327,7 @@ void cpu::OR(const u8 n) {
   c.tick(2);
 }
 
-void cpu::OR(const reg16 rr) {
+void cpu::OR(const reg16 rr) noexcept {
   F.C(reset);
   F.H(reset);
   F.N(reset);
@@ -341,7 +341,7 @@ void cpu::OR(const reg16 rr) {
   c.tick(2);
 }
 
-void cpu::XOR(const reg8 r) {
+void cpu::XOR(const reg8 r) noexcept {
   F.C(reset);
   F.H(reset);
   F.N(reset);
@@ -352,7 +352,7 @@ void cpu::XOR(const reg8 r) {
   c.tick(1);
 }
 
-void cpu::XOR(const u8 n) {
+void cpu::XOR(const u8 n) noexcept {
   F.C(reset);
   F.H(reset);
   F.N(reset);
@@ -366,7 +366,7 @@ void cpu::XOR(const u8 n) {
   c.tick(2);
 }
 
-void cpu::XOR(const reg16 rr) {
+void cpu::XOR(const reg16 rr) noexcept {
   F.C(reset);
   F.H(reset);
   F.N(reset);
@@ -380,7 +380,7 @@ void cpu::XOR(const reg16 rr) {
   c.tick(2);
 }
 
-void cpu::CP(const reg8 r) {
+void cpu::CP(const reg8 r) noexcept {
   F.N(set);
 
   (r.data() > A.data()) ? F.C(set) : F.C(reset);
@@ -390,7 +390,7 @@ void cpu::CP(const reg8 r) {
   c.tick(1);
 }
 
-void cpu::CP(const u8 n) {
+void cpu::CP(const u8 n) noexcept {
   F.N(set);
 
   reg8 tmp;
@@ -403,7 +403,7 @@ void cpu::CP(const u8 n) {
   c.tick(2);
 }
 
-void cpu::CP(const reg16 rr) {
+void cpu::CP(const reg16 rr) noexcept {
   F.N(set);
 
   reg8 tmp;
@@ -416,7 +416,7 @@ void cpu::CP(const reg16 rr) {
   c.tick(2);
 }
 
-void cpu::INC(reg8 r) {
+void cpu::INC(reg8 r) noexcept {
   F.N(reset);
 
   (r.loNibble() == 0b0000'1111) ? F.H(set) : F.H(reset);
@@ -426,7 +426,7 @@ void cpu::INC(reg8 r) {
   c.tick(1);
 }
 
-void cpu::INC(reg16 rr) {
+void cpu::INC(reg16 rr) noexcept {
   F.N(reset);
 
   u8 lower_nibble = std::to_integer<unsigned>(m[rr]) | (0b0000'1111U);
@@ -438,7 +438,7 @@ void cpu::INC(reg16 rr) {
   c.tick(3);
 }
 
-void cpu::DEC(reg8 r) {
+void cpu::DEC(reg8 r) noexcept {
   F.N(set);
 
   (r.loNibble() == 0) ? F.H(set) : F.H(reset);
@@ -448,7 +448,7 @@ void cpu::DEC(reg8 r) {
   c.tick(1);
 }
 
-void cpu::DEC(reg16 rr) {
+void cpu::DEC(reg16 rr) noexcept {
   F.N(set);
 
   u8 lower_nibble = std::to_integer<unsigned>(m[rr]) | (0b0000'1111U);
@@ -460,7 +460,7 @@ void cpu::DEC(reg16 rr) {
   c.tick(3);
 }
 
-void cpu::ADD(reg16 rr1, reg16 rr2) {
+void cpu::ADD(reg16 rr1, reg16 rr2) noexcept {
   F.N(reset);
 
   (rr1.data() + rr2.data() > reg16::max()) ? F.C(set) : F.C(reset);
@@ -476,7 +476,7 @@ void cpu::ADD(reg16 rr1, reg16 rr2) {
   c.tick(2);
 }
 
-void cpu::ADD(const u8 n, [[maybe_unused]] int dummy) {
+void cpu::ADD(const u8 n, [[maybe_unused]] int dummy) noexcept {
   F.N(reset);
   F.Z(reset);
 
@@ -487,17 +487,17 @@ void cpu::ADD(const u8 n, [[maybe_unused]] int dummy) {
   c.tick(4);
 }
 
-void cpu::INC(reg16 rr, [[maybe_unused]] int dummy) {
+void cpu::INC(reg16 rr, [[maybe_unused]] int dummy) noexcept {
   rr += 1;
   c.tick(2);
 }
 
-void cpu::DEC(reg16 rr, [[maybe_unused]] int dummy) {
+void cpu::DEC(reg16 rr, [[maybe_unused]] int dummy) noexcept {
   rr -= 1;
   c.tick(2);
 }
 
-void cpu::RLCA() {
+void cpu::RLCA() noexcept {
   F.H(reset);
   F.N(reset);
   F.Z(reset);
@@ -509,7 +509,7 @@ void cpu::RLCA() {
   c.tick(1);
 }
 
-void cpu::RLA() {
+void cpu::RLA() noexcept {
   F.H(reset);
   F.N(reset);
   F.Z(reset);
@@ -523,7 +523,7 @@ void cpu::RLA() {
   c.tick(1);
 }
 
-void cpu::RRCA() {
+void cpu::RRCA() noexcept {
   F.H(reset);
   F.N(reset);
   F.Z(reset);
@@ -534,7 +534,7 @@ void cpu::RRCA() {
   c.tick(1);
 }
 
-void cpu::RRA() {
+void cpu::RRA() noexcept {
   F.H(reset);
   F.N(reset);
   F.Z(reset);
@@ -548,7 +548,7 @@ void cpu::RRA() {
   c.tick(1);
 }
 
-void cpu::RLC(reg8 r) {
+void cpu::RLC(reg8 r) noexcept {
   F.H(reset);
   F.N(reset);
 
@@ -559,7 +559,7 @@ void cpu::RLC(reg8 r) {
   c.tick(2);
 }
 
-void cpu::RLC(reg16 rr) {
+void cpu::RLC(reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
@@ -574,7 +574,7 @@ void cpu::RLC(reg16 rr) {
   c.tick(4);
 }
 
-void cpu::RL(reg8 r) {
+void cpu::RL(reg8 r) noexcept {
   F.H(reset);
   F.N(reset);
 
@@ -590,7 +590,7 @@ void cpu::RL(reg8 r) {
   c.tick(2);
 }
 
-void cpu::RL(reg16 rr) {
+void cpu::RL(reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
@@ -608,7 +608,7 @@ void cpu::RL(reg16 rr) {
   c.tick(4);
 }
 
-void cpu::RRC(reg8 r) {
+void cpu::RRC(reg8 r) noexcept {
   F.H(reset);
   F.N(reset);
 
@@ -619,7 +619,7 @@ void cpu::RRC(reg8 r) {
   c.tick(2);
 }
 
-void cpu::RRC(reg16 rr) {
+void cpu::RRC(reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
@@ -635,7 +635,7 @@ void cpu::RRC(reg16 rr) {
   c.tick(4);
 }
 
-void cpu::RR(reg8 r) {
+void cpu::RR(reg8 r) noexcept {
   F.H(reset);
   F.N(reset);
 
@@ -651,7 +651,7 @@ void cpu::RR(reg8 r) {
   c.tick(2);
 }
 
-void cpu::RR(reg16 rr) {
+void cpu::RR(reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
@@ -670,7 +670,7 @@ void cpu::RR(reg16 rr) {
   c.tick(4);
 }
 
-void cpu::SLA(reg8 r) {
+void cpu::SLA(reg8 r) noexcept {
   F.H(reset);
   F.N(reset);
 
@@ -681,7 +681,7 @@ void cpu::SLA(reg8 r) {
   c.tick(2);
 }
 
-void cpu::SLA(reg16 rr) {
+void cpu::SLA(reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
@@ -695,7 +695,7 @@ void cpu::SLA(reg16 rr) {
   c.tick(4);
 }
 
-void cpu::SRA(reg8 r) {
+void cpu::SRA(reg8 r) noexcept {
   F.H(reset);
   F.N(reset);
 
@@ -709,7 +709,7 @@ void cpu::SRA(reg8 r) {
   c.tick(2);
 }
 
-void cpu::SRA(reg16 rr) {
+void cpu::SRA(reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
@@ -725,7 +725,7 @@ void cpu::SRA(reg16 rr) {
   c.tick(4);
 }
 
-void cpu::SRL(reg8 r) {
+void cpu::SRL(reg8 r) noexcept {
   F.H(reset);
   F.N(reset);
 
@@ -736,7 +736,7 @@ void cpu::SRL(reg8 r) {
   c.tick(2);
 }
 
-void cpu::SRL(reg16 rr) {
+void cpu::SRL(reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
@@ -750,7 +750,7 @@ void cpu::SRL(reg16 rr) {
   c.tick(4);
 }
 
-void cpu::SWAP(reg8 &r) {
+void cpu::SWAP(reg8 &r) noexcept {
   F.C(reset);
   F.H(reset);
   F.N(reset);
@@ -762,7 +762,7 @@ void cpu::SWAP(reg8 &r) {
   c.tick(2);
 }
 
-void cpu::SWAP(reg16 &rr) {
+void cpu::SWAP(reg16 &rr) noexcept {
   F.C(reset);
   F.H(reset);
   F.N(reset);
@@ -774,7 +774,7 @@ void cpu::SWAP(reg16 &rr) {
   c.tick(4);
 }
 
-void cpu::BIT(reg8 r, u8 pos) {
+void cpu::BIT(reg8 r, u8 pos) noexcept {
   F.H(set);
   F.N(reset);
 
@@ -783,7 +783,7 @@ void cpu::BIT(reg8 r, u8 pos) {
   c.tick(2);
 }
 
-void cpu::BIT(reg16 rr, u8 pos) {
+void cpu::BIT(reg16 rr, u8 pos) noexcept {
   F.H(set);
   F.N(reset);
 
