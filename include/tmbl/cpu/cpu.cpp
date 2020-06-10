@@ -84,9 +84,9 @@ void cpu::POP(reg16 rr) {
   c.tick(3);
 }
 void cpu::ADD(const reg8 r) {
+  F.N(reset);
   ((r.data() + A.data()) == (reg8::max() + 1)) ? F.Z(set) : F.Z(reset);
   ((r.loNibble() + A.loNibble()) > 0b0000'1111) ? F.H(set) : F.H(reset);
-  F.N(reset);
   (r.data() + A.data() > reg8::max()) ? F.C(set) : F.C(reset);
 
   A = A + r;
@@ -95,9 +95,9 @@ void cpu::ADD(const reg8 r) {
 }
 
 void cpu::ADD(const u8 n) {
+  F.N(reset);
   ((n + A.data()) == (reg8::max() + 1)) ? F.Z(set) : F.Z(reset);
   ((n + A.loNibble()) > 0b0000'1111) ? F.H(set) : F.H(reset);
-  F.N(reset);
   (n + A.data() > reg8::max()) ? F.C(set) : F.C(reset);
 
   reg8 tmp;
@@ -109,10 +109,10 @@ void cpu::ADD(const u8 n) {
 }
 
 void cpu::ADD(const reg16 rr) {
+  F.N(reset);
   u8 n = std::to_integer<unsigned>(m[rr]);
   ((n + A.data()) == (reg8::max() + 1)) ? F.Z(set) : F.Z(reset);
   ((n + A.loNibble()) > 0b0000'1111) ? F.H(set) : F.H(reset);
-  F.N(reset);
   (n + A.data() > reg8::max()) ? F.C(set) : F.C(reset);
 
   reg8 tmp;
@@ -123,6 +123,7 @@ void cpu::ADD(const reg16 rr) {
 }
 
 void cpu::ADC(const reg8 r) {
+  F.N(reset);
 
   if (A.C()) {
     A += 1;
@@ -130,7 +131,6 @@ void cpu::ADC(const reg8 r) {
 
   ((r.data() + A.data()) == (reg8::max() + 1)) ? F.Z(set) : F.Z(reset);
   ((r.loNibble() + A.loNibble()) > 0b0000'1111) ? F.H(set) : F.H(reset);
-  F.N(reset);
   (r.data() + A.data() > reg8::max()) ? F.C(set) : F.C(reset);
 
   A = A + r;
@@ -138,13 +138,14 @@ void cpu::ADC(const reg8 r) {
 }
 
 void cpu::ADC(const u8 n) {
+  F.N(reset);
+
   if (F.C()) {
     A += 1;
   }
 
   ((n + A.data()) == (reg8::max() + 1)) ? F.Z(set) : F.Z(reset);
   ((n + A.loNibble()) > 0b0000'1111) ? F.H(set) : F.H(reset);
-  F.N(reset);
   (n + A.data() > reg8::max()) ? F.C(set) : F.C(reset);
 
   reg8 tmp;
@@ -155,6 +156,8 @@ void cpu::ADC(const u8 n) {
 }
 
 void cpu::ADC(const reg16 rr) {
+  F.N(reset);
+
   if (F.C()) {
     A += 1;
   }
@@ -162,7 +165,6 @@ void cpu::ADC(const reg16 rr) {
   u8 n = std::to_integer<unsigned>(m[rr]);
   ((n + A.data()) == (reg8::max() + 1)) ? F.Z(set) : F.Z(reset);
   ((n + A.loNibble()) > 0b0000'1111) ? F.H(set) : F.H(reset);
-  F.N(reset);
   (n + A.data() > reg8::max()) ? F.C(set) : F.C(reset);
 
   reg8 tmp;
@@ -173,9 +175,10 @@ void cpu::ADC(const reg16 rr) {
 }
 
 void cpu::SUB(const reg8 r) {
+  F.N(set);
+
   ((A.data() - r.data()) == reg8::min()) ? F.Z(set) : F.Z(reset);
   ((A.loNibble() < r.loNibble())) ? F.H(set) : F.H(reset);
-  F.N(set);
   (A.data() < r.data()) ? F.C(set) : F.C(reset);
 
   A = A - r;
@@ -183,10 +186,10 @@ void cpu::SUB(const reg8 r) {
 }
 
 void cpu::SUB(const u8 n) {
+  F.N(set);
 
   ((A.data() - n) == reg8::min()) ? F.Z(set) : F.Z(reset);
   (A.loNibble() < n) ? F.H(set) : F.H(reset);
-  F.N(set);
   (A.data() < n) ? F.C(set) : F.C(reset);
 
   reg8 tmp;
@@ -197,11 +200,11 @@ void cpu::SUB(const u8 n) {
 }
 
 void cpu::SUB(const reg16 rr) {
+  F.N(set);
 
   u8 n = std::to_integer<unsigned>(m[rr]);
   ((A.data() - n) == reg8::min()) ? F.Z(set) : F.Z(reset);
   (A.loNibble() < n) ? F.H(set) : F.H(reset);
-  F.N(set);
   (A.data() < n) ? F.C(set) : F.C(reset);
 
   reg8 tmp;
@@ -212,12 +215,13 @@ void cpu::SUB(const reg16 rr) {
 }
 
 void cpu::SBC(const reg8 r) {
+  F.N(set);
+
   if (F.C()) {
     A -= 1;
   }
   ((A.data() - r.data()) == reg8::min()) ? F.Z(set) : F.Z(reset);
   ((A.loNibble() < r.loNibble())) ? F.H(set) : F.H(reset);
-  F.N(set);
   (A.data() < r.data()) ? F.C(set) : F.C(reset);
 
   A = A - r;
@@ -225,13 +229,14 @@ void cpu::SBC(const reg8 r) {
 }
 
 void cpu::SBC(const u8 n) {
+  F.N(set);
+
   if (F.C()) {
     A -= 1;
   }
 
   ((A.data() - n) == reg8::min()) ? F.Z(set) : F.Z(reset);
   (A.loNibble() < n) ? F.H(set) : F.H(reset);
-  F.N(set);
   (A.data() < n) ? F.C(set) : F.C(reset);
 
   reg8 tmp;
@@ -242,6 +247,8 @@ void cpu::SBC(const u8 n) {
 }
 
 void cpu::SBC(const reg16 rr) {
+  F.N(set);
+
   if (F.C()) {
     A -= 1;
   }
@@ -249,7 +256,6 @@ void cpu::SBC(const reg16 rr) {
   u8 n = std::to_integer<unsigned>(m[rr]);
   ((A.data() - n) == reg8::min()) ? F.Z(set) : F.Z(reset);
   (A.loNibble() < n) ? F.H(set) : F.H(reset);
-  F.N(set);
   (A.data() < n) ? F.C(set) : F.C(reset);
 
   reg8 tmp;
@@ -263,6 +269,7 @@ void cpu::AND(const reg8 r) {
   F.C(reset);
   F.H(set);
   F.N(reset);
+
   (A.data() == 0 || r.data() == 0) ? F.Z(set) : F.Z(reset);
 
   A = A & r;
@@ -286,6 +293,7 @@ void cpu::AND(const reg16 rr) {
   F.C(reset);
   F.H(set);
   F.N(reset);
+
   (A.data() == 0 || std::to_integer<unsigned>(m[rr]) == 0) ? F.Z(set) : F.Z(reset);
 
   reg8 tmp;
@@ -299,6 +307,7 @@ void cpu::OR(const reg8 r) {
   F.C(reset);
   F.H(reset);
   F.N(reset);
+
   (A.data() == 0 && r.data() == 0) ? F.Z(set) : F.Z(reset);
 
   A = A | r;
@@ -322,6 +331,7 @@ void cpu::OR(const reg16 rr) {
   F.C(reset);
   F.H(reset);
   F.N(reset);
+
   (A.data() == 0 || std::to_integer<unsigned>(m[rr]) == 0) ? F.Z(set) : F.Z(reset);
 
   reg8 tmp;
@@ -335,6 +345,7 @@ void cpu::XOR(const reg8 r) {
   F.C(reset);
   F.H(reset);
   F.N(reset);
+
   (A.data() == r.data()) ? F.Z(set) : F.Z(reset);
 
   A = A ^ r;
@@ -345,6 +356,7 @@ void cpu::XOR(const u8 n) {
   F.C(reset);
   F.H(reset);
   F.N(reset);
+
   (A.data() == n) ? F.Z(set) : F.Z(reset);
 
   reg8 tmp;
@@ -358,6 +370,7 @@ void cpu::XOR(const reg16 rr) {
   F.C(reset);
   F.H(reset);
   F.N(reset);
+
   (A.data() == std::to_integer<unsigned>(m[rr])) ? F.Z(set) : F.Z(reset);
 
   reg8 tmp;
@@ -368,41 +381,45 @@ void cpu::XOR(const reg16 rr) {
 }
 
 void cpu::CP(const reg8 r) {
+  F.N(set);
+
   (r.data() > A.data()) ? F.C(set) : F.C(reset);
   (r.loNibble() > A.loNibble()) ? F.H(set) : F.H(reset);
-  F.N(set);
   (r.data() == A.data()) ? F.Z(set) : F.Z(reset);
 
   c.tick(1);
 }
 
 void cpu::CP(const u8 n) {
+  F.N(set);
+
   reg8 tmp;
   tmp = n;
 
   (tmp.data() > A.data()) ? F.C(set) : F.C(reset);
   (tmp.loNibble() > A.loNibble()) ? F.H(set) : F.H(reset);
-  F.N(set);
   (tmp.data() == A.data()) ? F.Z(set) : F.Z(reset);
 
   c.tick(2);
 }
 
 void cpu::CP(const reg16 rr) {
+  F.N(set);
+
   reg8 tmp;
   tmp = m[rr];
 
   (tmp.data() > A.data()) ? F.C(set) : F.C(reset);
   (tmp.loNibble() > A.loNibble()) ? F.H(set) : F.H(reset);
-  F.N(set);
   (tmp.data() == A.data()) ? F.Z(set) : F.Z(reset);
 
   c.tick(2);
 }
 
 void cpu::INC(reg8 r) {
-  (r.loNibble() == 0b0000'1111) ? F.H(set) : F.H(reset);
   F.N(reset);
+
+  (r.loNibble() == 0b0000'1111) ? F.H(set) : F.H(reset);
   (r.data() == 0b1111'1111) ? F.Z(set) : F.Z(reset);
 
   r += 1;
@@ -410,10 +427,11 @@ void cpu::INC(reg8 r) {
 }
 
 void cpu::INC(reg16 rr) {
+  F.N(reset);
+
   u8 lower_nibble = std::to_integer<unsigned>(m[rr]) | (0b0000'1111U);
 
   (lower_nibble == 0b0000'1111) ? F.H(set) : F.H(reset);
-  F.N(reset);
   (std::to_integer<unsigned>(m[rr]) == 0b1111'1111) ? F.Z(set) : F.Z(reset);
 
   m[rr] = byte(std::to_integer<unsigned>(m[rr]) + 1);
@@ -421,8 +439,9 @@ void cpu::INC(reg16 rr) {
 }
 
 void cpu::DEC(reg8 r) {
-  (r.loNibble() == 0) ? F.H(set) : F.H(reset);
   F.N(set);
+
+  (r.loNibble() == 0) ? F.H(set) : F.H(reset);
   (r.data() == 1) ? F.Z(set) : F.Z(reset);
 
   r -= 1;
@@ -430,10 +449,11 @@ void cpu::DEC(reg8 r) {
 }
 
 void cpu::DEC(reg16 rr) {
+  F.N(set);
+
   u8 lower_nibble = std::to_integer<unsigned>(m[rr]) | (0b0000'1111U);
 
   (lower_nibble == 0) ? F.H(set) : F.H(reset);
-  F.N(set);
   (std::to_integer<unsigned>(m[rr]) == 1) ? F.Z(set) : F.Z(reset);
 
   m[rr] = byte(std::to_integer<unsigned>(m[rr]) - 1);
@@ -441,6 +461,8 @@ void cpu::DEC(reg16 rr) {
 }
 
 void cpu::ADD(reg16 rr1, reg16 rr2) {
+  F.N(reset);
+
   (rr1.data() + rr2.data() > reg16::max()) ? F.C(set) : F.C(reset);
 
   // zero the 4th nibble of both register to check H flag state;
@@ -450,18 +472,16 @@ void cpu::ADD(reg16 rr1, reg16 rr2) {
       ? F.H(set)
       : F.H(reset);
 
-  F.N(reset);
-
   rr1 = rr1 + rr2;
   c.tick(2);
 }
 
 void cpu::ADD(const u8 n, [[maybe_unused]] int dummy) {
-  ((SP.data() + n) > reg16::max()) ? F.C(set) : F.C(reset);
-  (((SP.data() & 0b0000'1111'1111'1111U) + n) > 4095U) ? F.H(set) : F.H(reset);
-
   F.N(reset);
   F.Z(reset);
+
+  ((SP.data() + n) > reg16::max()) ? F.C(set) : F.C(reset);
+  (((SP.data() & 0b0000'1111'1111'1111U) + n) > 4095U) ? F.H(set) : F.H(reset);
 
   SP += n;
   c.tick(4);
@@ -490,11 +510,11 @@ void cpu::RLCA() {
 }
 
 void cpu::RLA() {
-  u8 mask_for_0th_bit = F.C() ? 1 : 0;
-
   F.H(reset);
   F.N(reset);
   F.Z(reset);
+
+  u8 mask_for_0th_bit = F.C() ? 1 : 0;
 
   A = std::rotl(A.data(), 1);
   (A.msb() == 1) ? F.C(set) : F.C(reset);
@@ -515,11 +535,11 @@ void cpu::RRCA() {
 }
 
 void cpu::RRA() {
-  u8 mask_for_7th_bit = F.C() ? 0b1000'0000 : 0b0000'0000;
-
   F.H(reset);
   F.N(reset);
   F.Z(reset);
+
+  u8 mask_for_7th_bit = F.C() ? 0b1000'0000 : 0b0000'0000;
 
   A = std::rotr(A.data(), 1);
   (A.lsb() == 1) ? F.C(set) : F.C(reset);
