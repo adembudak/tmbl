@@ -31,21 +31,21 @@ bool reg8::test(std::size_t pos) const {
   return ((m_data & (1U << pos)) == 0) ? false : true;
 }
 
-void reg8::Z(flag val_) noexcept { val_ ? m_data |= 0b1000'0000 : m_data &= 0b0111'1111; }
-void reg8::N(flag val_) noexcept { val_ ? m_data |= 0b0100'0000 : m_data &= 0b1011'1111; }
-void reg8::H(flag val_) noexcept { val_ ? m_data |= 0b0010'0000 : m_data &= 0b1101'1111; }
-void reg8::C(flag val_) noexcept { val_ ? m_data |= 0b0001'0000 : m_data &= 0b1110'1111; }
+void reg8::Z(cflag val_) noexcept { val_ ? m_data |= 0b1000'0000 : m_data &= 0b0111'1111; }
+void reg8::N(cflag val_) noexcept { val_ ? m_data |= 0b0100'0000 : m_data &= 0b1011'1111; }
+void reg8::H(cflag val_) noexcept { val_ ? m_data |= 0b0010'0000 : m_data &= 0b1101'1111; }
+void reg8::C(cflag val_) noexcept { val_ ? m_data |= 0b0001'0000 : m_data &= 0b1110'1111; }
 
-flag reg8::Z() const noexcept { return (((m_data & 0b1000'0000) >> 8) == 1) ? set : reset; }
-flag reg8::N() const noexcept { return (((m_data & 0b0100'0000) >> 7) == 1) ? set : reset; }
-flag reg8::H() const noexcept { return (((m_data & 0b0010'0000) >> 6) == 1) ? set : reset; }
-flag reg8::C() const noexcept { return (((m_data & 0b0001'0000) >> 5) == 1) ? set : reset; }
+cflag reg8::Z() const noexcept { return (((m_data & 0b1000'0000U) >> 8U) == 1) ? set : reset; }
+cflag reg8::N() const noexcept { return (((m_data & 0b0100'0000U) >> 7U) == 1) ? set : reset; }
+cflag reg8::H() const noexcept { return (((m_data & 0b0010'0000U) >> 6U) == 1) ? set : reset; }
+cflag reg8::C() const noexcept { return (((m_data & 0b0001'0000U) >> 5U) == 1) ? set : reset; }
 
 u8 reg8::loNibble() const noexcept { return m_data & zeroed_upper_byte_mask; }
-u8 reg8::hiNibble() const noexcept { return (m_data & zeroed_lower_byte_mask) >> 4; };
+u8 reg8::hiNibble() const noexcept { return (m_data & zeroed_lower_byte_mask) >> 4U; };
 
 u8 reg8::lsb() const noexcept { return m_data & 0b0000'00001; }
-u8 reg8::msb() const noexcept { return (m_data & 0b1000'0000) >> 8; }
+u8 reg8::msb() const noexcept { return (m_data & 0b1000'0000U) >> 8U; }
 
 u8 reg8::min() noexcept { return min_u8_val; }
 u8 reg8::max() noexcept { return max_u8_val; }
