@@ -102,8 +102,11 @@ public:
   void SWAP(reg8 &r) noexcept;
   void SWAP(reg16 &rr) noexcept;
 
-  void BIT(reg8 r, u8 pos) noexcept;
-  void BIT(reg16 rr, u8 pos) noexcept;
+  void BIT(reg8 r, u8 pos);
+  void BIT(reg16 rr, u8 pos);
+
+  void SET(reg8 &r, u8 pos);
+  void SET(reg16 rr, u8 pos);
 
   void run();
 

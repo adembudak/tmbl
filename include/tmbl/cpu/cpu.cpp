@@ -774,7 +774,7 @@ void cpu::SWAP(reg16 &rr) noexcept {
   c.tick(4);
 }
 
-void cpu::BIT(reg8 r, u8 pos) noexcept {
+void cpu::BIT(reg8 r, u8 pos) {
   F.H(set);
   F.N(reset);
 
@@ -783,7 +783,7 @@ void cpu::BIT(reg8 r, u8 pos) noexcept {
   c.tick(2);
 }
 
-void cpu::BIT(reg16 rr, u8 pos) noexcept {
+void cpu::BIT(reg16 rr, u8 pos) {
   F.H(set);
   F.N(reset);
 
@@ -793,6 +793,28 @@ void cpu::BIT(reg16 rr, u8 pos) noexcept {
   tmp.test(pos) ? F.Z(reset) : F.Z(set);
 
   c.tick(3);
+}
+
+void cpu::SET(reg8 &r, u8 pos) {
+  if (pos < 0 || pos > 7) {
+    throw std::out_of_range("reg8");
+  }
+
+  // TODO: package this binary hack to
+  // reg8 class, overload operator[] ?
+  r = r.data() | (1U << pos);
+
+  c.tick(2);
+}
+
+void cpu::SET(reg16 rr, u8 pos) {
+  if (pos < 0 || pos > 7) {
+    throw std::out_of_range("reg8");
+  }
+
+  m[rr] = m[rr] | byte((1U << pos));
+
+  c.tick(4);
 }
 
 void cpu::run() {
