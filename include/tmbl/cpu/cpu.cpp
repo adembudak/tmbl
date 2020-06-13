@@ -21,6 +21,12 @@ void cpu::LD(reg8 &r, const reg16 rr) noexcept {
   c.tick(2);
 }
 
+void cpu::LD(const reg16 rr, const reg8 r) noexcept {
+  m[rr] = byte(r.data());
+
+  c.tick(2);
+}
+
 void cpu::PUSH(const reg16 rr) noexcept {
   m[SP - 1] = rr.lo();
   m[SP - 2] = rr.hi();

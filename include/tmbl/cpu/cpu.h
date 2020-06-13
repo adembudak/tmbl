@@ -15,6 +15,8 @@ public:
   void LD(reg8 &r, const u8 n) noexcept;
   void LD(reg8 &r, const reg16 rr) noexcept;
 
+  void LD(const reg16 rr, const reg8 r) noexcept;
+
   void PUSH(const reg16 rr) noexcept;
   void POP(reg16 rr) noexcept;
 
