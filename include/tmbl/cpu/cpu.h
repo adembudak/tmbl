@@ -12,6 +12,7 @@ namespace tmbl::cpu {
 class cpu final {
 public:
   void LD(reg8 &r1, const reg8 r2) noexcept;
+  void LD(reg8 &r, const u8 n) noexcept;
 
   void PUSH(const reg16 rr) noexcept;
   void POP(reg16 rr) noexcept;
