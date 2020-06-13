@@ -1,7 +1,38 @@
 #include "cpu.h"
 
-#include <bit>
 #include <stdexcept>
+#if __has_include(<bit>)
+#include <bit>
+#define has_bit_header 1
+#endif
+
+#ifndef has_bit_header
+namespace std {
+
+template <typename T> constexpr T rotl(T x, int s) noexcept {
+  constexpr auto Nd = std::numeric_limits<T>::digits;
+  const int r = s % Nd;
+  if (r == 0)
+    return x;
+  else if (r > 0)
+    return (x << r) | (x >> ((Nd - r) % Nd));
+  else
+    return (x >> -r) | (x << ((Nd + r) % Nd)); // rotr(x, -r)
+}
+
+template <typename T> constexpr T rotr(T x, int s) noexcept {
+  constexpr auto Nd = std::numeric_limits<T>::digits;
+  const int r = s % Nd;
+  if (r == 0)
+    return x;
+  else if (r > 0)
+    return (x >> r) | (x << ((Nd - r) % Nd));
+  else
+    return (x << -r) | (x >> ((Nd + r) % Nd)); // rotl(x, -r)
+}
+
+}
+#endif
 
 namespace tmbl::cpu {
 
@@ -16,6 +47,7 @@ void cpu::LD(reg8 &r, const u8 n) noexcept {
 
   c.tick(2);
 }
+
 void cpu::PUSH(const reg16 rr) noexcept {
   m[SP - 1] = rr.lo();
   m[SP - 2] = rr.hi();
