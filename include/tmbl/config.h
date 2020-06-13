@@ -1,9 +1,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include <boost/safe_numerics/safe_integer.hpp>
-
 #include <cstddef>
+#include <cstdint>
 
 namespace tmbl {
 
