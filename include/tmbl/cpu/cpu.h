@@ -126,6 +126,9 @@ public:
 
   void run();
 
+  template <typename T> constexpr T rotl(T x, int s) noexcept;
+  template <typename T> constexpr T rotr(T x, int s) noexcept;
+
 private:
   byte fetch(reg16 rr) { return m[rr]; }
   int decode(byte b) { return std::to_integer<int>(b); }

@@ -1,38 +1,5 @@
 #include "cpu.h"
-
 #include <stdexcept>
-#if __has_include(<bit>)
-#include <bit>
-#define has_bit_header 1
-#endif
-
-#if has_bit_header != 1
-namespace std {
-
-template <typename T> constexpr T rotl(T x, int s) noexcept {
-  constexpr auto Nd = std::numeric_limits<T>::digits;
-  const int r = s % Nd;
-  if (r == 0)
-    return x;
-  else if (r > 0)
-    return (x << r) | (x >> ((Nd - r) % Nd));
-  else
-    return (x >> -r) | (x << ((Nd + r) % Nd)); // rotr(x, -r)
-}
-
-template <typename T> constexpr T rotr(T x, int s) noexcept {
-  constexpr auto Nd = std::numeric_limits<T>::digits;
-  const int r = s % Nd;
-  if (r == 0)
-    return x;
-  else if (r > 0)
-    return (x >> r) | (x << ((Nd - r) % Nd));
-  else
-    return (x << -r) | (x >> ((Nd + r) % Nd)); // rotl(x, -r)
-}
-
-}
-#endif
 
 namespace tmbl::cpu {
 
@@ -483,7 +450,7 @@ void cpu::RLCA() noexcept {
   F.Z(reset);
 
   // rotate left
-  A = std::rotl(A.data(), /*rotate 1 times=*/1);
+  A = rotl(A.data(), /*rotate 1 times=*/1);
   (A.msb() == 1) ? F.C(set) : F.C(reset);
 
   c.tick(1);
@@ -496,7 +463,7 @@ void cpu::RLA() noexcept {
 
   u8 mask_for_0th_bit = F.C() ? 1 : 0;
 
-  A = std::rotl(A.data(), 1);
+  A = rotl(A.data(), 1);
   (A.msb() == 1) ? F.C(set) : F.C(reset);
 
   A = A.data() | mask_for_0th_bit;
@@ -508,7 +475,7 @@ void cpu::RRCA() noexcept {
   F.N(reset);
   F.Z(reset);
 
-  A = std::rotr(A.data(), 1);
+  A = rotr(A.data(), 1);
   (A.lsb() == 1) ? F.C(set) : F.C(reset);
 
   c.tick(1);
@@ -521,7 +488,7 @@ void cpu::RRA() noexcept {
 
   u8 mask_for_7th_bit = F.C() ? 0b1000'0000 : 0b0000'0000;
 
-  A = std::rotr(A.data(), 1);
+  A = rotr(A.data(), 1);
   (A.lsb() == 1) ? F.C(set) : F.C(reset);
 
   A = A.data() | mask_for_7th_bit;
@@ -532,7 +499,7 @@ void cpu::RLC(reg8 r) noexcept {
   F.H(reset);
   F.N(reset);
 
-  r = std::rotl(r.data(), 1);
+  r = rotl(r.data(), 1);
   (A.msb() == 1) ? F.C(set) : F.C(reset);
   (A.data() == reg8::min()) ? F.Z(set) : F.Z(reset);
 
@@ -543,7 +510,7 @@ void cpu::RLC(reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
-  m[rr] = byte(std::rotl(std::to_integer<unsigned>(m[rr]), 1));
+  m[rr] = byte(rotl(std::to_integer<unsigned>(m[rr]), 1));
 
   reg8 tmp;
   tmp = m[rr];
@@ -560,7 +527,7 @@ void cpu::RL(reg8 r) noexcept {
 
   u8 mask_for_0th_bit = F.C() ? 1 : 0;
 
-  r = std::rotl(r.data(), 1);
+  r = rotl(r.data(), 1);
 
   (r.msb() == 1) ? F.C(set) : F.C(reset);
   (r.data() == reg8::min()) ? F.Z(set) : F.Z(reset);
@@ -575,7 +542,7 @@ void cpu::RL(reg16 rr) noexcept {
   F.N(reset);
 
   u8 mask_for_0th_bit = F.C() ? 1 : 0;
-  m[rr] = byte(std::rotl(std::to_integer<unsigned>(m[rr]), 1));
+  m[rr] = byte(rotl(std::to_integer<unsigned>(m[rr]), 1));
 
   reg8 tmp;
   tmp = m[rr];
@@ -592,7 +559,7 @@ void cpu::RRC(reg8 r) noexcept {
   F.H(reset);
   F.N(reset);
 
-  r = std::rotr(r.data(), 1);
+  r = rotr(r.data(), 1);
   (r.lsb() == 1) ? F.C(set) : F.C(reset);
   (r.data() == reg8::min()) ? F.Z(set) : F.Z(reset);
 
@@ -603,7 +570,7 @@ void cpu::RRC(reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
-  m[rr] = byte(std::rotr(std::to_integer<unsigned>(m[rr]), 1));
+  m[rr] = byte(rotr(std::to_integer<unsigned>(m[rr]), 1));
 
   // create a temporary reg8 to reach individual bits of the byte
   // more easily, and set flags via it.
@@ -621,7 +588,7 @@ void cpu::RR(reg8 r) noexcept {
 
   u8 mask_for_7th_bit = F.C() ? 0b1000'0000 : 0b0000'0000;
 
-  r = std::rotr(r.data(), 1);
+  r = rotr(r.data(), 1);
 
   (r.lsb() == 1) ? F.C(set) : F.C(reset);
   (r.data() == reg8::min()) ? F.Z(set) : F.Z(reset);
@@ -637,7 +604,7 @@ void cpu::RR(reg16 rr) noexcept {
 
   u8 mask_for_7th_bit = F.C() ? 0b1000'0000 : 0b0000'0000;
 
-  m[rr] = byte(std::rotr(std::to_integer<unsigned>(m[rr]), 1));
+  m[rr] = byte(rotr(std::to_integer<unsigned>(m[rr]), 1));
 
   reg8 tmp;
   tmp = m[rr];
@@ -735,7 +702,7 @@ void cpu::SWAP(reg8 &r) noexcept {
   F.H(reset);
   F.N(reset);
 
-  r = std::rotl(r.data(), 4);
+  r = rotl(r.data(), 4);
 
   (r.data() == reg8::min()) ? F.Z(set) : F.Z(reset);
 
@@ -747,7 +714,7 @@ void cpu::SWAP(reg16 &rr) noexcept {
   F.H(reset);
   F.N(reset);
 
-  m[rr] = byte(std::rotl(std::to_integer<unsigned>(m[rr]), 4));
+  m[rr] = byte(rotl(std::to_integer<unsigned>(m[rr]), 4));
 
   (std::to_integer<unsigned>(m[rr]) == 0U) ? F.Z(set) : F.Z(reset);
 
@@ -997,6 +964,31 @@ void cpu::DI() noexcept {
 void cpu::EI() noexcept {
   IME = set;
   c.tick(1);
+}
+
+// extracted from libstd++ <bit>
+template <typename T> constexpr T cpu::rotl(T x, int s) noexcept {
+  constexpr auto Nd = std::numeric_limits<T>::digits;
+  const int r = s % Nd;
+  if (r == 0) {
+    return x;
+  } else if (r > 0) {
+    return (x << r) | (x >> ((Nd - r) % Nd));
+  } else {
+    return (x >> -r) | (x << ((Nd + r) % Nd)); // rotr(x, -r)
+  }
+}
+
+template <typename T> constexpr T cpu::rotr(T x, int s) noexcept {
+  constexpr auto Nd = std::numeric_limits<T>::digits;
+  const int r = s % Nd;
+  if (r == 0) {
+    return x;
+  } else if (r > 0) {
+    return (x >> r) | (x << ((Nd - r) % Nd));
+  } else {
+    return (x << -r) | (x >> ((Nd + r) % Nd)); // rotl(x, -r)
+  }
 }
 
 void cpu::run() {
