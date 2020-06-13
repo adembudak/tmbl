@@ -95,7 +95,7 @@ CheckOptions:
   - key:             cppcoreguidelines-avoid-magic-numbers.IgnoredFloatingPointValues
     value:           '1.0;100.0'
   - key:             cppcoreguidelines-avoid-magic-numbers.IgnoredIntegerValues
-    value:           '4095;255;65535;0;15;240;65280;128;64;32;1;2;3;4;5;6;7;8;128;127;64;191;32;223;16;239'
+    value:           '153;96;9;10;18;20;28;30;38;4095;255;65535;0;15;240;65280;128;64;32;1;2;3;4;5;6;7;8;128;127;64;191;32;223;16;239'
   - key:             cppcoreguidelines-explicit-virtual-functions.AllowOverrideAndFinal
     value:           '1'
   - key:             cppcoreguidelines-explicit-virtual-functions.FinalSpelling
