@@ -14,7 +14,6 @@ option(TOMBUL_BUILD_TESTS "Build tests" OFF)
 
 include(CTest)
 enable_testing()
-find_package(Boost QUIET REQUIRED)
 
 find_program(CCACHE ccache)
 if(CCACHE)
