@@ -20,6 +20,9 @@ public:
   void LDi() noexcept;
   void LDi([[maybe_unused]] int dummy) noexcept;
 
+  void LDd() noexcept;
+  void LDd([[maybe_unused]] int dummy) noexcept;
+
   void PUSH(const reg16 rr) noexcept;
   void POP(reg16 rr) noexcept;
 

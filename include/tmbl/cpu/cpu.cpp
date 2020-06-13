@@ -41,6 +41,20 @@ void cpu::LDi([[maybe_unused]] int dummy) noexcept {
   c.tick(2);
 }
 
+void cpu::LDd() noexcept {
+  m[HL] = byte(A.data());
+  HL -= 1;
+
+  c.tick(2);
+}
+
+void cpu::LDd([[maybe_unused]] int dummy) noexcept {
+  A = m[HL];
+  HL -= 1;
+
+  c.tick(2);
+}
+
 void cpu::PUSH(const reg16 rr) noexcept {
   m[SP - 1] = rr.lo();
   m[SP - 2] = rr.hi();
