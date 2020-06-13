@@ -6,7 +6,7 @@
 #define has_bit_header 1
 #endif
 
-#ifndef has_bit_header
+#if has_bit_header != 1
 namespace std {
 
 template <typename T> constexpr T rotl(T x, int s) noexcept {
