@@ -127,6 +127,7 @@ public:
 
   void RST(u8 t) noexcept;
 
+  void DAA() noexcept;
   void CPL() noexcept;
   void NOP() noexcept;
   void CCF() noexcept;

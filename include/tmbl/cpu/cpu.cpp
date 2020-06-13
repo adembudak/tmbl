@@ -957,6 +957,33 @@ void cpu::RST(u8 t) noexcept {
   c.tick(4);
 }
 
+void cpu::DAA() noexcept {
+  F.H(reset);
+
+  if (F.N() == reset) {
+    if (F.C() || A.data() > 0x99) {
+      A += 0b0110'0000; // add 0x60 to get valid BCD
+      F.C(set);
+    }
+
+    if (F.H() || A.loNibble() > 0x09) {
+      A += 0b0000'0110;
+    }
+  } else {
+    if (F.C()) {
+      A -= 0b0110'0000;
+    }
+
+    if (F.H()) {
+      A -= 0b0000'0110;
+    }
+  }
+
+  (A.data() == reg8::min()) ? F.Z(set) : F.Z(reset);
+
+  c.tick(1);
+}
+
 void cpu::CPL() noexcept {
   F.H(set);
   F.N(set);
