@@ -27,6 +27,20 @@ void cpu::LD(const reg16 rr, const reg8 r) noexcept {
   c.tick(2);
 }
 
+void cpu::LDi() noexcept {
+  m[HL] = byte(A.data());
+  HL += 1;
+
+  c.tick(2);
+}
+
+void cpu::LDi([[maybe_unused]] int dummy) noexcept {
+  A = m[HL];
+  HL += 1;
+
+  c.tick(2);
+}
+
 void cpu::PUSH(const reg16 rr) noexcept {
   m[SP - 1] = rr.lo();
   m[SP - 2] = rr.hi();
@@ -979,7 +993,7 @@ void cpu::EI() noexcept {
 }
 
 // extracted from libstd++ <bit>
-template <typename T> constexpr T cpu::rotl(T x, int s) noexcept {
+template <typename T> T cpu::rotl(T x, int s) noexcept {
   constexpr auto Nd = std::numeric_limits<T>::digits;
   const int r = s % Nd;
   if (r == 0) {
@@ -991,7 +1005,7 @@ template <typename T> constexpr T cpu::rotl(T x, int s) noexcept {
   }
 }
 
-template <typename T> constexpr T cpu::rotr(T x, int s) noexcept {
+template <typename T> T cpu::rotr(T x, int s) noexcept {
   constexpr auto Nd = std::numeric_limits<T>::digits;
   const int r = s % Nd;
   if (r == 0) {

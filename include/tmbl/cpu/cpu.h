@@ -17,6 +17,9 @@ public:
 
   void LD(const reg16 rr, const reg8 r) noexcept;
 
+  void LDi() noexcept;
+  void LDi([[maybe_unused]] int dummy) noexcept;
+
   void PUSH(const reg16 rr) noexcept;
   void POP(reg16 rr) noexcept;
 
@@ -129,8 +132,8 @@ public:
 
   void run();
 
-  template <typename T> constexpr T rotl(T x, int s) noexcept;
-  template <typename T> constexpr T rotr(T x, int s) noexcept;
+  template <typename T> T rotl(T x, int s) noexcept;
+  template <typename T> T rotr(T x, int s) noexcept;
 
 private:
   byte fetch(reg16 rr) { return m[rr]; }
