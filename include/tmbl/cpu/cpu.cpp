@@ -5,6 +5,12 @@
 
 namespace tmbl::cpu {
 
+void cpu::LD(reg8 &r1, const reg8 r2) noexcept {
+  r1 = r2;
+
+  c.tick(1);
+}
+
 void cpu::PUSH(const reg16 rr) noexcept {
   m[SP - 1] = rr.lo();
   m[SP - 2] = rr.hi();
