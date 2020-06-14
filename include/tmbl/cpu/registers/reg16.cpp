@@ -28,13 +28,13 @@ void reg16::hi(const byte b) {
   m_data = ((m_data & zeroed_upper_byte_mask) | std::to_integer<int>(b)) << 8;
 }
 
-[[nodiscard]] u16 reg16::data() const noexcept { return m_data; }
-[[nodiscard]] u16 operator-(const reg16 rr, const int i) { return rr.data() - i; }
-[[nodiscard]] u16 operator+(const reg16 rr, const int i) { return rr.data() + i; }
+[[nodiscard]] u16 reg16::value() const noexcept { return m_data; }
+[[nodiscard]] u16 operator-(const reg16 rr, const int i) { return rr.value() - i; }
+[[nodiscard]] u16 operator+(const reg16 rr, const int i) { return rr.value() + i; }
 
 [[nodiscard]] reg16 operator+(const reg16 rr1, const reg16 rr2) {
   reg16 tmp;
-  tmp = rr1.data() + rr2.data();
+  tmp = rr1.value() + rr2.value();
   return tmp;
 }
 

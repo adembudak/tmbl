@@ -55,7 +55,7 @@ public:
   static u8 min() noexcept;
   static u8 max() noexcept;
 
-  [[nodiscard]] u8 data() const noexcept;
+  [[nodiscard]] u8 value() const noexcept;
 
 private:
   mutable u8 m_data = 0b0000'0000U;

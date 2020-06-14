@@ -50,11 +50,11 @@ u8 reg8::msb() const noexcept { return (m_data & 0b1000'0000U) >> 8U; }
 u8 reg8::min() noexcept { return min_u8_val; }
 u8 reg8::max() noexcept { return max_u8_val; }
 
-[[nodiscard]] u8 reg8::data() const noexcept { return m_data; }
+[[nodiscard]] u8 reg8::value() const noexcept { return m_data; }
 
 [[nodiscard]] reg8 operator+(const reg8 r1, const reg8 r2) {
   reg8 tmp;
-  u8 result = r1.data() + r2.data();
+  u8 result = r1.value() + r2.value();
 
   tmp = result;
   return tmp;
@@ -62,7 +62,7 @@ u8 reg8::max() noexcept { return max_u8_val; }
 
 [[nodiscard]] reg8 operator-(const reg8 r1, const reg8 r2) {
   reg8 tmp;
-  u8 result = r1.data() - r2.data();
+  u8 result = r1.value() - r2.value();
 
   tmp = result;
   return tmp;
@@ -70,7 +70,7 @@ u8 reg8::max() noexcept { return max_u8_val; }
 
 [[nodiscard]] reg8 operator&(const reg8 r1, const reg8 r2) {
   reg8 tmp;
-  u8 result = r1.data() & r2.data();
+  u8 result = r1.value() & r2.value();
   tmp = result;
 
   return tmp;
@@ -78,7 +78,7 @@ u8 reg8::max() noexcept { return max_u8_val; }
 
 [[nodiscard]] reg8 operator|(const reg8 r1, const reg8 r2) {
   reg8 tmp;
-  u8 result = r1.data() | r2.data();
+  u8 result = r1.value() | r2.value();
   tmp = result;
 
   return tmp;
@@ -86,7 +86,7 @@ u8 reg8::max() noexcept { return max_u8_val; }
 
 [[nodiscard]] reg8 operator^(const reg8 r1, const reg8 r2) {
   reg8 tmp;
-  u8 result = r1.data() ^ r2.data();
+  u8 result = r1.value() ^ r2.value();
   tmp = result;
 
   return tmp;

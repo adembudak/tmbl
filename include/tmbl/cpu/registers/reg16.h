@@ -20,7 +20,7 @@ public:
   static constexpr u16 min() noexcept { return min_u16_val; }
   static constexpr u16 max() noexcept { return max_u16_val; }
 
-  [[nodiscard]] u16 data() const noexcept;
+  [[nodiscard]] u16 value() const noexcept;
 
 private:
   mutable u16 m_data = 0b0000'0000'0000'0000;
