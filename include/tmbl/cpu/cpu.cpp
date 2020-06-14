@@ -80,6 +80,22 @@ void cpu::LD(const u8 n, Orientation o) noexcept {
   c.tick(3);
 }
 
+void cpu::LD(Orientation o) noexcept {
+
+  u16 C_reg_val = std::to_integer<unsigned>(BC.lo());
+
+  switch (o) {
+  case Orientation::READ_FROM_IO_PORT:
+    A = m[u16(0xFF00 + C_reg_val)];
+    break;
+  case Orientation::WRITE_TO_IO_PORT:
+    m[u16(0xFF00 + C_reg_val)] = byte(A.data());
+    break;
+  }
+
+  c.tick(2);
+}
+
 void cpu::PUSH(const reg16 rr) noexcept {
   m[SP - 1] = rr.lo();
   m[SP - 2] = rr.hi();
