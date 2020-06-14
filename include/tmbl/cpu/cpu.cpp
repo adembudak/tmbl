@@ -96,8 +96,27 @@ void cpu::LD(Orientation o) noexcept {
   c.tick(2);
 }
 
+void cpu::LD(const reg16 rr, const u8 n) noexcept {
+  m[rr] = byte(n);
+
+  c.tick(3);
+}
+
 void cpu::LD(reg16 &rr, const u16 nn) noexcept {
   rr = nn;
+
+  c.tick(3);
+}
+
+void cpu::LD() noexcept {
+  SP = HL;
+
+  c.tick(2);
+}
+
+void cpu::LD(const u8 i) noexcept {
+  HL = SP + i;
+
   c.tick(3);
 }
 

@@ -30,7 +30,10 @@ public:
   void LD(const u8 n, Orientation o) noexcept;
   void LD(Orientation o) noexcept;
 
+  void LD(const reg16 rr, const u8 n) noexcept;
   void LD(reg16 &rr, const u16 nn) noexcept;
+  void LD() noexcept;
+  void LD(const u8 i) noexcept;
 
   void PUSH(const reg16 rr) noexcept;
   void POP(reg16 rr) noexcept;
