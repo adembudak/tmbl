@@ -96,6 +96,11 @@ void cpu::LD(Orientation o) noexcept {
   c.tick(2);
 }
 
+void cpu::LD(reg16 &rr, const u16 nn) noexcept {
+  rr = nn;
+  c.tick(3);
+}
+
 void cpu::PUSH(const reg16 rr) noexcept {
   m[SP - 1] = rr.lo();
   m[SP - 2] = rr.hi();
