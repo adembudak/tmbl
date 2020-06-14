@@ -96,7 +96,7 @@ void cpu::LD(Orientation o) noexcept {
   c.tick(2);
 }
 
-void cpu::LD(const reg16 rr, const u8 n) noexcept {
+void cpu::LD(const reg16 rr, const u8 n, [[maybe_unused]] int dummy) noexcept {
   m[rr] = byte(n);
 
   c.tick(3);
@@ -468,7 +468,7 @@ void cpu::CP(const reg16 rr) noexcept {
   c.tick(2);
 }
 
-void cpu::INC(reg8 r) noexcept {
+void cpu::INC(reg8 &r) noexcept {
   F.N(reset);
 
   (r.loNibble() == 0b0000'1111) ? F.H(set) : F.H(reset);
@@ -490,7 +490,7 @@ void cpu::INC(reg16 rr) noexcept {
   c.tick(3);
 }
 
-void cpu::DEC(reg8 r) noexcept {
+void cpu::DEC(reg8 &r) noexcept {
   F.N(set);
 
   (r.loNibble() == 0) ? F.H(set) : F.H(reset);

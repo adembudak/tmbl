@@ -30,7 +30,7 @@ public:
   void LD(const u8 n, Orientation o) noexcept;
   void LD(Orientation o) noexcept;
 
-  void LD(const reg16 rr, const u8 n) noexcept;
+  void LD(const reg16 rr, const u8 n, [[maybe_unused]] int dummy) noexcept;
   void LD(reg16 &rr, const u16 nn) noexcept;
   void LD() noexcept;
   void LD(const u8 i) noexcept;
@@ -70,11 +70,11 @@ public:
   void CP(const u8 n) noexcept;
   void CP(const reg16 rr) noexcept;
 
-  void INC(reg8 r) noexcept;
-  void INC(reg16 rr) noexcept;
+  void INC(reg8 &r) noexcept;
+  void INC(const reg16 rr) noexcept;
 
-  void DEC(reg8 r) noexcept;
-  void DEC(reg16 rr) noexcept;
+  void DEC(reg8 &r) noexcept;
+  void DEC(const reg16 rr) noexcept;
 
   void ADD(reg16 rr1, reg16 rr2) noexcept;
   void ADD(const u8 n, [[maybe_unused]] int dummy) noexcept;
