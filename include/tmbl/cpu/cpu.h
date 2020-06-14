@@ -11,6 +11,9 @@ namespace tmbl::cpu {
 
 class cpu final {
 public:
+  void run();
+
+private:
   void LD(reg8 &r1, const reg8 r2) noexcept;
   void LD(reg8 &r, const u8 n) noexcept;
   void LD(reg8 &r, const reg16 rr) noexcept;
@@ -144,8 +147,6 @@ public:
   void SCF() noexcept;
   void DI() noexcept;
   void EI() noexcept;
-
-  void run();
 
   template <typename T> T rotl(T x, int s) noexcept;
   template <typename T> T rotr(T x, int s) noexcept;
