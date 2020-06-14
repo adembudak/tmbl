@@ -23,6 +23,9 @@ public:
   void LDd() noexcept;
   void LDd([[maybe_unused]] int dummy) noexcept;
 
+  void LD(const u16 nn) noexcept;
+  void LD(const u16 nn, [[maybe_unused]] int dummy) noexcept;
+
   void PUSH(const reg16 rr) noexcept;
   void POP(reg16 rr) noexcept;
 
