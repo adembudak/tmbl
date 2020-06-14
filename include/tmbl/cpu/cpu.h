@@ -26,6 +26,9 @@ public:
   void LD(const u16 nn) noexcept;
   void LD(const u16 nn, [[maybe_unused]] int dummy) noexcept;
 
+  enum class Orientation { READ_FROM_IO_PORT, WRITE_TO_IO_PORT };
+  void LD(const u8 n, Orientation o) noexcept;
+
   void PUSH(const reg16 rr) noexcept;
   void POP(reg16 rr) noexcept;
 

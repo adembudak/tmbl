@@ -67,6 +67,19 @@ void cpu::LD(const u16 nn, [[maybe_unused]] int dummy) noexcept {
   c.tick(4);
 }
 
+void cpu::LD(const u8 n, Orientation o) noexcept {
+  switch (o) {
+  case Orientation::READ_FROM_IO_PORT:
+    A = m[u16(0xFF00 + n)];
+    break;
+  case Orientation::WRITE_TO_IO_PORT:
+    m[u16(0xFF00 + n)] = byte(A.data());
+    break;
+  }
+
+  c.tick(3);
+}
+
 void cpu::PUSH(const reg16 rr) noexcept {
   m[SP - 1] = rr.lo();
   m[SP - 2] = rr.hi();
