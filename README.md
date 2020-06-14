@@ -6,7 +6,7 @@
 
 | roadmap :checkered_flag: | status :x: :white_check_mark: :heavy_check_mark: |
 |:------:|:---:|
-| implement processor instructions | :white_check_mark:  |
+| implement processor instructions | :heavy_check_mark:  |
 | implement memory instructions | :x:   |
 | implement picture processing unit | :x:   |
 | implement audio processing unit | :x:   |
