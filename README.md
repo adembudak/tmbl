@@ -1,8 +1,8 @@
 
 ### tombul 
-![ubuntu](https://github.com/p1v0t/tombul/workflows/ubuntu/badge.svg) ![windows](https://github.com/p1v0t/tombul/workflows/windows/badge.svg)
+[![ubuntu](https://github.com/p1v0t/tombul/workflows/ubuntu/badge.svg)](https://github.com/p1v0t/tombul/actions?query=workflow%3Aubuntu) [![windows](https://github.com/p1v0t/tombul/workflows/windows/badge.svg)](https://github.com/p1v0t/tombul/actions?query=workflow%3Awindows)
 
-> tombul: fairly incomplete but work in pogress Gameboy emulator library.
+> tombul: fairly incomplete but work in progress Gameboy emulator library.
 
 | roadmap :checkered_flag: | status :x: :white_check_mark: :heavy_check_mark: |
 |:------:|:---:|
