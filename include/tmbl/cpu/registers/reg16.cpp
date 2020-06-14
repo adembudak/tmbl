@@ -1,4 +1,5 @@
 #include "reg16.h"
+#include "reg8.h"
 
 namespace tmbl::cpu {
 
@@ -13,7 +14,12 @@ reg16 &reg16::operator+=(const u8 n) {
 }
 
 reg16 &reg16::operator-=(const u8 n) {
-  m_data += n;
+  m_data -= n;
+  return *this;
+}
+
+const reg16 reg16::operator++(int) {
+  m_data++;
   return *this;
 }
 
@@ -25,12 +31,12 @@ void reg16::lo(const byte b) {
 }
 
 void reg16::hi(const byte b) {
-  m_data = ((m_data & zeroed_upper_byte_mask) | std::to_integer<int>(b)) << 8;
+  m_data = ((m_data & zeroed_upper_byte_mask) | (std::to_integer<int>(b)) << 8);
 }
 
 [[nodiscard]] u16 reg16::value() const noexcept { return m_data; }
-[[nodiscard]] u16 operator-(const reg16 rr, const int i) { return rr.value() - i; }
 [[nodiscard]] u16 operator+(const reg16 rr, const int i) { return rr.value() + i; }
+[[nodiscard]] u16 operator-(const reg16 rr, const int i) { return rr.value() - i; }
 
 [[nodiscard]] reg16 operator+(const reg16 rr1, const reg16 rr2) {
   reg16 tmp;

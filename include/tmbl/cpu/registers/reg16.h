@@ -5,11 +5,14 @@
 
 namespace tmbl::cpu {
 
+class reg8;
+
 class reg16 final {
 public:
   reg16 &operator=(const u16 nn);
   reg16 &operator+=(const u8 n);
   reg16 &operator-=(const u8 n);
+  const reg16 operator++(int);
 
   byte lo() const noexcept;
   byte hi() const noexcept;
@@ -32,8 +35,8 @@ private:
   static constexpr u16 zeroed_lower_byte_mask = 0b1111'1111'0000'0000;
 };
 
-[[nodiscard]] u16 operator-(const reg16 rr, const int i);
 [[nodiscard]] u16 operator+(const reg16 rr, const int i);
+[[nodiscard]] u16 operator-(const reg16 rr, const int i);
 
 [[nodiscard]] reg16 operator+(const reg16 rr1, const reg16 rr2);
 
