@@ -317,6 +317,376 @@ void cpu::run() {
         CCF();
         break;
 
+      case 0x40:
+        LD(B, B);
+        BC.hi(B);
+        break;
+
+      case 0x41:
+        LD(B, C);
+        BC.hi(B);
+        break;
+
+      case 0x42:
+        LD(B, D);
+        BC.hi(B);
+        break;
+
+      case 0x43:
+        LD(B, E);
+        BC.hi(B);
+        break;
+
+      case 0x44:
+        LD(B, H);
+        BC.hi(B);
+        break;
+
+      case 0x45:
+        LD(B, L);
+        BC.hi(B);
+        break;
+
+      case 0x46:
+        LD(B, HL);
+        BC.hi(B);
+        break;
+
+      case 0x47:
+        LD(B, A);
+        BC.hi(B);
+        break;
+
+      case 0x48:
+        LD(C, B);
+        BC.lo(C);
+        break;
+
+      case 0x49:
+        LD(C, C);
+        BC.lo(C);
+        break;
+
+      case 0x4A:
+        LD(C, D);
+        BC.lo(C);
+        break;
+
+      case 0x4B:
+        LD(C, E);
+        BC.lo(C);
+        break;
+
+      case 0x4C:
+        LD(C, H);
+        BC.lo(C);
+        break;
+
+      case 0x4D:
+        LD(C, L);
+        BC.lo(C);
+        break;
+
+      case 0x4E:
+        LD(C, HL);
+        BC.lo(C);
+        break;
+
+      case 0x4F:
+        LD(C, A);
+        BC.lo(C);
+        break;
+
+      case 0x50:
+        LD(D, B);
+        DE.hi(D);
+        break;
+
+      case 0x51:
+        LD(D, C);
+        DE.hi(D);
+        break;
+
+      case 0x52:
+        LD(D, D);
+        DE.hi(D);
+        break;
+
+      case 0x53:
+        LD(D, E);
+        DE.hi(E);
+        break;
+
+      case 0x54:
+        LD(D, H);
+        DE.hi(D);
+        break;
+
+      case 0x55:
+        LD(D, L);
+        DE.hi(D);
+        break;
+
+      case 0x56:
+        LD(D, HL);
+        DE.hi(D);
+        break;
+
+      case 0x57:
+        LD(D, A);
+        DE.hi(D);
+        break;
+
+      case 0x58:
+        LD(E, B);
+        DE.hi(E);
+        break;
+
+      case 0x59:
+        LD(E, C);
+        DE.hi(E);
+        break;
+
+      case 0x5A:
+        LD(E, D);
+        DE.hi(E);
+        break;
+
+      case 0x5B:
+        LD(E, E);
+        DE.hi(E);
+        break;
+
+      case 0x5C:
+        LD(E, H);
+        DE.hi(E);
+        break;
+
+      case 0x5D:
+        LD(E, L);
+        DE.hi(E);
+        break;
+
+      case 0x5E:
+        LD(E, HL);
+        DE.hi(E);
+        break;
+
+      case 0x5F:
+        LD(E, A);
+        DE.hi(E);
+        break;
+
+      case 0x60:
+        LD(H, B);
+        HL.hi(H);
+        break;
+
+      case 0x61:
+        LD(H, C);
+        HL.hi(H);
+        break;
+
+      case 0x62:
+        LD(H, D);
+        HL.hi(H);
+        break;
+
+      case 0x63:
+        LD(H, E);
+        HL.hi(H);
+        break;
+
+      case 0x64:
+        LD(H, H);
+        HL.hi(H);
+        break;
+
+      case 0x65:
+        LD(H, L);
+        HL.hi(H);
+        break;
+
+      case 0x66:
+        LD(H, HL);
+        HL.hi(H);
+        break;
+
+      case 0x67:
+        LD(H, A);
+        HL.hi(H);
+        break;
+
+      case 0x68:
+        LD(L, B);
+        HL.lo(L);
+        break;
+
+      case 0x69:
+        LD(L, C);
+        HL.lo(L);
+        break;
+
+      case 0x6A:
+
+        LD(L, D);
+        HL.lo(L);
+        break;
+
+      case 0x6B:
+        LD(L, E);
+        HL.lo(L);
+        break;
+
+      case 0x6C:
+        LD(L, H);
+        HL.lo(L);
+        break;
+
+      case 0x6D:
+        LD(L, L);
+        HL.lo(L);
+        break;
+
+      case 0x6E:
+        LD(L, HL);
+        HL.lo(L);
+        break;
+
+      case 0x6F:
+        LD(L, A);
+        HL.lo(L);
+        break;
+
+      case 0x70:
+        LD(HL, B);
+        break;
+
+      case 0x71:
+        LD(HL, C);
+        break;
+
+      case 0x72:
+        LD(HL, D);
+        break;
+
+      case 0x73:
+        LD(HL, E);
+        break;
+
+      case 0x74:
+        LD(HL, H);
+        break;
+
+      case 0x75:
+        LD(HL, L);
+        break;
+
+      case 0x76:
+        HALT();
+        break;
+
+      case 0x77:
+        LD(HL, A);
+        break;
+
+      case 0x78:
+        LD(A, B);
+        break;
+
+      case 0x79:
+        LD(A, C);
+        break;
+
+      case 0x7A:
+        LD(A, D);
+        break;
+
+      case 0x7B:
+        LD(A, E);
+        break;
+
+      case 0x7C:
+        LD(A, H);
+        break;
+
+      case 0x7D:
+        LD(A, L);
+        break;
+
+      case 0x7E:
+        LD(A, HL);
+        break;
+
+      case 0x7F:
+        LD(A, A);
+        break;
+
+      case 0x80:
+        ADD(B);
+        break;
+
+      case 0x81:
+        ADD(C);
+        break;
+
+      case 0x82:
+        ADD(D);
+        break;
+
+      case 0x83:
+        ADD(E);
+        break;
+
+      case 0x84:
+        ADD(H);
+        break;
+
+      case 0x85:
+        ADD(L);
+        break;
+
+      case 0x86:
+        ADD(HL);
+        break;
+
+      case 0x87:
+        ADD(A);
+        break;
+
+      case 0x88:
+        ADC(B);
+        break;
+
+      case 0x89:
+        ADC(C);
+        break;
+
+      case 0x8A:
+        ADC(D);
+        break;
+
+      case 0x8B:
+        ADC(E);
+        break;
+
+      case 0x8C:
+        ADC(H);
+        break;
+
+      case 0x8D:
+        ADC(L);
+        break;
+
+      case 0x8E:
+        ADC(HL);
+        break;
+
+      case 0x8F:
+        ADC(A);
+        break;
+
+        // case 0x90:
         // ...
         // case 0xFF:
     }
