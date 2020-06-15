@@ -13,7 +13,12 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Generate build scripts
-      run: cmake -G"Unix Makefiles" -DCMAKE_CXX_COMPILER=clang++-9 -DCMAKE_BUILD_TYPE:STRING="Debug" -DTOMBUL_BUILD_TESTS:BOOL=OFF -S . -Bbuild 
+      run: cmake -G"Unix Makefiles" -DCMAKE_CXX_COMPILER=clang++-9 -DCMAKE_BUILD_TYPE:STRING="Debug" -DTOMBUL_BUILD_TESTS:BOOL=ON -S . -Bbuild
 
     - name: Build
       run: cmake --build build -- --jobs `nproc`
+
+    - name: Run tests
+      run: |
+        cd build
+        ctest --parallel `nproc`
