@@ -24,14 +24,20 @@ const reg16 reg16::operator++(int) {
 }
 
 byte reg16::lo() const noexcept { return byte(m_data & reg16::zeroed_upper_byte_mask); }
-byte reg16::hi() const noexcept { return byte((m_data & reg16::zeroed_lower_byte_mask) >> 8); }
+byte reg16::hi() const noexcept { return byte((m_data & reg16::zeroed_lower_byte_mask) >> 8U); }
 
-void reg16::lo(const byte b) {
-  m_data = (m_data & zeroed_lower_byte_mask) | std::to_integer<int>(b);
+void reg16::lo(const byte b) noexcept {
+  m_data = (m_data & zeroed_lower_byte_mask) | std::to_integer<unsigned>(b);
 }
 
-void reg16::hi(const byte b) {
-  m_data = ((m_data & zeroed_upper_byte_mask) | (std::to_integer<int>(b)) << 8);
+void reg16::hi(const byte b) noexcept {
+  m_data = (m_data & zeroed_upper_byte_mask) | (std::to_integer<unsigned>(b) << 8U);
+}
+
+void reg16::lo(const reg8 r) noexcept { m_data = (m_data & zeroed_lower_byte_mask) | r.value(); }
+
+void reg16::hi(const reg8 r) noexcept {
+  m_data = (m_data & zeroed_upper_byte_mask) | (r.value() << 8U);
 }
 
 [[nodiscard]] u16 reg16::value() const noexcept { return m_data; }
