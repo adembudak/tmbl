@@ -48,7 +48,7 @@ TEST(SixteenBitRegisterType, memberLoHiAccessor) {
   ASSERT_EQ(std::to_integer<unsigned>(hi), 0b1001'1101);
 }
 
-TEST(SixteenBitRegisterType, memberLoHiSetter) {
+TEST(SixteenBitRegisterType, memberLoHiSetterbyte) {
   reg16 HL;
   HL = 0b1111'1111'0000'0000;
 
@@ -64,6 +64,22 @@ TEST(SixteenBitRegisterType, memberLoHiSetter) {
   BC.hi(byte(0b1010'1010));
   BC.lo(byte(0b0110'0110));
   ASSERT_EQ(BC.value(), 0b1010'1010'0110'0110);
+}
+
+TEST(SixteenBitRegisterType, memberLoHiSetterReg8) {
+  reg16 BC;
+  BC = 0b1111'0000'1100'0011;
+
+  reg8 B;
+  B = 0b0000'1111;
+
+  reg8 C;
+  C = 0b0011'0011;
+
+  BC.hi(B);
+  BC.lo(C);
+
+  ASSERT_EQ(BC.value(), 0b0000'1111'0011'0011);
 }
 
 TEST(SixteenBitRegisterType, NonMemberOperatorPlusMinusReg16andInt) {
