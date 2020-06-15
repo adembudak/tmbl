@@ -79,7 +79,7 @@ void cpu::run() {
         break;
 
       case 0x0B:
-        DEC(BC, /*dummy*/ 666);
+        DEC(BC);
         break;
 
       case 0x0C:
@@ -152,7 +152,7 @@ void cpu::run() {
         break;
 
       case 0x1B:
-        DEC(DE, /*dummy*/ 666);
+        DEC(DE);
         break;
 
       case 0x1C:
@@ -247,7 +247,77 @@ void cpu::run() {
         CPL();
         break;
 
-        // ---
+      case 0x30:
+        e = make_i8(fetch(PC++));
+        JR(10, e);
+
+        break;
+
+      case 0x31:
+        nn = make_u16(fetch(PC++));
+        LD(SP, nn);
+        break;
+
+      case 0x32:
+        LDi();
+        break;
+
+      case 0x33:
+        INC(SP);
+        break;
+
+      case 0x34:
+        INC();
+        break;
+
+      case 0x35:
+        DEC();
+        break;
+
+      case 0x36:
+        n = make_u8(fetch(PC++));
+        LD(HL, n, /*dummy*/ 666);
+        break;
+
+      case 0x37:
+        SCF();
+        break;
+
+      case 0x38:
+        e = make_i8(fetch(PC++));
+        JR(11, e);
+        break;
+
+      case 0x39:
+        ADD(HL, SP);
+        break;
+
+      case 0x3A:
+        LDd(/*dummy*/ 666);
+        break;
+
+      case 0x3B:
+        DEC(SP);
+        break;
+
+      case 0x3C:
+        INC(A);
+        break;
+
+      case 0x3D:
+        DEC(A);
+        break;
+
+      case 0x3E:
+        n = make_u8(fetch(PC++));
+        LD(A, n);
+        break;
+
+      case 0x3F:
+        CCF();
+        break;
+
+        // ...
         // case 0xFF:
     }
   }
@@ -747,11 +817,6 @@ void cpu::INC() noexcept {
   c.tick(3);
 }
 
-void cpu::INC(reg16 &rr) noexcept {
-  rr = rr + 1;
-  c.tick(2);
-}
-
 void cpu::DEC(reg8 &r) noexcept {
   F.N(set);
 
@@ -762,15 +827,15 @@ void cpu::DEC(reg8 &r) noexcept {
   c.tick(1);
 }
 
-void cpu::DEC(const reg16 rr) noexcept {
+void cpu::DEC() noexcept {
   F.N(set);
 
-  u8 lower_nibble = std::to_integer<unsigned>(m[rr]) | (0b0000'1111U);
+  u8 lower_nibble = std::to_integer<unsigned>(m[HL]) | (0b0000'1111U);
 
   (lower_nibble == 0) ? F.H(set) : F.H(reset);
-  (std::to_integer<unsigned>(m[rr]) == 1) ? F.Z(set) : F.Z(reset);
+  (std::to_integer<unsigned>(m[HL]) == 1) ? F.Z(set) : F.Z(reset);
 
-  m[rr] = byte(std::to_integer<unsigned>(m[rr]) - 1);
+  m[HL] = byte(std::to_integer<unsigned>(m[HL]) - 1);
   c.tick(3);
 }
 
@@ -801,12 +866,12 @@ void cpu::ADD(const u8 n, [[maybe_unused]] int dummy) noexcept {
   c.tick(4);
 }
 
-void cpu::INC(reg16 rr, [[maybe_unused]] int dummy) noexcept {
+void cpu::INC(reg16 &rr) noexcept {
   rr += 1;
   c.tick(2);
 }
 
-void cpu::DEC(reg16 rr, [[maybe_unused]] int dummy) noexcept {
+void cpu::DEC(reg16 &rr) noexcept {
   rr -= 1;
   c.tick(2);
 }
