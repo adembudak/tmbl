@@ -12,6 +12,16 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Install googletest
+      run: | 
+        git clone https://github.com/google/googletest.git --branch release-1.10.0
+        cd googletest
+        cmake -DCMAKE_BUILD_TYPE:STRING="Debug" -DBUILD_GMOCK:BOOL=OFF -S . -B build
+        cmake --build build -- --jobs `nproc`
+        sudo cmake --install build
+        cd .. 
+        sudo rm -rf googletest
+
     - name: Generate build scripts
       run: cmake -G"Unix Makefiles" -DCMAKE_CXX_COMPILER=clang++-9 -DCMAKE_BUILD_TYPE:STRING="Debug" -DTOMBUL_BUILD_TESTS:BOOL=ON -S . -Bbuild
 
