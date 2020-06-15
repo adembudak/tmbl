@@ -58,6 +58,7 @@ void cpu::run() {
       case 0x06:
         n = make_u8(fetch(PC++));
         LD(B, n);
+        BC.hi(B);
         break;
 
       case 0x07:
@@ -173,7 +174,81 @@ void cpu::run() {
       case 0x1F:
         RRA();
 
-      default:;
+      case 0x20:
+        e = make_i8(fetch(PC++));
+        JR(00, e);
+        break;
+
+      case 0x21:
+        nn = make_u16(fetch(PC++));
+        LD(HL, nn);
+        break;
+
+      case 0x22:
+        LDi();
+        break;
+
+      case 0x23:
+        INC(HL);
+        break;
+
+      case 0x24:
+        INC(H);
+        HL.hi(H);
+        break;
+
+      case 0x25:
+        DEC(H);
+        HL.hi(H);
+        break;
+
+      case 0x26:
+        n = make_u8(fetch(PC++));
+        LD(H, n);
+        HL.hi(H);
+        break;
+
+      case 0x27:
+        DAA();
+        break;
+
+      case 0x28:
+        e = make_i8(fetch(PC++));
+        JR(1, e);
+        break;
+
+      case 0x29:
+        ADD(HL, HL);
+        break;
+
+      case 0x2A:
+        LDi(/*dummy*/ 666);
+        break;
+
+      case 0x2B:
+        DEC(HL);
+        break;
+
+      case 0x2C:
+        INC(L);
+        HL.lo(L);
+        break;
+
+      case 0x2D:
+        DEC(L);
+        HL.lo(L);
+        break;
+
+      case 0x2E:
+        n = make_u8(fetch(PC++));
+        LD(L, n);
+        break;
+      case 0x2F:
+        CPL();
+        break;
+
+        // ---
+        // case 0xFF:
     }
   }
 }
