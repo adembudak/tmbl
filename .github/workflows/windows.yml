@@ -12,21 +12,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Install googletest
-      run: | 
-        git clone https://github.com/google/googletest.git --branch release-1.10.0
-        cd googletest
-        cmake -DBUILD_GMOCK:BOOL=OFF -S . -B build
-        cmake --build build --config Release
-        cmake --install build
-
     - name: Generate build scripts
-      run: cmake -DTOMBUL_BUILD_TESTS:BOOL=ON -S . -Bbuild
+      run: cmake -DTOMBUL_BUILD_TESTS:BOOL=OFF -S . -Bbuild
 
     - name: Build
       run: cmake --build build --config Debug
-
-    - name: Run tests
-      run: |
-        cd build
-        ctest --parallel 4
+    
