@@ -36,11 +36,11 @@ private:
   void LD(const reg16 rr, const u8 n, [[maybe_unused]] int dummy) noexcept;
   void LD(reg16 &rr, const u16 nn) noexcept;
   void LD() noexcept;
-  void LD(const u8 i) noexcept;
+  void LD(const i8 e) noexcept;
   void LD(const u16 nn, const reg16 rr) noexcept;
 
   void PUSH(const reg16 rr) noexcept;
-  void POP(reg16 rr) noexcept;
+  void POP(reg16 &rr) noexcept;
 
   void ADD(const reg8 r) noexcept;
   void ADD(const u8 n) noexcept;
@@ -81,7 +81,7 @@ private:
   void DEC() noexcept;
 
   void ADD(reg16 &rr1, const reg16 rr2) noexcept;
-  void ADD(const u8 n, [[maybe_unused]] int dummy) noexcept;
+  void ADD(reg16 &rr, const i8 e) noexcept;
 
   void INC(reg16 &rr) noexcept;
   void DEC(reg16 &rr) noexcept;

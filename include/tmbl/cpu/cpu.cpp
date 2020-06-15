@@ -14,6 +14,7 @@ void cpu::run() {
   u8 n = 0;
   i8 e = 0;
 
+  reg16 AF;
   reg8 D, E;
   reg8 B, C;
   reg8 H, L;
@@ -23,6 +24,8 @@ void cpu::run() {
     D = DE.hi(); E = DE.lo();
     B = BC.hi(); C = BC.lo();
     H = HL.hi(); L = HL.lo();
+
+    AF.hi(A); AF.lo(F);
     // clang-format on
 
     byte addr = fetch(PC++);
@@ -686,9 +689,470 @@ void cpu::run() {
         ADC(A);
         break;
 
-        // case 0x90:
-        // ...
-        // case 0xFF:
+      case 0x90:
+        SUB(B);
+        break;
+
+      case 0x91:
+        SUB(C);
+        break;
+
+      case 0x92:
+        SUB(D);
+        break;
+
+      case 0x93:
+        SUB(E);
+        break;
+
+      case 0x94:
+        SUB(H);
+        break;
+
+      case 0x95:
+        SUB(L);
+        break;
+
+      case 0x96:
+        SUB(HL);
+        break;
+
+      case 0x97:
+        SUB(A);
+        break;
+
+      case 0x98:
+        SBC(B);
+        break;
+
+      case 0x99:
+        SBC(C);
+        break;
+
+      case 0x9A:
+        SBC(D);
+        break;
+
+      case 0x9B:
+        SBC(E);
+        break;
+
+      case 0x9C:
+        SBC(H);
+        break;
+
+      case 0x9D:
+        SBC(L);
+        break;
+
+      case 0x9E:
+        SBC(HL);
+        break;
+
+      case 0x9F:
+        SBC(A);
+        break;
+
+      case 0xA0:
+        AND(B);
+        break;
+
+      case 0xA1:
+        AND(C);
+        break;
+
+      case 0xA2:
+        AND(D);
+        break;
+
+      case 0xA3:
+        AND(E);
+        break;
+
+      case 0xA4:
+        AND(H);
+        break;
+
+      case 0xA5:
+        AND(L);
+        break;
+
+      case 0xA6:
+        AND(HL);
+        break;
+
+      case 0xA7:
+        AND(A);
+        break;
+
+      case 0xA8:
+        XOR(B);
+        break;
+
+      case 0xA9:
+        XOR(C);
+        break;
+
+      case 0xAA:
+        XOR(D);
+        break;
+
+      case 0xAB:
+        XOR(E);
+        break;
+
+      case 0xAC:
+        XOR(H);
+        break;
+
+      case 0xAD:
+        XOR(L);
+        break;
+
+      case 0xAE:
+        XOR(HL);
+        break;
+
+      case 0xAF:
+        XOR(A);
+        break;
+
+      case 0xB0:
+        OR(B);
+        break;
+
+      case 0xB1:
+        OR(C);
+        break;
+
+      case 0xB2:
+        OR(D);
+        break;
+
+      case 0xB3:
+        OR(E);
+        break;
+
+      case 0xB4:
+        OR(H);
+        break;
+
+      case 0xB5:
+        OR(L);
+        break;
+
+      case 0xB6:
+        OR(HL);
+        break;
+
+      case 0xB7:
+        OR(A);
+        break;
+
+      case 0xB8:
+        CP(B);
+        break;
+
+      case 0xB9:
+        CP(C);
+        break;
+
+      case 0xBA:
+        CP(D);
+        break;
+
+      case 0xBB:
+        CP(E);
+        break;
+
+      case 0xBC:
+        CP(H);
+        break;
+
+      case 0xBD:
+        CP(L);
+        break;
+
+      case 0xBE:
+        CP(HL);
+        break;
+
+      case 0xBF:
+        CP(A);
+        break;
+
+      case 0xC0:
+        RET(0);
+        break;
+
+      case 0xC1:
+        POP(BC);
+        break;
+
+      case 0xC2:
+        nn = make_u16(fetch(PC++));
+        JP(0, nn);
+        break;
+
+      case 0xC3:
+        nn = make_u16(fetch(PC++));
+        JP(nn);
+        break;
+
+      case 0xC4:
+        nn = make_u16(fetch(PC++));
+        CALL(0, nn);
+        break;
+
+      case 0xC5:
+        PUSH(BC);
+        break;
+
+      case 0xC6:
+        n = make_u8(fetch(PC++));
+        ADD(n);
+        break;
+
+      case 0xC7:
+        RST(0);
+        break;
+
+      case 0xC8:
+        RST(/*Z*/ 1);
+        break;
+
+      case 0xC9:
+        RET();
+        break;
+
+      case 0xCA:
+        nn = make_u16(fetch(PC++));
+        JP(/*Z*/ 1, nn);
+        break;
+
+      case 0xCB:
+        // TODO what is PREFIX instruction?
+        [[fallthrough]];
+
+      case 0xCC:
+        nn = make_u16(fetch(PC++));
+        CALL(/*Z*/ 1, nn);
+        break;
+
+      case 0xCD:
+        nn = make_u16(fetch(PC++));
+        CALL(nn);
+        break;
+
+      case 0xCE:
+        n = make_u8(fetch(PC++));
+        ADC(n);
+        break;
+
+      case 0xCF:
+        RST(8);
+        break;
+
+      case 0xD0:
+        RET(10);
+        break;
+
+      case 0xD1:
+        POP(DE);
+        break;
+
+      case 0xD2:
+        nn = make_u16(fetch(PC++));
+        JP(10, nn);
+        break;
+
+      case 0xD3:
+        break;
+
+      case 0xD4:
+        nn = make_u16(fetch(PC++));
+        CALL(10, nn);
+        break;
+
+      case 0xD5:
+        PUSH(DE);
+        break;
+
+      case 0xD6:
+        n = make_u8(fetch(PC++));
+        SUB(n);
+        break;
+
+      case 0xD7:
+        RST(10);
+        break;
+
+      case 0xD8:
+        RET(11);
+        break;
+
+      case 0xD9:
+        RETI();
+        break;
+
+      case 0xDA:
+        nn = make_u16(fetch(PC++));
+        JP(/*C*/ 11, nn);
+        break;
+
+      case 0xDB:
+        break;
+
+      case 0xDC:
+        nn = make_u16(fetch(PC++));
+        CALL(/*C*/ 11, nn);
+        break;
+
+      case 0xDD:
+        break;
+
+      case 0xDE:
+        n = make_u8(fetch(PC++));
+        SBC(n);
+        break;
+
+      case 0xDF:
+        RST(18);
+        break;
+
+      case 0xE0:
+        n = make_u8(fetch(PC++));
+        LD(n, Orientation::WRITE_TO_IO_PORT);
+        break;
+
+      case 0xE1:
+        POP(HL);
+        break;
+
+      case 0xE2:
+        LD(Orientation::WRITE_TO_IO_PORT);
+        break;
+
+      case 0xE3:
+        break;
+
+      case 0xE4:
+        break;
+
+      case 0xE5:
+        PUSH(HL);
+        break;
+
+      case 0xE6:
+        n = make_u8(fetch(PC++));
+        AND(n);
+        break;
+
+      case 0xE7:
+        RST(20);
+        break;
+
+      case 0xE8:
+        e = make_i8(fetch(PC++));
+        ADD(SP, e);
+        break;
+
+      case 0xE9:
+        JP(HL);
+        break;
+
+      case 0xEA:
+        nn = make_u16(fetch(PC++));
+        LD(nn);
+        break;
+
+      case 0xEB:
+        break;
+
+      case 0xEC:
+        break;
+
+      case 0xED:
+        break;
+
+      case 0xEE:
+        n = make_u8(fetch(PC++));
+        XOR(n);
+        break;
+
+      case 0xEF:
+        RST(28);
+        break;
+
+      case 0xF0:
+        n = make_u8(fetch(PC++));
+        LD(n, Orientation::READ_FROM_IO_PORT);
+        break;
+
+      case 0xF1:
+
+        POP(AF);
+
+        A = AF.hi();
+        F = AF.lo();
+        break;
+
+      case 0xF2:
+        LD(Orientation::READ_FROM_IO_PORT);
+        break;
+
+      case 0xF3:
+        DI();
+        break;
+
+      case 0xF4:
+        break;
+
+      case 0xF5:
+        PUSH(AF);
+        break;
+
+      case 0xF6:
+        n = make_u8(fetch(PC++));
+        OR(n);
+        break;
+
+      case 0xF7:
+        RST(30);
+        break;
+
+      case 0xF8:
+        e = make_i8(fetch(PC++));
+        LD(e);
+        break;
+
+      case 0xF9:
+        LD();
+        break;
+
+      case 0xFA:
+        nn = make_u16(fetch(PC++));
+        LD(nn, /*dummy*/ 666);
+        break;
+
+      case 0xFB:
+        EI();
+        break;
+
+      case 0xFC:
+        break;
+
+      case 0xFD:
+        break;
+
+      case 0xFE:
+        n = make_u8(fetch(PC++));
+        CP(n);
+        break;
+
+      case 0xFF:
+        RST(38);
+        break;
     }
   }
 }
@@ -805,8 +1269,8 @@ void cpu::LD() noexcept {
   c.tick(2);
 }
 
-void cpu::LD(const u8 i) noexcept {
-  HL = SP + i;
+void cpu::LD(const i8 e) noexcept {
+  HL = SP + e;
 
   c.tick(3);
 }
@@ -825,7 +1289,7 @@ void cpu::PUSH(const reg16 rr) noexcept {
   c.tick(4);
 }
 
-void cpu::POP(reg16 rr) noexcept {
+void cpu::POP(reg16 &rr) noexcept {
   rr.lo(m[SP]);
   rr.hi(m[SP + 1]);
   SP += 2;
@@ -1225,14 +1689,14 @@ void cpu::ADD(reg16 &rr1, const reg16 rr2) noexcept {
   c.tick(2);
 }
 
-void cpu::ADD(const u8 n, [[maybe_unused]] int dummy) noexcept {
+void cpu::ADD(reg16 &rr, const i8 e) noexcept {
   F.N(reset);
   F.Z(reset);
 
-  ((SP.value() + n) > reg16::max()) ? F.C(set) : F.C(reset);
-  (((SP.value() & 0b0000'1111'1111'1111U) + n) > 4095U) ? F.H(set) : F.H(reset);
+  ((rr.value() + e) > reg16::max()) ? F.C(set) : F.C(reset);
+  (((rr.value() & 0b0000'1111'1111'1111U) + e) > 4095U) ? F.H(set) : F.H(reset);
 
-  SP += n;
+  rr += e;
   c.tick(4);
 }
 
@@ -1805,6 +2269,5 @@ template <typename T> T cpu::rotr(T x, int s) noexcept {
 
 byte cpu::fetch(reg16 rr) { return m[rr]; }
 u16 cpu::decode(byte b) { return std::to_integer<u16>(b); }
-
 }
 
