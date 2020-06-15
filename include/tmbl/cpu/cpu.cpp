@@ -12,12 +12,19 @@ void cpu::run() {
 
   u16 nn = 0;
   u8 n = 0;
+  i8 e = 0;
 
   reg8 D, E;
   reg8 B, C;
   reg8 H, L;
 
   for (;;) {
+    // clang-format off
+    D = DE.hi(); E = DE.lo();
+    B = BC.hi(); C = BC.lo();
+    H = HL.hi(); L = HL.lo();
+    // clang-format on
+
     byte addr = fetch(PC++);
 
     switch (u16 val = decode(addr); val) {
@@ -39,13 +46,11 @@ void cpu::run() {
         break;
 
       case 0x04:
-        B = BC.hi();
         INC(B);
         BC.hi(B);
         break;
 
       case 0x05:
-        B = BC.hi();
         DEC(B);
         BC.hi(B);
         break;
@@ -78,6 +83,7 @@ void cpu::run() {
 
       case 0x0C:
         INC(C);
+        BC.lo(C);
         break;
 
       case 0x0D:
@@ -85,7 +91,6 @@ void cpu::run() {
         break;
 
       case 0x0E:
-        C = BC.lo();
         n = make_u8(fetch(PC++));
         LD(C, n);
         BC.lo(C);
@@ -95,13 +100,79 @@ void cpu::run() {
         RRCA();
         break;
 
-        /*
       case 0x10:
+        STOP();
         break;
 
       case 0x11:
-        ...
-        */
+        nn = make_u16(fetch(PC++));
+        LD(DE, nn);
+        break;
+
+      case 0x12:
+        LD(DE, A);
+        break;
+
+      case 0x13:
+        INC(DE);
+        break;
+
+      case 0x14:
+        INC(D);
+        DE.hi(D);
+        break;
+
+      case 0x15:
+        DEC(D);
+        DE.hi(D);
+        break;
+
+      case 0x16:
+        n = make_u8(fetch(PC++));
+        LD(D, n);
+        DE.hi(D);
+        break;
+
+      case 0x17:
+        RLA();
+        break;
+
+      case 0x18:
+        e = make_i8(fetch(PC++));
+        JR(e);
+        break;
+
+      case 0x19:
+        ADD(HL, DE);
+        break;
+
+      case 0x1A:
+        LD(A, DE);
+        break;
+
+      case 0x1B:
+        DEC(DE, /*dummy*/ 666);
+        break;
+
+      case 0x1C:
+        INC(E);
+        DE.lo(E);
+        break;
+
+      case 0x1D:
+        DEC(E);
+        DE.lo(E);
+        break;
+
+      case 0x1E:
+        n = make_u8(fetch(PC++));
+        LD(E, n);
+        DE.lo(E);
+        break;
+
+      case 0x1F:
+        RRA();
+
       default:;
     }
   }
