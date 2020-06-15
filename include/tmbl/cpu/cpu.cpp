@@ -4,12 +4,106 @@
 namespace tmbl::cpu {
 
 void cpu::run() {
-  for (;;) {
+  // clang-format off
+  auto make_i8 = [](byte b) -> i8 { return std::to_integer<i8>(b); };
+  auto make_u8 = [](byte b) -> u8 { return std::to_integer<unsigned>(b); };
+  auto make_u16 = [](byte b) -> u16 { return std::to_integer<unsigned>(b); };
+  // clang-format on
 
-    //    switch (byte addr = fetch(); decode(addr)) {
-    //    case 0x00:
-    //     NOP();
-    //   case 0x01:
+  u16 nn = 0;
+  u8 n = 0;
+
+  reg8 D, E;
+  reg8 B, C;
+  reg8 H, L;
+
+  for (;;) {
+    byte addr = fetch(PC++);
+
+    switch (u16 val = decode(addr); val) {
+      case 0x00:
+        NOP();
+        break;
+
+      case 0x01:
+        nn = make_u16(fetch(PC++));
+        LD(BC, nn);
+        break;
+
+      case 0x02:
+        LD(BC, A);
+        break;
+
+      case 0x03:
+        INC(BC);
+        break;
+
+      case 0x04:
+        B = BC.hi();
+        INC(B);
+        BC.hi(B);
+        break;
+
+      case 0x05:
+        B = BC.hi();
+        DEC(B);
+        BC.hi(B);
+        break;
+
+      case 0x06:
+        n = make_u8(fetch(PC++));
+        LD(B, n);
+        break;
+
+      case 0x07:
+        RLCA();
+        break;
+
+      case 0x08:
+        nn = make_u16(fetch(PC++));
+        LD(nn, SP);
+        break;
+
+      case 0x09:
+        ADD(HL, BC);
+        break;
+
+      case 0x0A:
+        LD(A, BC);
+        break;
+
+      case 0x0B:
+        DEC(BC, /*dummy*/ 666);
+        break;
+
+      case 0x0C:
+        INC(C);
+        break;
+
+      case 0x0D:
+        DEC(C);
+        break;
+
+      case 0x0E:
+        C = BC.lo();
+        n = make_u8(fetch(PC++));
+        LD(C, n);
+        BC.lo(C);
+        break;
+
+      case 0x0F:
+        RRCA();
+        break;
+
+        /*
+      case 0x10:
+        break;
+
+      case 0x11:
+        ...
+        */
+      default:;
+    }
   }
 }
 
@@ -79,12 +173,12 @@ void cpu::LD(const u16 nn, [[maybe_unused]] int dummy) noexcept {
 
 void cpu::LD(const u8 n, Orientation o) noexcept {
   switch (o) {
-  case Orientation::READ_FROM_IO_PORT:
-    A = m[u16(0xFF00 + n)];
-    break;
-  case Orientation::WRITE_TO_IO_PORT:
-    m[u16(0xFF00 + n)] = byte(A.value());
-    break;
+    case Orientation::READ_FROM_IO_PORT:
+      A = m[u16(0xFF00 + n)];
+      break;
+    case Orientation::WRITE_TO_IO_PORT:
+      m[u16(0xFF00 + n)] = byte(A.value());
+      break;
   }
 
   c.tick(3);
@@ -95,12 +189,12 @@ void cpu::LD(Orientation o) noexcept {
   u16 C_reg_val = std::to_integer<unsigned>(BC.lo());
 
   switch (o) {
-  case Orientation::READ_FROM_IO_PORT:
-    A = m[u16(0xFF00 + C_reg_val)];
-    break;
-  case Orientation::WRITE_TO_IO_PORT:
-    m[u16(0xFF00 + C_reg_val)] = byte(A.value());
-    break;
+    case Orientation::READ_FROM_IO_PORT:
+      A = m[u16(0xFF00 + C_reg_val)];
+      break;
+    case Orientation::WRITE_TO_IO_PORT:
+      m[u16(0xFF00 + C_reg_val)] = byte(A.value());
+      break;
   }
 
   c.tick(2);
@@ -113,7 +207,8 @@ void cpu::LD(const reg16 rr, const u8 n, [[maybe_unused]] int dummy) noexcept {
 }
 
 void cpu::LD(reg16 &rr, const u16 nn) noexcept {
-  rr = nn;
+  rr.lo(byte(nn & 0x00FFU));
+  rr.hi(byte((nn & 0xFF00U) >> 8));
 
   c.tick(3);
 }
@@ -130,6 +225,12 @@ void cpu::LD(const u8 i) noexcept {
   c.tick(3);
 }
 
+void cpu::LD(const u16 nn, const reg16 rr) noexcept {
+  m[nn] = rr.lo();
+  m[nn + 1] = rr.hi();
+
+  c.tick(5);
+}
 void cpu::PUSH(const reg16 rr) noexcept {
   m[SP - 1] = rr.lo();
   m[SP - 2] = rr.hi();
@@ -488,16 +589,21 @@ void cpu::INC(reg8 &r) noexcept {
   c.tick(1);
 }
 
-void cpu::INC(reg16 rr) noexcept {
+void cpu::INC() noexcept {
   F.N(reset);
 
-  u8 lower_nibble = std::to_integer<unsigned>(m[rr]) | (0b0000'1111U);
+  u8 lower_nibble = std::to_integer<unsigned>(m[HL]) | (0b0000'1111U);
 
   (lower_nibble == 0b0000'1111) ? F.H(set) : F.H(reset);
-  (std::to_integer<unsigned>(m[rr]) == 0b1111'1111) ? F.Z(set) : F.Z(reset);
+  (std::to_integer<unsigned>(m[HL]) == 0b1111'1111) ? F.Z(set) : F.Z(reset);
 
-  m[rr] = byte(std::to_integer<unsigned>(m[rr]) + 1);
+  m[HL] = byte(std::to_integer<unsigned>(m[HL]) + 1);
   c.tick(3);
+}
+
+void cpu::INC(reg16 &rr) noexcept {
+  rr = rr + 1;
+  c.tick(2);
 }
 
 void cpu::DEC(reg8 &r) noexcept {
@@ -510,7 +616,7 @@ void cpu::DEC(reg8 &r) noexcept {
   c.tick(1);
 }
 
-void cpu::DEC(reg16 rr) noexcept {
+void cpu::DEC(const reg16 rr) noexcept {
   F.N(set);
 
   u8 lower_nibble = std::to_integer<unsigned>(m[rr]) | (0b0000'1111U);
@@ -522,7 +628,7 @@ void cpu::DEC(reg16 rr) noexcept {
   c.tick(3);
 }
 
-void cpu::ADD(reg16 rr1, reg16 rr2) noexcept {
+void cpu::ADD(reg16 &rr1, const reg16 rr2) noexcept {
   F.N(reset);
 
   (rr1.value() + rr2.value() > reg16::max()) ? F.C(set) : F.C(reset);
@@ -1081,6 +1187,16 @@ void cpu::EI() noexcept {
   c.tick(1);
 }
 
+void cpu::HALT() noexcept {
+  // TODO: implement this
+  c.tick(1);
+}
+
+void cpu::STOP() noexcept {
+  // TODO: implement this
+  c.tick(1);
+}
+
 // extracted from libstd++ <bit>
 template <typename T> T cpu::rotl(T x, int s) noexcept {
   constexpr auto Nd = std::numeric_limits<T>::digits;
@@ -1105,6 +1221,9 @@ template <typename T> T cpu::rotr(T x, int s) noexcept {
     return (x << -r) | (x >> ((Nd + r) % Nd)); // rotl(x, -r)
   }
 }
+
+byte cpu::fetch(reg16 rr) { return m[rr]; }
+u16 cpu::decode(byte b) { return std::to_integer<u16>(b); }
 
 }
 

@@ -37,6 +37,7 @@ private:
   void LD(reg16 &rr, const u16 nn) noexcept;
   void LD() noexcept;
   void LD(const u8 i) noexcept;
+  void LD(const u16 nn, const reg16 rr) noexcept;
 
   void PUSH(const reg16 rr) noexcept;
   void POP(reg16 rr) noexcept;
@@ -74,12 +75,13 @@ private:
   void CP(const reg16 rr) noexcept;
 
   void INC(reg8 &r) noexcept;
-  void INC(const reg16 rr) noexcept;
+  void INC() noexcept;
+  void INC(reg16 &rr) noexcept;
 
   void DEC(reg8 &r) noexcept;
   void DEC(const reg16 rr) noexcept;
 
-  void ADD(reg16 rr1, reg16 rr2) noexcept;
+  void ADD(reg16 &rr1, const reg16 rr2) noexcept;
   void ADD(const u8 n, [[maybe_unused]] int dummy) noexcept;
 
   void INC(reg16 rr, [[maybe_unused]] int dummy) noexcept;
@@ -148,12 +150,15 @@ private:
   void DI() noexcept;
   void EI() noexcept;
 
+  void HALT() noexcept;
+  void STOP() noexcept;
+
   template <typename T> T rotl(T x, int s) noexcept;
   template <typename T> T rotr(T x, int s) noexcept;
 
 private:
-  byte fetch(reg16 rr) { return m[rr]; }
-  int decode(byte b) { return std::to_integer<int>(b); }
+  byte fetch(reg16 rr);
+  u16 decode(byte b);
 
 private:
   mutable reg16 PC;
