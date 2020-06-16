@@ -931,8 +931,246 @@ void cpu::run() {
         break;
 
       case 0xCB:
-        // TODO what is PREFIX instruction?
-        [[fallthrough]];
+        switch (decode(fetch(PC++))) {
+          case 0x00:
+            RLC(B);
+            BC.hi(B);
+            break;
+
+          case 0x01:
+            RLC(C);
+            BC.lo(C);
+            break;
+
+          case 0x02:
+            RLC(D);
+            DE.hi(D);
+            break;
+          case 0x03:
+            RLC(E);
+            DE.lo(E);
+            break;
+
+          case 0x04:
+            RLC(H);
+            HL.hi(H);
+            break;
+
+          case 0x05:
+            RLC(L);
+            HL.lo(L);
+            break;
+
+          case 0x06:
+            RLC(HL);
+            break;
+
+          case 0x07:
+            RLC(C);
+            BC.lo(C);
+            break;
+
+          case 0x08:
+            RRC(B);
+            BC.hi(B);
+            break;
+
+          case 0x09:
+            RRC(C);
+            BC.lo(C);
+            break;
+
+          case 0x0A:
+            RRC(D);
+            DE.hi(D);
+            break;
+
+          case 0x0B:
+            RRC(E);
+            DE.lo(E);
+            break;
+
+          case 0x0C:
+            RRC(H);
+            HL.hi(H);
+            break;
+
+          case 0x0D:
+            RRC(L);
+            HL.lo(L);
+            break;
+
+          case 0x0E:
+            RRC(HL);
+            break;
+
+          case 0x0F:
+            RRC(A);
+            AF.hi(A);
+            break;
+
+          case 0x10:
+            RL(B);
+            BC.hi(B);
+            break;
+
+          case 0x11:
+            RL(C);
+            BC.lo(C);
+            break;
+
+          case 0x12:
+            RL(D);
+            DE.hi(D);
+            break;
+
+          case 0x13:
+            RL(E);
+            DE.lo(E);
+            break;
+
+          case 0x14:
+            RL(H);
+            HL.hi(H);
+            break;
+          case 0x15:
+            RL(L);
+            HL.lo(L);
+            break;
+
+          case 0x16:
+            RL(HL);
+            break;
+
+          case 0x17:
+            RL(A);
+            AF.hi(A);
+            break;
+
+          case 0x18:
+            RR(B);
+            BC.hi(B);
+            break;
+
+          case 0x19:
+            RR(C);
+            BC.lo(C);
+            break;
+
+          case 0x1A:
+            RR(D);
+            DE.hi(D);
+            break;
+
+          case 0x1B:
+            RR(E);
+            DE.lo(E);
+            break;
+
+          case 0x1C:
+            RR(H);
+            HL.hi(H);
+            break;
+
+          case 0x1D:
+            RR(L);
+            HL.lo(L);
+            break;
+
+          case 0x1E:
+            RR(HL);
+            break;
+
+          case 0x1F:
+            RR(A);
+            AF.hi(A);
+            break;
+
+          case 0x20:
+            SLA(B);
+            BC.hi(B);
+            break;
+
+          case 0x21:
+            SLA(C);
+            BC.lo(C);
+            break;
+
+          case 0x22:
+            SLA(D);
+            DE.hi(D);
+            break;
+
+          case 0x23:
+            SLA(E);
+            DE.lo(E);
+            break;
+
+          case 0x24:
+            SLA(H);
+            HL.hi(H);
+            break;
+
+          case 0x25:
+            SLA(L);
+            HL.lo(L);
+            break;
+
+          case 0x26:
+            SLA(HL);
+            break;
+
+          case 0x27:
+            SLA(A);
+            AF.hi(A);
+            break;
+
+          case 0x28:
+            SRA(B);
+            BC.hi(B);
+            break;
+
+          case 0x29:
+            SRA(C);
+            BC.lo(C);
+            break;
+
+          case 0x2A:
+            SRA(D);
+            DE.hi(D);
+            break;
+
+          case 0x2B:
+            SRA(E);
+            DE.lo(E);
+            break;
+
+          case 0x2C:
+            SRA(H);
+            HL.hi(H);
+            break;
+
+          case 0x2D:
+            SRA(L);
+            HL.lo(L);
+            break;
+
+          case 0x2E:
+            SRA(HL);
+            break;
+
+          case 0x2F:
+            SRA(A);
+            AF.hi(A);
+            break;
+
+            /*
+          case 0x30:
+            break;
+            ...
+            case 0xFF
+            */
+        }
 
       case 0xCC:
         nn = make_u16(fetch(PC++), fetch(PC++));
@@ -1761,7 +1999,7 @@ void cpu::RRA() noexcept {
   c.tick(1);
 }
 
-void cpu::RLC(reg8 r) noexcept {
+void cpu::RLC(reg8 &r) noexcept {
   F.H(reset);
   F.N(reset);
 
@@ -1772,7 +2010,7 @@ void cpu::RLC(reg8 r) noexcept {
   c.tick(2);
 }
 
-void cpu::RLC(reg16 rr) noexcept {
+void cpu::RLC(const reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
@@ -1787,7 +2025,7 @@ void cpu::RLC(reg16 rr) noexcept {
   c.tick(4);
 }
 
-void cpu::RL(reg8 r) noexcept {
+void cpu::RL(reg8 &r) noexcept {
   F.H(reset);
   F.N(reset);
 
@@ -1803,7 +2041,7 @@ void cpu::RL(reg8 r) noexcept {
   c.tick(2);
 }
 
-void cpu::RL(reg16 rr) noexcept {
+void cpu::RL(const reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
@@ -1821,7 +2059,7 @@ void cpu::RL(reg16 rr) noexcept {
   c.tick(4);
 }
 
-void cpu::RRC(reg8 r) noexcept {
+void cpu::RRC(reg8 &r) noexcept {
   F.H(reset);
   F.N(reset);
 
@@ -1832,7 +2070,7 @@ void cpu::RRC(reg8 r) noexcept {
   c.tick(2);
 }
 
-void cpu::RRC(reg16 rr) noexcept {
+void cpu::RRC(const reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
@@ -1848,7 +2086,7 @@ void cpu::RRC(reg16 rr) noexcept {
   c.tick(4);
 }
 
-void cpu::RR(reg8 r) noexcept {
+void cpu::RR(reg8 &r) noexcept {
   F.H(reset);
   F.N(reset);
 
@@ -1864,7 +2102,7 @@ void cpu::RR(reg8 r) noexcept {
   c.tick(2);
 }
 
-void cpu::RR(reg16 rr) noexcept {
+void cpu::RR(const reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
@@ -1883,7 +2121,7 @@ void cpu::RR(reg16 rr) noexcept {
   c.tick(4);
 }
 
-void cpu::SLA(reg8 r) noexcept {
+void cpu::SLA(reg8 &r) noexcept {
   F.H(reset);
   F.N(reset);
 
@@ -1894,7 +2132,7 @@ void cpu::SLA(reg8 r) noexcept {
   c.tick(2);
 }
 
-void cpu::SLA(reg16 rr) noexcept {
+void cpu::SLA(const reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
@@ -1908,7 +2146,7 @@ void cpu::SLA(reg16 rr) noexcept {
   c.tick(4);
 }
 
-void cpu::SRA(reg8 r) noexcept {
+void cpu::SRA(reg8 &r) noexcept {
   F.H(reset);
   F.N(reset);
 
@@ -1922,7 +2160,7 @@ void cpu::SRA(reg8 r) noexcept {
   c.tick(2);
 }
 
-void cpu::SRA(reg16 rr) noexcept {
+void cpu::SRA(const reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
@@ -1938,7 +2176,7 @@ void cpu::SRA(reg16 rr) noexcept {
   c.tick(4);
 }
 
-void cpu::SRL(reg8 r) noexcept {
+void cpu::SRL(reg8 &r) noexcept {
   F.H(reset);
   F.N(reset);
 
@@ -1949,7 +2187,7 @@ void cpu::SRL(reg8 r) noexcept {
   c.tick(2);
 }
 
-void cpu::SRL(reg16 rr) noexcept {
+void cpu::SRL(const reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
@@ -1975,7 +2213,7 @@ void cpu::SWAP(reg8 &r) noexcept {
   c.tick(2);
 }
 
-void cpu::SWAP(reg16 &rr) noexcept {
+void cpu::SWAP(const reg16 rr) noexcept {
   F.C(reset);
   F.H(reset);
   F.N(reset);
@@ -1987,7 +2225,7 @@ void cpu::SWAP(reg16 &rr) noexcept {
   c.tick(4);
 }
 
-void cpu::BIT(reg8 r, u8 pos) {
+void cpu::BIT(const reg8 r, const u8 pos) {
   F.H(set);
   F.N(reset);
 
@@ -1996,7 +2234,7 @@ void cpu::BIT(reg8 r, u8 pos) {
   c.tick(2);
 }
 
-void cpu::BIT(reg16 rr, u8 pos) {
+void cpu::BIT(const reg16 rr, const u8 pos) {
   F.H(set);
   F.N(reset);
 
@@ -2008,7 +2246,7 @@ void cpu::BIT(reg16 rr, u8 pos) {
   c.tick(3);
 }
 
-void cpu::SET(reg8 &r, u8 pos) {
+void cpu::SET(reg8 &r, const u8 pos) {
   if (pos < 0 || pos > 7) {
     throw std::out_of_range("reg8");
   }
@@ -2020,7 +2258,7 @@ void cpu::SET(reg8 &r, u8 pos) {
   c.tick(2);
 }
 
-void cpu::SET(reg16 rr, u8 pos) {
+void cpu::SET(const reg16 rr, const u8 pos) {
   if (pos < 0 || pos > 7) {
     throw std::out_of_range("reg8");
   }
@@ -2030,7 +2268,7 @@ void cpu::SET(reg16 rr, u8 pos) {
   c.tick(4);
 }
 
-void cpu::RES(reg8 &r, u8 pos) {
+void cpu::RES(reg8 &r, const u8 pos) {
   if (pos < 0 || pos > 7) {
     throw std::out_of_range("reg8");
   }
@@ -2040,7 +2278,7 @@ void cpu::RES(reg8 &r, u8 pos) {
   c.tick(2);
 }
 
-void cpu::RES(reg16 rr, u8 pos) {
+void cpu::RES(const reg16 rr, const u8 pos) {
   if (pos < 0 || pos > 7) {
     throw std::out_of_range("reg8");
   }
@@ -2050,13 +2288,13 @@ void cpu::RES(reg16 rr, u8 pos) {
   c.tick(4);
 }
 
-void cpu::JP(u16 nn) noexcept {
+void cpu::JP(const u16 nn) noexcept {
   PC = nn;
 
   c.tick(4);
 }
 
-void cpu::JP(u8 cc, u16 nn) noexcept {
+void cpu::JP(const u8 cc, const u16 nn) noexcept {
   if ((cc == 0 && !F.Z()) || (cc == 1 && F.Z()) || (cc == 2 && !F.C()) || (cc == 3 && F.C())) {
     PC = nn;
     c.tick(4);
@@ -2065,19 +2303,19 @@ void cpu::JP(u8 cc, u16 nn) noexcept {
   }
 }
 
-void cpu::JP(reg16 rr) noexcept {
+void cpu::JP(const reg16 rr) noexcept {
   PC = rr;
 
   c.tick(1);
 }
 
-void cpu::JR(i8 e) noexcept {
+void cpu::JR(const i8 e) noexcept {
   PC += e;
 
   c.tick(3);
 }
 
-void cpu::JR(u8 cc, i8 e) noexcept {
+void cpu::JR(const u8 cc, const i8 e) noexcept {
   if ((cc == 0 && !F.Z()) || (cc == 1 && F.Z()) || (cc == 2 && !F.C()) || (cc == 3 && F.C())) {
     PC += e;
     c.tick(3);
@@ -2086,7 +2324,7 @@ void cpu::JR(u8 cc, i8 e) noexcept {
   }
 }
 
-void cpu::CALL(u16 nn) noexcept {
+void cpu::CALL(const u16 nn) noexcept {
   m[SP - 1] = PC.hi();
   m[SP - 2] = PC.lo();
   PC = nn;
@@ -2095,7 +2333,7 @@ void cpu::CALL(u16 nn) noexcept {
   c.tick(6);
 }
 
-void cpu::CALL(u8 cc, u16 nn) noexcept {
+void cpu::CALL(const u8 cc, const u16 nn) noexcept {
   if ((cc == 0 && !F.Z()) || (cc == 1 && F.Z()) || (cc == 2 && !F.C()) || (cc == 3 && F.C())) {
     m[SP - 1] = PC.hi();
     m[SP - 2] = PC.lo();
@@ -2126,7 +2364,7 @@ void cpu::RETI() noexcept {
   c.tick(4);
 }
 
-void cpu::RET(u8 cc) noexcept {
+void cpu::RET(const u8 cc) noexcept {
   if ((cc == 0 && !F.Z()) || (cc == 1 && F.Z()) || (cc == 2 && !F.C()) || (cc == 3 && F.C())) {
     PC.lo(m[SP]);
     PC.hi(m[SP + 1]);
@@ -2138,7 +2376,7 @@ void cpu::RET(u8 cc) noexcept {
   }
 }
 
-void cpu::RST(u8 t) noexcept {
+void cpu::RST(const u8 t) noexcept {
   m[SP - 1] = PC.hi();
   m[SP - 2] = PC.lo();
   SP = SP - 2;

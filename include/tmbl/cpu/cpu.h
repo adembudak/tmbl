@@ -92,54 +92,54 @@ private:
   void RRCA() noexcept;
   void RRA() noexcept;
 
-  void RLC(reg8 r) noexcept;
-  void RLC(reg16 rr) noexcept;
+  void RLC(reg8 &r) noexcept;
+  void RLC(const reg16 rr) noexcept;
 
-  void RL(reg8 r) noexcept;
-  void RL(reg16 rr) noexcept;
+  void RL(reg8 &r) noexcept;
+  void RL(const reg16 rr) noexcept;
 
-  void RRC(reg8 r) noexcept;
-  void RRC(reg16 rr) noexcept;
+  void RRC(reg8 &r) noexcept;
+  void RRC(const reg16 rr) noexcept;
 
-  void RR(reg8 r) noexcept;
-  void RR(reg16 rr) noexcept;
+  void RR(reg8 &r) noexcept;
+  void RR(const reg16 rr) noexcept;
 
-  void SLA(reg8 r) noexcept;
-  void SLA(reg16 rr) noexcept;
+  void SLA(reg8 &r) noexcept;
+  void SLA(const reg16 rr) noexcept;
 
-  void SRA(reg8 r) noexcept;
-  void SRA(reg16 rr) noexcept;
+  void SRA(reg8 &r) noexcept;
+  void SRA(const reg16 rr) noexcept;
 
-  void SRL(reg8 r) noexcept;
-  void SRL(reg16 rr) noexcept;
+  void SRL(reg8 &r) noexcept;
+  void SRL(const reg16 rr) noexcept;
 
   void SWAP(reg8 &r) noexcept;
-  void SWAP(reg16 &rr) noexcept;
+  void SWAP(const reg16 rr) noexcept;
 
-  void BIT(reg8 r, u8 pos);
-  void BIT(reg16 rr, u8 pos);
+  void BIT(const reg8 r, const u8 pos);
+  void BIT(const reg16 rr, const u8 pos);
 
-  void SET(reg8 &r, u8 pos);
-  void SET(reg16 rr, u8 pos);
+  void SET(reg8 &r, const u8 pos);
+  void SET(const reg16 rr, const u8 pos);
 
-  void RES(reg8 &r, u8 pos);
-  void RES(reg16 rr, u8 pos);
+  void RES(reg8 &r, const u8 pos);
+  void RES(const reg16 rr, const u8 pos);
 
-  void JP(u16 nn) noexcept;
-  void JP(u8 cc, u16 nn) noexcept;
-  void JP(reg16 rr) noexcept;
+  void JP(const u16 nn) noexcept;
+  void JP(const u8 cc, const u16 nn) noexcept;
+  void JP(const reg16 rr) noexcept;
 
-  void JR(i8 e) noexcept;
-  void JR(u8 cc, i8 e) noexcept;
+  void JR(const i8 e) noexcept;
+  void JR(const u8 cc, const i8 e) noexcept;
 
-  void CALL(u16 nn) noexcept;
-  void CALL(u8 cc, u16 nn) noexcept;
+  void CALL(const u16 nn) noexcept;
+  void CALL(const u8 cc, const u16 nn) noexcept;
 
   void RET() noexcept;
   void RETI() noexcept;
-  void RET(u8 cc) noexcept;
+  void RET(const u8 cc) noexcept;
 
-  void RST(u8 t) noexcept;
+  void RST(const u8 t) noexcept;
 
   void DAA() noexcept;
   void CPL() noexcept;
