@@ -5,9 +5,9 @@ namespace tmbl::cpu {
 
 void cpu::run() {
   // clang-format off
-  auto make_i8 = [](byte b) -> i8 { return std::to_integer<i8>(b); };
-  auto make_u8 = [](byte b) -> u8 { return std::to_integer<unsigned>(b); };
-  auto make_u16 = [](byte b) -> u16 { return std::to_integer<unsigned>(b); };
+  auto make_i8 = [](const byte b) -> i8 { return std::to_integer<i8>(b); };
+  auto make_u8 = [](const byte b) -> u8 { return std::to_integer<unsigned>(b); };
+  auto make_u16 = [](const byte l, const byte u) -> u16 { return std::to_integer<unsigned>((u << 8) | l);};
   // clang-format on
 
   u16 nn = 0;
@@ -36,7 +36,7 @@ void cpu::run() {
         break;
 
       case 0x01:
-        nn = make_u16(fetch(PC++));
+        nn = make_u16(fetch(PC++), fetch(PC++));
         LD(BC, nn);
         break;
 
@@ -69,7 +69,7 @@ void cpu::run() {
         break;
 
       case 0x08:
-        nn = make_u16(fetch(PC++));
+        nn = make_u16(fetch(PC++), fetch(PC++));
         LD(nn, SP);
         break;
 
@@ -109,7 +109,7 @@ void cpu::run() {
         break;
 
       case 0x11:
-        nn = make_u16(fetch(PC++));
+        nn = make_u16(fetch(PC++), fetch(PC++));
         LD(DE, nn);
         break;
 
@@ -183,7 +183,7 @@ void cpu::run() {
         break;
 
       case 0x21:
-        nn = make_u16(fetch(PC++));
+        nn = make_u16(fetch(PC++), fetch(PC++));
         LD(HL, nn);
         break;
 
@@ -257,7 +257,7 @@ void cpu::run() {
         break;
 
       case 0x31:
-        nn = make_u16(fetch(PC++));
+        nn = make_u16(fetch(PC++), fetch(PC++));
         LD(SP, nn);
         break;
 
@@ -890,17 +890,17 @@ void cpu::run() {
         break;
 
       case 0xC2:
-        nn = make_u16(fetch(PC++));
-        JP(0, nn);
+        nn = make_u16(fetch(PC++), fetch(PC++));
+        JP(/*NZ*/ 0, nn);
         break;
 
       case 0xC3:
-        nn = make_u16(fetch(PC++));
+        nn = make_u16(fetch(PC++), fetch(PC++));
         JP(nn);
         break;
 
       case 0xC4:
-        nn = make_u16(fetch(PC++));
+        nn = make_u16(fetch(PC++), fetch(PC++));
         CALL(0, nn);
         break;
 
@@ -926,7 +926,7 @@ void cpu::run() {
         break;
 
       case 0xCA:
-        nn = make_u16(fetch(PC++));
+        nn = make_u16(fetch(PC++), fetch(PC++));
         JP(/*Z*/ 1, nn);
         break;
 
@@ -935,12 +935,12 @@ void cpu::run() {
         [[fallthrough]];
 
       case 0xCC:
-        nn = make_u16(fetch(PC++));
+        nn = make_u16(fetch(PC++), fetch(PC++));
         CALL(/*Z*/ 1, nn);
         break;
 
       case 0xCD:
-        nn = make_u16(fetch(PC++));
+        nn = make_u16(fetch(PC++), fetch(PC++));
         CALL(nn);
         break;
 
@@ -962,7 +962,7 @@ void cpu::run() {
         break;
 
       case 0xD2:
-        nn = make_u16(fetch(PC++));
+        nn = make_u16(fetch(PC++), fetch(PC++));
         JP(10, nn);
         break;
 
@@ -970,7 +970,7 @@ void cpu::run() {
         break;
 
       case 0xD4:
-        nn = make_u16(fetch(PC++));
+        nn = make_u16(fetch(PC++), fetch(PC++));
         CALL(10, nn);
         break;
 
@@ -996,7 +996,7 @@ void cpu::run() {
         break;
 
       case 0xDA:
-        nn = make_u16(fetch(PC++));
+        nn = make_u16(fetch(PC++), fetch(PC++));
         JP(/*C*/ 11, nn);
         break;
 
@@ -1004,7 +1004,7 @@ void cpu::run() {
         break;
 
       case 0xDC:
-        nn = make_u16(fetch(PC++));
+        nn = make_u16(fetch(PC++), fetch(PC++));
         CALL(/*C*/ 11, nn);
         break;
 
@@ -1062,7 +1062,7 @@ void cpu::run() {
         break;
 
       case 0xEA:
-        nn = make_u16(fetch(PC++));
+        nn = make_u16(fetch(PC++), fetch(PC++));
         LD(nn);
         break;
 
@@ -1131,7 +1131,7 @@ void cpu::run() {
         break;
 
       case 0xFA:
-        nn = make_u16(fetch(PC++));
+        nn = make_u16(fetch(PC++), fetch(PC++));
         LD(nn, /*dummy*/ 666);
         break;
 
