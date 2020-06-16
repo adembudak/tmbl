@@ -1164,9 +1164,388 @@ void cpu::run() {
             AF.hi(A);
             break;
 
-            /*
           case 0x30:
+            SWAP(B);
+            BC.hi(B);
             break;
+
+          case 0x31:
+            SWAP(C);
+            BC.lo(C);
+            break;
+
+          case 0x32:
+            SWAP(D);
+            DE.hi(D);
+            break;
+
+          case 0x33:
+            SWAP(E);
+            DE.lo(E);
+            break;
+
+          case 0x34:
+            SWAP(H);
+            HL.hi(H);
+            break;
+
+          case 0x35:
+            SWAP(L);
+            HL.lo(L);
+            break;
+
+          case 0x36:
+            SWAP(HL);
+            break;
+
+          case 0x37:
+            SWAP(A);
+            break;
+
+          case 0x38:
+            SRL(B);
+            BC.hi(B);
+            break;
+
+          case 0x39:
+            SRL(C);
+            BC.lo(C);
+            break;
+
+          case 0x3A:
+            SRL(D);
+            DE.hi(D);
+            break;
+
+          case 0x3B:
+            SRL(E);
+            DE.lo(E);
+            break;
+
+          case 0x3C:
+            SRL(H);
+            HL.hi(H);
+            break;
+
+          case 0x3D:
+            SRL(L);
+            HL.lo(L);
+            break;
+
+          case 0x3E:
+            SRL(HL);
+            break;
+
+          case 0x3F:
+            SRL(A);
+            break;
+
+          case 0x40:
+            BIT(B, 0);
+            BC.hi(B);
+            break;
+
+          case 0x41:
+            BIT(C, 0);
+            BC.lo(C);
+            break;
+
+          case 0x42:
+            BIT(D, 0);
+            DE.hi(D);
+            break;
+
+          case 0x43:
+            BIT(E, 0);
+            DE.lo(E);
+            break;
+
+          case 0x44:
+            BIT(H, 0);
+            HL.hi(H);
+            break;
+
+          case 0x45:
+            BIT(L, 0);
+            HL.lo(L);
+            break;
+
+          case 0x46:
+            BIT(HL, 0);
+            break;
+
+          case 0x47:
+            BIT(A, 0);
+            break;
+
+          case 0x48:
+            BIT(B, 1);
+            BC.hi(B);
+            break;
+
+          case 0x49:
+            BIT(C, 1);
+            BC.lo(C);
+            break;
+
+          case 0x4A:
+            BIT(D, 1);
+            DE.hi(D);
+            break;
+
+          case 0x4B:
+            BIT(E, 1);
+            DE.lo(E);
+            break;
+
+          case 0x4C:
+            BIT(H, 1);
+            HL.hi(H);
+            break;
+
+          case 0x4D:
+            BIT(L, 1);
+            HL.lo(L);
+            break;
+
+          case 0x4E:
+            BIT(HL, 1);
+            break;
+
+          case 0x4F:
+            BIT(A, 1);
+            break;
+
+          case 0x50:
+            BIT(B, 2);
+            BC.hi(B);
+            break;
+
+          case 0x51:
+            BIT(C, 2);
+            BC.lo(C);
+            break;
+
+          case 0x52:
+            BIT(D, 2);
+            DE.hi(D);
+            break;
+
+          case 0x53:
+            BIT(E, 2);
+            DE.lo(E);
+            break;
+
+          case 0x54:
+            BIT(H, 2);
+            HL.hi(H);
+            break;
+
+          case 0x55:
+            BIT(L, 2);
+            HL.lo(L);
+            break;
+
+          case 0x56:
+            BIT(HL, 2);
+            break;
+
+          case 0x57:
+            BIT(A, 2);
+            break;
+
+          case 0x58:
+            BIT(B, 3);
+            BC.hi(B);
+            break;
+
+          case 0x59:
+            BIT(C, 3);
+            BC.lo(C);
+            break;
+
+          case 0x5A:
+            BIT(D, 3);
+            DE.hi(D);
+            break;
+
+          case 0x5B:
+            BIT(E, 3);
+            DE.lo(E);
+            break;
+
+          case 0x5C:
+            BIT(H, 3);
+            HL.hi(H);
+            break;
+
+          case 0x5D:
+            BIT(L, 3);
+            HL.lo(L);
+            break;
+
+          case 0x5E:
+            BIT(HL, 3);
+            break;
+
+          case 0x5F:
+            BIT(A, 3);
+            break;
+
+          case 0x60:
+            BIT(B, 4);
+            BC.hi(B);
+            break;
+
+          case 0x61:
+            BIT(C, 4);
+            BC.lo(C);
+            break;
+
+          case 0x62:
+            BIT(D, 4);
+            DE.hi(D);
+            break;
+
+          case 0x63:
+            BIT(E, 4);
+            DE.lo(E);
+            break;
+
+          case 0x64:
+            BIT(H, 4);
+            HL.hi(H);
+            break;
+
+          case 0x65:
+            BIT(L, 4);
+            HL.lo(L);
+            break;
+
+          case 0x66:
+            BIT(HL, 4);
+            break;
+
+          case 0x67:
+            BIT(A, 4);
+            break;
+
+          case 0x68:
+            BIT(B, 5);
+            BC.hi(B);
+            break;
+
+          case 0x69:
+            BIT(C, 5);
+            BC.lo(C);
+            break;
+
+          case 0x6A:
+            BIT(D, 5);
+            DE.hi(D);
+            break;
+
+          case 0x6B:
+            BIT(E, 5);
+            DE.lo(E);
+            break;
+
+          case 0x6C:
+            BIT(H, 5);
+            HL.hi(H);
+            break;
+
+          case 0x6D:
+            BIT(L, 5);
+            HL.lo(L);
+            break;
+
+          case 0x6E:
+            BIT(HL, 5);
+            break;
+
+          case 0x6F:
+            BIT(A, 5);
+            break;
+
+          case 0x70:
+            BIT(B, 6);
+            BC.hi(B);
+            break;
+
+          case 0x71:
+            BIT(C, 6);
+            BC.lo(C);
+            break;
+
+          case 0x72:
+            BIT(D, 6);
+            DE.hi(D);
+            break;
+
+          case 0x73:
+            BIT(E, 6);
+            DE.lo(E);
+            break;
+
+          case 0x74:
+            BIT(H, 6);
+            HL.hi(H);
+            break;
+
+          case 0x75:
+            BIT(L, 6);
+            HL.lo(L);
+            break;
+
+          case 0x76:
+            BIT(HL, 6);
+            break;
+
+          case 0x77:
+            BIT(A, 6);
+            break;
+
+          case 0x78:
+            BIT(B, 7);
+            BC.hi(B);
+            break;
+
+          case 0x79:
+            BIT(C, 7);
+            BC.lo(C);
+            break;
+
+          case 0x7A:
+            BIT(D, 7);
+            DE.hi(D);
+            break;
+
+          case 0x7B:
+            BIT(E, 7);
+            DE.lo(E);
+            break;
+
+          case 0x7C:
+            BIT(H, 7);
+            HL.hi(H);
+            break;
+
+          case 0x7D:
+            BIT(L, 7);
+            HL.lo(L);
+            break;
+
+          case 0x7E:
+            BIT(HL, 7);
+            break;
+
+          case 0x7F:
+            BIT(A, 7);
+            break;
+
+            /*
+             *
             ...
             case 0xFF
             */
