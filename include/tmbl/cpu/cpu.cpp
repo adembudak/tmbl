@@ -1544,11 +1544,613 @@ void cpu::run() {
             BIT(A, 7);
             break;
 
-            /*
-             *
-            ...
-            case 0xFF
-            */
+          case 0x80:
+            RES(B, 0);
+            BC.hi(B);
+            break;
+
+          case 0x81:
+            RES(C, 0);
+            BC.lo(C);
+            break;
+
+          case 0x82:
+            RES(D, 0);
+            DE.hi(D);
+            break;
+
+          case 0x83:
+            RES(E, 0);
+            DE.lo(E);
+            break;
+
+          case 0x84:
+            RES(H, 0);
+            HL.hi(H);
+            break;
+
+          case 0x85:
+            RES(L, 0);
+            HL.lo(L);
+            break;
+
+          case 0x86:
+            RES(HL, 0);
+            break;
+
+          case 0x87:
+            RES(A, 0);
+            break;
+
+          case 0x88:
+            RES(B, 1);
+            BC.hi(B);
+            break;
+
+          case 0x89:
+            RES(C, 1);
+            BC.lo(C);
+            break;
+
+          case 0x8A:
+            RES(D, 1);
+            DE.hi(D);
+            break;
+
+          case 0x8B:
+            RES(E, 1);
+            DE.lo(E);
+            break;
+
+          case 0x8C:
+            RES(H, 1);
+            HL.hi(H);
+            break;
+
+          case 0x8D:
+            RES(L, 1);
+            HL.lo(L);
+            break;
+
+          case 0x8E:
+            RES(HL, 1);
+            break;
+
+          case 0x8F:
+            RES(A, 1);
+            break;
+
+          case 0x90:
+            RES(B, 2);
+            BC.hi(B);
+            break;
+
+          case 0x91:
+            RES(C, 2);
+            BC.lo(C);
+            break;
+
+          case 0x92:
+            RES(D, 2);
+            DE.hi(D);
+            break;
+
+          case 0x93:
+            RES(E, 2);
+            DE.lo(E);
+            break;
+
+          case 0x94:
+            RES(H, 2);
+            HL.hi(H);
+            break;
+
+          case 0x95:
+            RES(L, 2);
+            HL.lo(L);
+            break;
+
+          case 0x96:
+            RES(HL, 2);
+            break;
+
+          case 0x97:
+            RES(A, 2);
+            break;
+
+          case 0x98:
+            RES(B, 3);
+            BC.hi(B);
+            break;
+
+          case 0x99:
+            RES(C, 3);
+            BC.lo(C);
+            break;
+
+          case 0x9A:
+            RES(D, 3);
+            DE.hi(D);
+            break;
+
+          case 0x9B:
+            RES(E, 3);
+            DE.lo(E);
+            break;
+
+          case 0x9C:
+            RES(H, 2);
+            HL.hi(H);
+            break;
+
+          case 0x9D:
+            RES(L, 3);
+            HL.lo(L);
+            break;
+
+          case 0x9E:
+            RES(HL, 3);
+            break;
+
+          case 0x9F:
+            RES(A, 3);
+            break;
+
+          case 0xA0:
+            RES(B, 4);
+            BC.hi(B);
+            break;
+
+          case 0xA1:
+            RES(C, 4);
+            BC.lo(C);
+            break;
+
+          case 0xA2:
+            RES(D, 4);
+            DE.hi(D);
+            break;
+
+          case 0xA3:
+            RES(E, 4);
+            DE.lo(E);
+            break;
+
+          case 0xA4:
+            RES(H, 4);
+            HL.hi(H);
+            break;
+
+          case 0xA5:
+            RES(L, 4);
+            HL.lo(L);
+            break;
+
+          case 0xA6:
+            RES(HL, 4);
+            break;
+
+          case 0xA7:
+            RES(A, 4);
+            break;
+
+          case 0xA8:
+            RES(B, 5);
+            BC.hi(B);
+            break;
+
+          case 0xA9:
+            RES(C, 5);
+            BC.lo(C);
+            break;
+
+          case 0xAA:
+            RES(D, 5);
+            DE.hi(D);
+            break;
+
+          case 0xAB:
+            RES(E, 5);
+            DE.lo(E);
+            break;
+
+          case 0xAC:
+            RES(H, 5);
+            HL.hi(H);
+            break;
+
+          case 0xAD:
+            RES(L, 5);
+            HL.lo(L);
+            break;
+
+          case 0xAE:
+            RES(HL, 5);
+            break;
+
+          case 0xAF:
+            RES(A, 5);
+            break;
+
+          case 0xB0:
+            RES(B, 6);
+            BC.hi(B);
+            break;
+
+          case 0xB1:
+            RES(C, 6);
+            BC.lo(C);
+            break;
+
+          case 0xB2:
+            RES(D, 6);
+            DE.hi(D);
+            break;
+
+          case 0xB3:
+            RES(E, 6);
+            DE.lo(E);
+            break;
+
+          case 0xB4:
+            RES(H, 6);
+            HL.hi(H);
+            break;
+
+          case 0xB5:
+            RES(L, 6);
+            HL.lo(L);
+            break;
+
+          case 0xB6:
+            RES(HL, 6);
+            break;
+
+          case 0xB7:
+            RES(A, 6);
+            break;
+
+          case 0xB8:
+            RES(B, 7);
+            BC.hi(B);
+            break;
+
+          case 0xB9:
+            RES(C, 7);
+            BC.lo(C);
+            break;
+
+          case 0xBA:
+            RES(D, 7);
+            DE.hi(D);
+            break;
+
+          case 0xBB:
+            RES(E, 7);
+            DE.lo(E);
+            break;
+
+          case 0xBC:
+            RES(H, 7);
+            HL.hi(H);
+            break;
+
+          case 0xBD:
+            RES(L, 7);
+            HL.lo(L);
+            break;
+
+          case 0xBE:
+            RES(HL, 7);
+            break;
+
+          case 0xBF:
+            RES(A, 7);
+            break;
+
+          case 0xC0:
+            SET(B, 0);
+            BC.hi(B);
+            break;
+
+          case 0xC1:
+            SET(C, 0);
+            BC.lo(C);
+            break;
+
+          case 0xC2:
+            SET(D, 0);
+            DE.hi(D);
+            break;
+
+          case 0xC3:
+            SET(E, 0);
+            DE.lo(E);
+            break;
+
+          case 0xC4:
+            SET(H, 0);
+            HL.hi(H);
+            break;
+
+          case 0xC5:
+            SET(L, 0);
+            HL.lo(L);
+            break;
+
+          case 0xC6:
+            SET(HL, 0);
+            break;
+
+          case 0xC7:
+            SET(A, 0);
+            break;
+
+          case 0xC8:
+            SET(B, 1);
+            BC.hi(B);
+            break;
+
+          case 0xC9:
+            SET(C, 1);
+            BC.lo(C);
+            break;
+
+          case 0xCA:
+            SET(D, 1);
+            DE.hi(D);
+            break;
+
+          case 0xCB:
+            SET(E, 1);
+            DE.lo(E);
+            break;
+
+          case 0xCC:
+            SET(H, 1);
+            HL.hi(H);
+            break;
+
+          case 0xCD:
+            SET(L, 1);
+            HL.lo(L);
+            break;
+
+          case 0xCE:
+            SET(HL, 1);
+            break;
+
+          case 0xCF:
+            SET(A, 1);
+            break;
+
+          case 0xD0:
+            SET(B, 2);
+            BC.hi(B);
+            break;
+
+          case 0xD1:
+            SET(C, 2);
+            BC.lo(C);
+            break;
+
+          case 0xD2:
+            SET(D, 2);
+            DE.hi(D);
+            break;
+
+          case 0xD3:
+            SET(E, 2);
+            DE.lo(E);
+            break;
+
+          case 0xD4:
+            SET(H, 2);
+            HL.hi(H);
+            break;
+
+          case 0xD5:
+            SET(L, 2);
+            HL.lo(L);
+            break;
+
+          case 0xD6:
+            SET(HL, 2);
+            break;
+
+          case 0xD7:
+            SET(A, 2);
+            break;
+
+          case 0xD8:
+            SET(B, 3);
+            BC.hi(B);
+            break;
+
+          case 0xD9:
+            SET(C, 3);
+            BC.lo(C);
+            break;
+
+          case 0xDA:
+            SET(D, 3);
+            DE.hi(D);
+            break;
+
+          case 0xDB:
+            SET(E, 3);
+            DE.lo(E);
+            break;
+
+          case 0xDC:
+            SET(H, 3);
+            HL.hi(H);
+            break;
+
+          case 0xDD:
+            SET(L, 3);
+            HL.lo(L);
+            break;
+
+          case 0xDE:
+            SET(HL, 3);
+            break;
+
+          case 0xDF:
+            SET(A, 3);
+            break;
+
+          case 0xE0:
+            SET(B, 4);
+            BC.hi(B);
+            break;
+
+          case 0xE1:
+            SET(C, 4);
+            BC.lo(C);
+            break;
+
+          case 0xE2:
+            SET(D, 4);
+            DE.hi(D);
+            break;
+
+          case 0xE3:
+            SET(E, 4);
+            DE.lo(E);
+            break;
+
+          case 0xE4:
+            SET(H, 4);
+            HL.hi(H);
+            break;
+
+          case 0xE5:
+            SET(L, 4);
+            HL.lo(L);
+            break;
+
+          case 0xE6:
+            SET(HL, 4);
+            break;
+
+          case 0xE7:
+            SET(A, 4);
+            break;
+
+          case 0xE8:
+            SET(B, 5);
+            BC.hi(B);
+            break;
+
+          case 0xE9:
+            SET(C, 5);
+            BC.lo(C);
+            break;
+
+          case 0xEA:
+            SET(D, 5);
+            DE.hi(D);
+            break;
+
+          case 0xEB:
+            SET(E, 5);
+            DE.lo(E);
+            break;
+
+          case 0xEC:
+            SET(H, 5);
+            HL.hi(H);
+            break;
+
+          case 0xED:
+            SET(L, 5);
+            HL.lo(L);
+            break;
+
+          case 0xEE:
+            SET(HL, 5);
+            break;
+
+          case 0xEF:
+            SET(A, 5);
+            break;
+
+          case 0xF0:
+            SET(B, 6);
+            BC.hi(B);
+            break;
+
+          case 0xF1:
+            SET(C, 6);
+            BC.lo(C);
+            break;
+
+          case 0xF2:
+            SET(D, 6);
+            DE.hi(D);
+            break;
+
+          case 0xF3:
+            SET(E, 6);
+            DE.lo(E);
+            break;
+
+          case 0xF4:
+            SET(H, 6);
+            HL.hi(H);
+            break;
+
+          case 0xF5:
+            SET(L, 6);
+            HL.lo(L);
+            break;
+
+          case 0xF6:
+            SET(HL, 6);
+            break;
+
+          case 0xF7:
+            SET(A, 6);
+            break;
+
+          case 0xF8:
+            SET(B, 7);
+            BC.hi(B);
+            break;
+
+          case 0xF9:
+            SET(C, 7);
+            BC.lo(C);
+            break;
+
+          case 0xFA:
+            SET(D, 7);
+            DE.hi(D);
+            break;
+
+          case 0xFB:
+            SET(E, 7);
+            DE.lo(E);
+            break;
+
+          case 0xFC:
+            SET(H, 7);
+            HL.hi(H);
+            break;
+
+          case 0xFD:
+            SET(L, 7);
+            HL.lo(L);
+            break;
+
+          case 0xFE:
+            SET(HL, 7);
+            break;
+
+          case 0xFF:
+            SET(A, 7);
+            break;
         }
 
       case 0xCC:
@@ -2887,4 +3489,3 @@ template <typename T> T cpu::rotr(T x, int s) noexcept {
 byte cpu::fetch(reg16 rr) { return m[rr]; }
 u16 cpu::decode(byte b) { return std::to_integer<u16>(b); }
 }
-
