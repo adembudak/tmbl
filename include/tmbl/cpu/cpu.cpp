@@ -2415,15 +2415,15 @@ void cpu::LDi([[maybe_unused]] int dummy) noexcept {
 }
 
 void cpu::LDd() noexcept {
-  m[HL] = byte(A.value());
   HL -= 1;
+  m[HL] = byte(A.value());
 
   c.tick(2);
 }
 
 void cpu::LDd([[maybe_unused]] int dummy) noexcept {
-  A = m[HL];
   HL -= 1;
+  A = m[HL];
 
   c.tick(2);
 }
