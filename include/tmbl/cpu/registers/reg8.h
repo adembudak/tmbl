@@ -30,7 +30,6 @@ namespace tmbl::cpu {
 class reg8 final {
 public:
   reg8 &operator=(const u8 n) noexcept;
-  reg8 &operator=(byte b) noexcept;
   reg8 &operator+=(const u8 n) noexcept;
   reg8 &operator-=(const u8 n) noexcept;
 

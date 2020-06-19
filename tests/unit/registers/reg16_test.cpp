@@ -42,10 +42,10 @@ TEST(SixteenBitRegisterType, memberLoHiAccessor) {
   HL = 0b1001'1101'0011'1011;
 
   byte lo = HL.lo();
-  ASSERT_EQ(std::to_integer<unsigned>(lo), 0b0011'1011);
+  ASSERT_EQ(lo, 0b0011'1011);
 
   byte hi = HL.hi();
-  ASSERT_EQ(std::to_integer<unsigned>(hi), 0b1001'1101);
+  ASSERT_EQ(hi, 0b1001'1101);
 }
 
 TEST(SixteenBitRegisterType, memberLoHiSetter) {
@@ -56,13 +56,13 @@ TEST(SixteenBitRegisterType, memberLoHiSetter) {
   HL.lo(b);
   ASSERT_EQ(HL.value(), 0b1111'1111'1100'0011);
 
-  b = byte{0b1001'1010};
+  b = 0b1001'1010;
   HL.hi(b);
   ASSERT_EQ(HL.value(), 0b1001'1010'1100'0011);
 
   reg16 BC;
-  BC.hi(byte(0b1010'1010));
-  BC.lo(byte(0b0110'0110));
+  BC.hi(0b1010'1010);
+  BC.lo(0b0110'0110);
   ASSERT_EQ(BC.value(), 0b1010'1010'0110'0110);
 }
 

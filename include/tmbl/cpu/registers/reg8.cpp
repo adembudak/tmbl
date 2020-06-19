@@ -8,11 +8,6 @@ reg8 &reg8::operator=(const u8 n) noexcept {
   return *this;
 }
 
-reg8 &reg8::operator=(byte b) noexcept {
-  m_data = std::to_integer<int>(b);
-  return *this;
-}
-
 reg8 &reg8::operator+=(const u8 n) noexcept {
   m_data += n;
   return *this;

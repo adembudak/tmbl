@@ -33,7 +33,7 @@ TEST(EightBitRegisterType, MemberOperatorEqualU8) {
 
 TEST(EightBitRegisterType, MemberOperatorEqualByte) {
   reg8 H;
-  byte b = byte(128);
+  byte b = 128;
 
   H = b;
   ASSERT_EQ(H.value(), 128);
