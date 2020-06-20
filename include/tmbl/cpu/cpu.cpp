@@ -28,9 +28,7 @@ void cpu::run() {
     AF.hi(A); AF.lo(F);
     // clang-format on
 
-    byte addr = fetch(PC++);
-
-    switch (u16 val = decode(addr); val) {
+    switch (fetch(PC++)) {
       case 0x00:
         NOP();
         break;
@@ -931,7 +929,7 @@ void cpu::run() {
         break;
 
       case 0xCB:
-        switch (decode(fetch(PC++))) {
+        switch (fetch(PC++)) {
           case 0x00:
             RLC(B);
             BC.hi(B);
@@ -2389,26 +2387,26 @@ void cpu::LD(reg8 &r, const u8 n) noexcept {
 }
 
 void cpu::LD(reg8 &r, const reg16 rr) noexcept {
-  r = m[rr];
+  r = bus.read(rr);
 
   c.tick(2);
 }
 
 void cpu::LD(const reg16 rr, const reg8 r) noexcept {
-  m[rr] = r.value();
+  bus.write(rr, r);
 
   c.tick(2);
 }
 
 void cpu::LDi() noexcept {
-  m[HL] = A.value();
+  bus.write(HL, A);
   HL += 1;
 
   c.tick(2);
 }
 
 void cpu::LDi([[maybe_unused]] int dummy) noexcept {
-  A = m[HL];
+  A = bus.read(HL);
   HL += 1;
 
   c.tick(2);
@@ -2416,26 +2414,25 @@ void cpu::LDi([[maybe_unused]] int dummy) noexcept {
 
 void cpu::LDd() noexcept {
   HL -= 1;
-  m[HL] = A.value();
+  bus.write(HL, A);
 
   c.tick(2);
 }
 
 void cpu::LDd([[maybe_unused]] int dummy) noexcept {
   HL -= 1;
-  A = m[HL];
+  A = bus.read(HL);
 
   c.tick(2);
 }
 
 void cpu::LD(const u16 nn) noexcept {
-  m[nn] = A.value();
-
+  bus.write(nn, A);
   c.tick(4);
 }
 
 void cpu::LD(const u16 nn, [[maybe_unused]] int dummy) noexcept {
-  A = m[nn];
+  A = bus.read(nn);
 
   c.tick(4);
 }
@@ -2443,10 +2440,10 @@ void cpu::LD(const u16 nn, [[maybe_unused]] int dummy) noexcept {
 void cpu::LD(const u8 n, Orientation o) noexcept {
   switch (o) {
     case Orientation::READ_FROM_IO_PORT:
-      A = m[u16(0xFF00 + n)];
+      A = bus.read(u16(0xFF00 + n));
       break;
     case Orientation::WRITE_TO_IO_PORT:
-      m[u16(0xFF00 + n)] = A.value();
+      bus.write(u16(0xFF00 + n), A);
       break;
   }
 
@@ -2459,10 +2456,10 @@ void cpu::LD(Orientation o) noexcept {
 
   switch (o) {
     case Orientation::READ_FROM_IO_PORT:
-      A = m[u16(0xFF00 + C_reg_val)];
+      A = bus.read(u16(0xFF00 + C_reg_val));
       break;
     case Orientation::WRITE_TO_IO_PORT:
-      m[u16(0xFF00 + C_reg_val)] = A.value();
+      bus.write(u16(0xFF00 + C_reg_val), A);
       break;
   }
 
@@ -2470,7 +2467,7 @@ void cpu::LD(Orientation o) noexcept {
 }
 
 void cpu::LD(const reg16 rr, const u8 n, [[maybe_unused]] int dummy) noexcept {
-  m[rr] = n;
+  bus.write(rr, n);
 
   c.tick(3);
 }
@@ -2495,22 +2492,24 @@ void cpu::LD(const i8 e) noexcept {
 }
 
 void cpu::LD(const u16 nn, const reg16 rr) noexcept {
-  m[nn] = rr.lo();
-  m[nn + 1] = rr.hi();
+  //  m[nn] = rr.lo();
+  bus.write(nn, rr.lo());
+  bus.write(nn + 1, rr.hi());
 
   c.tick(5);
 }
 void cpu::PUSH(const reg16 rr) noexcept {
-  m[SP - 1] = rr.lo();
-  m[SP - 2] = rr.hi();
+  bus.write(SP - 1, rr.lo());
+  bus.write(SP - 2, rr.hi());
+
   SP -= 2;
 
   c.tick(4);
 }
 
 void cpu::POP(reg16 &rr) noexcept {
-  rr.lo(m[SP]);
-  rr.hi(m[SP + 1]);
+  rr.lo(bus.read(SP));
+  rr.hi(bus.read(SP + 1));
   SP += 2;
 
   c.tick(3);
@@ -2542,13 +2541,13 @@ void cpu::ADD(const u8 n) noexcept {
 
 void cpu::ADD(const reg16 rr) noexcept {
   F.N(reset);
-  u8 n = m[rr];
+  u8 n = bus.read(rr);
   ((n + A.value()) == (reg8::max() + 1)) ? F.Z(set) : F.Z(reset);
   ((n + A.loNibble()) > 0b0000'1111) ? F.H(set) : F.H(reset);
   (n + A.value() > reg8::max()) ? F.C(set) : F.C(reset);
 
   reg8 tmp;
-  tmp = m[rr];
+  tmp = bus.read(rr);
   A = A + tmp;
 
   c.tick(2);
@@ -2594,13 +2593,13 @@ void cpu::ADC(const reg16 rr) noexcept {
     A += 1;
   }
 
-  u8 n = m[rr];
+  u8 n = bus.read(rr);
   ((n + A.value()) == (reg8::max() + 1)) ? F.Z(set) : F.Z(reset);
   ((n + A.loNibble()) > 0b0000'1111) ? F.H(set) : F.H(reset);
   (n + A.value() > reg8::max()) ? F.C(set) : F.C(reset);
 
   reg8 tmp;
-  tmp = m[rr];
+  tmp = bus.read(rr);
 
   A = A + tmp;
   c.tick(2);
@@ -2634,13 +2633,13 @@ void cpu::SUB(const u8 n) noexcept {
 void cpu::SUB(const reg16 rr) noexcept {
   F.N(set);
 
-  u8 n = m[rr];
+  u8 n = bus.read(rr);
   ((A.value() - n) == reg8::min()) ? F.Z(set) : F.Z(reset);
   (A.loNibble() < n) ? F.H(set) : F.H(reset);
   (A.value() < n) ? F.C(set) : F.C(reset);
 
   reg8 tmp;
-  tmp = m[rr];
+  tmp = bus.read(rr);
 
   A = A - tmp;
   c.tick(2);
@@ -2685,13 +2684,13 @@ void cpu::SBC(const reg16 rr) noexcept {
     A -= 1;
   }
 
-  u8 n = m[rr];
+  u8 n = bus.read(rr);
   ((A.value() - n) == reg8::min()) ? F.Z(set) : F.Z(reset);
   (A.loNibble() < n) ? F.H(set) : F.H(reset);
   (A.value() < n) ? F.C(set) : F.C(reset);
 
   reg8 tmp;
-  tmp = m[rr];
+  tmp = bus.read(rr);
 
   A = A - tmp;
   c.tick(2);
@@ -2726,10 +2725,10 @@ void cpu::AND(const reg16 rr) noexcept {
   F.H(set);
   F.N(reset);
 
-  (A.value() == 0 || m[rr] == 0) ? F.Z(set) : F.Z(reset);
+  (A.value() == 0 || bus.read(rr) == 0) ? F.Z(set) : F.Z(reset);
 
   reg8 tmp;
-  tmp = m[rr];
+  tmp = bus.read(rr);
 
   A = A & tmp;
   c.tick(2);
@@ -2764,10 +2763,10 @@ void cpu::OR(const reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
-  (A.value() == 0 || m[rr] == 0) ? F.Z(set) : F.Z(reset);
+  (A.value() == 0 || bus.read(rr) == 0) ? F.Z(set) : F.Z(reset);
 
   reg8 tmp;
-  tmp = m[rr];
+  tmp = bus.read(rr);
 
   A = A | tmp;
   c.tick(2);
@@ -2803,10 +2802,10 @@ void cpu::XOR(const reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
-  (A.value() == m[rr]) ? F.Z(set) : F.Z(reset);
+  (A.value() == bus.read(rr)) ? F.Z(set) : F.Z(reset);
 
   reg8 tmp;
-  tmp = m[rr];
+  tmp = bus.read(rr);
 
   A = A ^ tmp;
   c.tick(2);
@@ -2839,7 +2838,7 @@ void cpu::CP(const reg16 rr) noexcept {
   F.N(set);
 
   reg8 tmp;
-  tmp = m[rr];
+  tmp = bus.read(rr);
 
   (tmp.value() > A.value()) ? F.C(set) : F.C(reset);
   (tmp.loNibble() > A.loNibble()) ? F.H(set) : F.H(reset);
@@ -2861,12 +2860,13 @@ void cpu::INC(reg8 &r) noexcept {
 void cpu::INC() noexcept {
   F.N(reset);
 
-  u8 lower_nibble = m[HL] | (0b0000'1111U);
+  byte val = bus.read(HL);
+  u8 lower_nibble = val | 0b0000'1111U;
 
   (lower_nibble == 0b0000'1111) ? F.H(set) : F.H(reset);
-  (m[HL] == 0b1111'1111) ? F.Z(set) : F.Z(reset);
+  (val == 0b1111'1111) ? F.Z(set) : F.Z(reset);
 
-  m[HL] = m[HL] + 1;
+  bus.write(HL, byte(val + 1));
   c.tick(3);
 }
 
@@ -2883,12 +2883,13 @@ void cpu::DEC(reg8 &r) noexcept {
 void cpu::DEC() noexcept {
   F.N(set);
 
-  u8 lower_nibble = m[HL] | (0b0000'1111U);
+  byte val = bus.read(HL);
+  u8 lower_nibble = val | 0b0000'1111U;
 
   (lower_nibble == 0) ? F.H(set) : F.H(reset);
-  (m[HL] == 1) ? F.Z(set) : F.Z(reset);
+  (val == 1) ? F.Z(set) : F.Z(reset);
 
-  m[HL] = m[HL] - 1;
+  bus.write(HL, byte(val - 1));
   c.tick(3);
 }
 
@@ -2995,10 +2996,10 @@ void cpu::RLC(const reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
-  m[rr] = rotl(m[rr], 1);
+  bus.write(rr, rotl(bus.read(rr), 1));
 
   reg8 tmp;
-  tmp = m[rr];
+  tmp = bus.read(rr);
 
   (tmp.msb() == 1) ? F.C(set) : F.C(reset);
   (tmp.value() == reg8::min()) ? F.Z(set) : F.Z(reset);
@@ -3027,15 +3028,15 @@ void cpu::RL(const reg16 rr) noexcept {
   F.N(reset);
 
   u8 mask_for_0th_bit = F.C() ? 1 : 0;
-  m[rr] = rotl(m[rr], 1);
+  bus.write(rr, rotl(bus.read(rr), 1));
 
   reg8 tmp;
-  tmp = m[rr];
+  tmp = bus.read(rr);
 
   (tmp.msb() == 1) ? F.C(set) : F.C(reset);
   (tmp.value() == reg8::min()) ? F.Z(set) : F.Z(reset);
 
-  m[rr] = m[rr] | mask_for_0th_bit;
+  bus.write(rr, byte(bus.read(rr) | mask_for_0th_bit));
 
   c.tick(4);
 }
@@ -3055,12 +3056,12 @@ void cpu::RRC(const reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
-  m[rr] = rotr(m[rr], 1);
+  bus.write(rr, rotr(bus.read(rr), 1));
 
   // create a temporary reg8 to reach individual bits of the byte
   // more easily, and set flags via it.
   reg8 tmp;
-  tmp = m[rr];
+  tmp = bus.read(rr);
   (tmp.msb() == 1) ? F.C(set) : F.C(reset);
   (tmp.value() == 0) ? F.Z(set) : F.Z(reset);
 
@@ -3089,15 +3090,14 @@ void cpu::RR(const reg16 rr) noexcept {
 
   u8 mask_for_7th_bit = F.C() ? 0b1000'0000 : 0b0000'0000;
 
-  m[rr] = rotr(m[rr], 1);
-
+  bus.write(rr, rotr(bus.read(rr), 1));
   reg8 tmp;
-  tmp = m[rr];
+  tmp = bus.read(rr);
 
   (tmp.lsb() == 1) ? F.C(set) : F.C(reset);
   (tmp.value() == reg8::min()) ? F.Z(set) : F.Z(reset);
 
-  m[rr] = m[rr] | mask_for_7th_bit;
+  bus.write(rr, byte((bus.read(rr) | mask_for_7th_bit)));
 
   c.tick(4);
 }
@@ -3117,12 +3117,15 @@ void cpu::SLA(const reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
+  auto val = bus.read(rr);
   reg8 tmp;
-  tmp = m[rr];
+  tmp = val;
+
   (tmp.msb() == 1) ? F.C(set) : F.C(reset);
 
-  m[rr] <<= 1;
-  (m[rr] == 0U) ? F.Z(set) : F.Z(reset);
+  bus.write(rr, val <<= 1);
+
+  (bus.read(rr) == 0U) ? F.Z(set) : F.Z(reset);
 
   c.tick(4);
 }
@@ -3145,14 +3148,15 @@ void cpu::SRA(const reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
+  byte val = bus.read(rr);
   reg8 tmp;
-  tmp = m[rr];
+  tmp = val;
   u8 old_msb_mask = (tmp.msb() == 1) ? 0b1000'0000 : 0b0000'0000;
   (tmp.lsb() == 1) ? F.C(set) : F.C(reset);
 
-  m[rr] >>= 1;
-  m[rr] |= old_msb_mask;
-  (m[rr] == 0U) ? F.Z(set) : F.Z(reset);
+  bus.write(rr, val >>= 1);
+  bus.write(rr, byte(bus.read(rr) | old_msb_mask));
+  (bus.read(rr) == 0U) ? F.Z(set) : F.Z(reset);
 
   c.tick(4);
 }
@@ -3172,12 +3176,13 @@ void cpu::SRL(const reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
+  byte val = bus.read(rr);
   reg8 tmp;
-  tmp = m[rr];
+  tmp = val;
   (tmp.lsb() == 1) ? F.C(set) : F.C(reset);
 
-  m[rr] >>= 1;
-  (m[rr] == 0U) ? F.Z(set) : F.Z(reset);
+  bus.write(rr, val >>= 1);
+  (bus.read(rr) == 0U) ? F.Z(set) : F.Z(reset);
 
   c.tick(4);
 }
@@ -3199,9 +3204,9 @@ void cpu::SWAP(const reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
-  m[rr] = rotl(m[rr], 4);
+  bus.write(rr, byte(rotl(bus.read(rr), 4)));
 
-  (m[rr] == 0U) ? F.Z(set) : F.Z(reset);
+  (bus.read(rr) == 0U) ? F.Z(set) : F.Z(reset);
 
   c.tick(4);
 }
@@ -3220,7 +3225,7 @@ void cpu::BIT(const reg16 rr, const u8 pos) {
   F.N(reset);
 
   reg8 tmp;
-  tmp = m[rr];
+  tmp = bus.read(rr);
 
   tmp.test(pos) ? F.Z(reset) : F.Z(set);
 
@@ -3244,7 +3249,7 @@ void cpu::SET(const reg16 rr, const u8 pos) {
     throw std::out_of_range("reg8");
   }
 
-  m[rr] = m[rr] | (1U << pos);
+  bus.write(rr, byte(bus.read(rr) | (1U << pos)));
 
   c.tick(4);
 }
@@ -3264,7 +3269,7 @@ void cpu::RES(const reg16 rr, const u8 pos) {
     throw std::out_of_range("reg8");
   }
 
-  m[rr] = m[rr] & ~(1U << pos);
+  bus.write(rr, byte(bus.read(rr) & ~(1U << pos)));
 
   c.tick(4);
 }
@@ -3306,8 +3311,10 @@ void cpu::JR(const u8 cc, const i8 e) noexcept {
 }
 
 void cpu::CALL(const u16 nn) noexcept {
-  m[SP - 1] = PC.hi();
-  m[SP - 2] = PC.lo();
+
+  bus.write(SP - 1, PC.hi());
+  bus.write(SP - 2, PC.lo());
+
   PC = nn;
   SP = SP - 2;
 
@@ -3316,8 +3323,9 @@ void cpu::CALL(const u16 nn) noexcept {
 
 void cpu::CALL(const u8 cc, const u16 nn) noexcept {
   if ((cc == 0 && !F.Z()) || (cc == 1 && F.Z()) || (cc == 2 && !F.C()) || (cc == 3 && F.C())) {
-    m[SP - 1] = PC.hi();
-    m[SP - 2] = PC.lo();
+    bus.write(SP - 1, PC.hi());
+    bus.write(SP - 2, PC.lo());
+
     PC = nn;
     SP = SP - 2;
 
@@ -3328,16 +3336,16 @@ void cpu::CALL(const u8 cc, const u16 nn) noexcept {
 }
 
 void cpu::RET() noexcept {
-  PC.lo(m[SP]);
-  PC.hi(m[SP + 1]);
+  PC.lo(bus.read(SP));
+  PC.hi(bus.read(SP + 1));
   SP = SP + 2;
 
   c.tick(4);
 }
 
 void cpu::RETI() noexcept {
-  PC.lo(m[SP]);
-  PC.hi(m[SP + 1]);
+  PC.lo(bus.read(SP));
+  PC.hi(bus.read(SP + 1));
   SP = SP + 2;
 
   IME = set;
@@ -3347,8 +3355,8 @@ void cpu::RETI() noexcept {
 
 void cpu::RET(const u8 cc) noexcept {
   if ((cc == 0 && !F.Z()) || (cc == 1 && F.Z()) || (cc == 2 && !F.C()) || (cc == 3 && F.C())) {
-    PC.lo(m[SP]);
-    PC.hi(m[SP + 1]);
+    PC.lo(bus.read(SP));
+    PC.hi(bus.read(SP + 1));
     SP = SP + 2;
 
     c.tick(5);
@@ -3358,8 +3366,8 @@ void cpu::RET(const u8 cc) noexcept {
 }
 
 void cpu::RST(const u8 t) noexcept {
-  m[SP - 1] = PC.hi();
-  m[SP - 2] = PC.lo();
+  bus.write(SP - 1, PC.hi());
+  bus.write(SP - 2, PC.lo());
   SP = SP - 2;
 
   PC.lo(0b0000'0000);
@@ -3486,6 +3494,6 @@ template <typename T> T cpu::rotr(T x, int s) noexcept {
   }
 }
 
-byte cpu::fetch(reg16 rr) { return m[rr]; }
-u16 cpu::decode(byte b) { return b; }
+byte cpu::fetch(reg16 rr) { return bus.read(rr); }
+
 }

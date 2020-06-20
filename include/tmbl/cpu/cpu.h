@@ -5,6 +5,7 @@
 #include "registers/reg8.h"
 #include "clock/clock.h"
 #include "../memory/memory.h"
+#include "../bus/bus.h"
 #include "../config.h"
 
 namespace tmbl::cpu {
@@ -157,7 +158,6 @@ private:
 
 private:
   byte fetch(reg16 rr);
-  u16 decode(byte b);
 
 private:
   mutable reg16 PC;
@@ -170,7 +170,7 @@ private:
   mutable reg16 DE;
   mutable reg16 HL;
 
-  memory::memory m;
+  bus::bus bus;
   clock c;
 
   flag IME = false;
