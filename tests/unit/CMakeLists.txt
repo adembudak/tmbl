@@ -12,5 +12,4 @@ function(add_tombul_test test_name target)
     TEST_LIST ${test_name})
 endfunction()
 
-add_subdirectory(instructions)
 add_subdirectory(registers)
