@@ -50,7 +50,7 @@ public:
   byte &WY() noexcept;
   byte &WX() noexcept;
 
-  // display re
+  // display registers -  CGB only
   byte &HDMA1() noexcept;
   byte &HDMA2() noexcept;
   byte &HDMA3() noexcept;
@@ -60,6 +60,51 @@ public:
   byte &BCPD() noexcept;
   byte &OCPS() noexcept;
   byte &OCPD() noexcept;
+
+  bool CGB() const noexcept;
+  bool SGB() const noexcept;
+
+  void cartType() noexcept;
+
+  enum class cartidge {
+    ROM_ONLY = 0x00,
+
+    ROM_MBC1 = 0x01,
+    ROM_MBC1_RAM = 0x02,
+    ROM_MBC1_RAM_BATTERY = 0x03,
+
+    ROM_MBC2 = 0x05,
+    ROM_MBC2_BATTERY = 0x06,
+
+    ROM_RAM = 0x08,
+    ROM_RAM_BATTERY = 0x09,
+
+    ROM_MMM01 = 0x0B,
+    ROM_MMM01_SRAM = 0x0C,
+    ROM_MMM01_SRAM_BATTERY = 0x0D,
+
+    ROM_MBC3_TIMER_BATTERY = 0x0F,
+    ROM_MBC3_TIMER_RAM_BATTERY = 0x10,
+    ROM_MBC3 = 0x11,
+    ROM_MBC3_RAM = 0x12,
+    ROM_MBC3_RAM_BATTERY = 0x13,
+
+    ROM_MBC5 = 0x19,
+    ROM_MBC5_RAM = 0x1A,
+    ROM_MBC5_RAM_BATTERY = 0x1B,
+
+    ROM_MBC5_RUMBLE = 0x1C,
+    ROM_MBC5_RUMBLE_SRAM = 0x1D,
+    ROM_MBC5_RUMBLE_SRAM_BATTERY = 0x1E,
+
+    POCKET_CAMERA = 0x1F,
+    BANDAI_TAMA5 = 0xFD,
+
+    Hudson_HuC_3 = 0xFE,
+    Hudson_HuC_1 = 0xFF
+  };
+
+  cartidge cartidge_type;
 
 private:
   const byte nintendo_logo[48]{0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B, 0x03, 0x73,
