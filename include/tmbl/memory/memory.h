@@ -65,7 +65,6 @@ public:
   bool SGB() const noexcept;
 
   void cartType() noexcept;
-
   enum class cartidge {
     ROM_ONLY = 0x00,
 
@@ -104,8 +103,6 @@ public:
     Hudson_HuC_1 = 0xFF
   };
 
-  cartidge cartidge_type;
-
 private:
   const byte nintendo_logo[48]{0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B, 0x03, 0x73,
                                0x00, 0x83, 0x00, 0x0C, 0x00, 0x0D, 0x00, 0x08, 0x11, 0x1F,
@@ -114,6 +111,32 @@ private:
                                0xDD, 0xDC, 0x99, 0x9F, 0xBB, 0xB9, 0x33, 0x3E};
 
   mutable std::array<byte, 64 * 1024> m_data{};
+
+  byte *const rom_begin = std::data(m_data) + 0x0000U;
+  byte *const rom_end = std::data(m_data) + 0x07FFFU;
+
+  byte *const vram_begin = std::data(m_data) + 0x8000U;
+  byte *const vram_end = std::data(m_data) + 0x9FFFU;
+
+  byte *const sram_begin = std::data(m_data) + 0xA000U;
+  byte *const sram_end = std::data(m_data) + 0xBFFFU;
+
+  byte *const wram_begin = std::data(m_data) + 0xC000U;
+  byte *const wram_end = std::data(m_data) + 0xDFFFU;
+
+  byte *const wram_echo_begin = std::data(m_data) + 0xE000U;
+  byte *const wram_echo_end = std::data(m_data) + 0xFDFFU;
+
+  byte *const oam_begin = std::data(m_data) + 0xFE00U;
+  byte *const oam_end = std::data(m_data) + 0xFE9FU;
+
+  byte *const io_begin = std::data(m_data) + 0xFF00U;
+  byte *const io_end = std::data(m_data) + 0xFF7FU;
+
+  byte *const hram_begin = std::data(m_data) + 0xFF80U;
+  byte *const hram_end = std::data(m_data) + 0xFFFEU;
+
+  cartidge cartidge_type;
 };
 
 }
