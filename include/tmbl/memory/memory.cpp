@@ -5,6 +5,7 @@
 #include <algorithm>
 
 namespace tmbl::memory {
+
 memory::memory() {
   std::copy(std::begin(nintendo_logo), std::end(nintendo_logo), std::data(m_data) + 0x104);
 }
@@ -65,103 +66,50 @@ void memory::cartType() noexcept {
       break;
 
     case 0x01:
-      cartidge_type = cartidge::ROM_MBC1;
-      break;
-
+      [[fallthrough]];
     case 0x02:
-      cartidge_type = cartidge::ROM_MBC1_RAM;
-      break;
-
+      [[fallthrough]];
     case 0x03:
-      cartidge_type = cartidge::ROM_MBC1_RAM_BATTERY;
-      break;
+      cartidge_type = cartidge::ROM_MBC1;
 
     case 0x05:
+      [[fallthrough]];
+    case 0x06:
       cartidge_type = cartidge::ROM_MBC2;
       break;
 
-    case 0x06:
-      cartidge_type = cartidge::ROM_MBC2_BATTERY;
-      break;
-
-    case 0x08:
-      cartidge_type = cartidge::ROM_RAM;
-      break;
-
-    case 0x09:
-      cartidge_type = cartidge::ROM_MBC1_RAM_BATTERY;
-      break;
-
     case 0x0B:
+      [[fallthrough]];
+    case 0x0C:
+      [[fallthrough]];
+    case 0x0D:
       cartidge_type = cartidge::ROM_MMM01;
       break;
 
-    case 0x0C:
-      cartidge_type = cartidge::ROM_MMM01_SRAM;
-      break;
-
-    case 0x0D:
-      cartidge_type = cartidge::ROM_MMM01_SRAM_BATTERY;
-      break;
-
     case 0x0F:
-      cartidge_type = cartidge::ROM_MBC3_TIMER_BATTERY;
-      break;
-
+      [[fallthrough]];
     case 0x10:
-      cartidge_type = cartidge::ROM_MBC3_TIMER_RAM_BATTERY;
-      break;
-
+      [[fallthrough]];
     case 0x11:
+      [[fallthrough]];
+    case 0x12:
+      [[fallthrough]];
+    case 0x13:
       cartidge_type = cartidge::ROM_MBC3;
       break;
 
-    case 0x12:
-      cartidge_type = cartidge::ROM_MBC3_RAM;
-      break;
-
-    case 0x13:
-      cartidge_type = cartidge::ROM_MBC3_RAM_BATTERY;
-      break;
-
     case 0x19:
-      cartidge_type = cartidge::ROM_MBC5;
-      break;
-
+      [[fallthrough]];
     case 0x1A:
-      cartidge_type = cartidge::ROM_MBC5_RAM;
-      break;
-
+      [[fallthrough]];
     case 0x1B:
-      cartidge_type = cartidge::ROM_MBC5_RAM_BATTERY;
-      break;
-
+      [[fallthrough]];
     case 0x1C:
-      cartidge_type = cartidge::ROM_MBC5_RUMBLE;
-      break;
-
+      [[fallthrough]];
     case 0x1D:
-      cartidge_type = cartidge::ROM_MBC5_RUMBLE_SRAM;
-      break;
-
+      [[fallthrough]];
     case 0x1E:
-      cartidge_type = cartidge::ROM_MBC5_RUMBLE_SRAM_BATTERY;
-      break;
-
-    case 0x1F:
-      cartidge_type = cartidge::POCKET_CAMERA;
-      break;
-
-    case 0xFD:
-      cartidge_type = cartidge::BANDAI_TAMA5;
-      break;
-
-    case 0xFE:
-      cartidge_type = cartidge::Hudson_HuC_3;
-      break;
-
-    case 0xFF:
-      cartidge_type = cartidge::Hudson_HuC_1;
+      cartidge_type = cartidge::ROM_MBC5;
       break;
   }
 }
