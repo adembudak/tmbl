@@ -62,7 +62,7 @@ bool memory::SGB() const noexcept { return m_data[0x0146] == 0x0003 ? true : fal
 void memory::cartType() noexcept {
   switch (m_data[0x147]) {
     case 0x00:
-      cartidge_type = cartidge::ROM_ONLY;
+      cartridge_info.type = cartridge_type::ROM_ONLY;
       break;
 
     case 0x01:
@@ -70,12 +70,12 @@ void memory::cartType() noexcept {
     case 0x02:
       [[fallthrough]];
     case 0x03:
-      cartidge_type = cartidge::ROM_MBC1;
+      cartridge_info.type = cartridge_type::ROM_MBC1;
 
     case 0x05:
       [[fallthrough]];
     case 0x06:
-      cartidge_type = cartidge::ROM_MBC2;
+      cartridge_info.type = cartridge_type::ROM_MBC2;
       break;
 
     case 0x0B:
@@ -83,7 +83,7 @@ void memory::cartType() noexcept {
     case 0x0C:
       [[fallthrough]];
     case 0x0D:
-      cartidge_type = cartidge::ROM_MMM01;
+      cartridge_info.type = cartridge_type::ROM_MMM01;
       break;
 
     case 0x0F:
@@ -95,7 +95,7 @@ void memory::cartType() noexcept {
     case 0x12:
       [[fallthrough]];
     case 0x13:
-      cartidge_type = cartidge::ROM_MBC3;
+      cartridge_info.type = cartridge_type::ROM_MBC3;
       break;
 
     case 0x19:
@@ -109,7 +109,75 @@ void memory::cartType() noexcept {
     case 0x1D:
       [[fallthrough]];
     case 0x1E:
-      cartidge_type = cartidge::ROM_MBC5;
+      cartridge_info.type = cartridge_type::ROM_MBC5;
+      break;
+  }
+}
+
+void memory::cartRom() noexcept {
+  switch (m_data[0x0149]) {
+    case 0x00:
+      cartridge_info.rom = cartridge_rom::KB_32;
+      break;
+
+    case 0x01:
+      cartridge_info.rom = cartridge_rom::KB_64;
+      break;
+
+    case 0x02:
+      cartridge_info.rom = cartridge_rom::KB_128;
+      break;
+
+    case 0x03:
+      cartridge_info.rom = cartridge_rom::KB_256;
+      break;
+
+    case 0x04:
+      cartridge_info.rom = cartridge_rom::KB_512;
+      break;
+
+    case 0x05:
+      cartridge_info.rom = cartridge_rom::KB_1024;
+      break;
+
+    case 0x06:
+      cartridge_info.rom = cartridge_rom::KB_2048;
+      break;
+
+    case 0x52:
+      cartridge_info.rom = cartridge_rom::KB_1152;
+      break;
+
+    case 0x53:
+      cartridge_info.rom = cartridge_rom::KB_1280;
+      break;
+
+    case 0x54:
+      cartridge_info.rom = cartridge_rom::KB_1526;
+      break;
+  }
+}
+
+void memory::cartRam() noexcept {
+  switch (m_data[0x0149]) {
+    case 0x00:
+      cartridge_info.ram = cartridge_ram::None;
+      break;
+
+    case 0x01:
+      cartridge_info.ram = cartridge_ram::KB_2;
+      break;
+
+    case 0x02:
+      cartridge_info.ram = cartridge_ram::KB_8;
+      break;
+
+    case 0x03:
+      cartridge_info.ram = cartridge_ram::KB_32;
+      break;
+
+    case 0x04:
+      cartridge_info.ram = cartridge_ram::KB_128;
       break;
   }
 }

@@ -65,7 +65,10 @@ public:
   bool SGB() const noexcept;
 
   void cartType() noexcept;
-  enum class cartidge {
+  void cartRom() noexcept;
+  void cartRam() noexcept;
+
+  enum class cartridge_type {
     ROM_ONLY = 0x00,
 
     ROM_MBC1 = 0x01,
@@ -103,6 +106,27 @@ public:
     Hudson_HuC_1 = 0xFF
   };
 
+  enum class cartridge_rom {
+    KB_32 = 0x00,
+    KB_64 = 0x01,
+    KB_128 = 0x02,
+    KB_256 = 0x03,
+    KB_512 = 0x04,
+    KB_1024 = 0x05,
+    KB_2048 = 0x06,
+    KB_1152 = 0x52,
+    KB_1280 = 0x53,
+    KB_1526 = 0x54
+  };
+
+  enum class cartridge_ram {
+    None = 0x00,
+    KB_2 = 0x01,
+    KB_8 = 0x02,
+    KB_32 = 0x03,
+    KB_128 = 0x04,
+  };
+
 private:
   const byte nintendo_logo[48]{0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B, 0x03, 0x73,
                                0x00, 0x83, 0x00, 0x0C, 0x00, 0x0D, 0x00, 0x08, 0x11, 0x1F,
@@ -136,7 +160,11 @@ private:
   byte *const hram_begin = std::data(m_data) + 0xFF80U;
   byte *const hram_end = std::data(m_data) + 0xFFFEU;
 
-  cartidge cartidge_type;
+  struct {
+    cartridge_type type;
+    cartridge_rom rom;
+    cartridge_ram ram;
+  } cartridge_info;
 };
 
 }
