@@ -2,11 +2,16 @@
 
 namespace tmbl {
 
-// TODO: implement those functions
+void Gameboy::init(const std::filesystem::path &p){
+	game.load(p);
+}
 
 void Gameboy::saveState() {}
 void Gameboy::loadState() {}
 void Gameboy::pause() {}
-void Gameboy::run() {}
+
+void Gameboy::run() {
+	c.run();
+}
 
 }
