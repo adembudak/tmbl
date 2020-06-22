@@ -14,9 +14,6 @@ namespace tmbl::memory {
 class memory final {
 public:
   memory();
-  [[nodiscard]] bool dumpROM(const char *romfile);
-  [[nodiscard]] byte *data() const noexcept;
-
   [[nodiscard]] byte &operator[](const u16 nn);
 
   // port mode registers
