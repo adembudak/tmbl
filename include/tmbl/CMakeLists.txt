@@ -11,3 +11,4 @@ target_link_libraries(Gameboy PRIVATE memory)
 target_link_libraries(Gameboy PRIVATE bus)
 target_link_libraries(Gameboy PRIVATE cartridge)
 
+add_library(Gameboy::Gameboy ALIAS Gameboy)
