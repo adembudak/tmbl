@@ -1,11 +1,12 @@
 #include "cartridge.h"
 #include <filesystem>
 #include <fstream>
+#include <numeric>
 
 namespace tmbl::cartridge {
 
 void cartridge::load(const std::filesystem::path &p) {
-  rom_data.reserve(8*1024*1024);
+  rom_data.reserve(8 * 1024 * 1024);
 
   std::ifstream stream(p, std::ios::binary);
   std::copy(std::istreambuf_iterator<char>(stream), {}, rom_data.begin());
@@ -13,7 +14,25 @@ void cartridge::load(const std::filesystem::path &p) {
   rom_data.shrink_to_fit();
 }
 
+void cartridge::title() noexcept {
+  for (auto start = 0x104; start < 0x134; ++start) {
+    game_title.push_back(rom_data[start]);
+  }
+}
+
+void cartridge::manufacturer() noexcept {
+  for (auto start = 0x134; start < 0x142; ++start) {
+    manufacturer_code.push_back(rom_data[start]);
+  }
+}
+
 bool cartridge::CGB() const noexcept { return rom_data[0x0143] == 0x0080 ? true : false; }
+
+void cartridge::newLicenseCode() noexcept {
+  new_license_code.push_back(rom_data[0x0144]);
+  new_license_code.push_back(rom_data[0x0145]);
+}
+
 bool cartridge::SGB() const noexcept { return rom_data[0x0146] == 0x0003 ? true : false; }
 
 void cartridge::cartType() noexcept {
@@ -72,7 +91,7 @@ void cartridge::cartType() noexcept {
 }
 
 void cartridge::cartRom() noexcept {
-  switch (rom_data[0x0149]) {
+  switch (rom_data[0x0148]) {
     case 0x00:
       cartridge_info.rom = cartridge_rom::KB_32;
       break;
@@ -139,5 +158,21 @@ void cartridge::cartRam() noexcept {
   }
 }
 
+void cartridge::destinationCode() noexcept { destination_code = rom_data[0x014A] ? "JP" : ""; }
+
+void cartridge::oldLicenseCode() noexcept {
+  if (rom_data[0x014B] == 0x0033)
+    old_license_code = new_license_code;
+  else {
+    old_license_code.push_back(rom_data[0x014B]);
+  }
+}
+
+void cartridge::romVersion() noexcept { rom_version = rom_data[0x014C]; }
+
+int cartridge::headerChecksum() const noexcept {
+  return std::accumulate(rom_data.data() + 0x0134, rom_data.data() + 0x014D, 0,
+                         [](const byte sum, const byte val) { return sum - val - 1; });
+}
 
 }

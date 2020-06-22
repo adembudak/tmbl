@@ -4,6 +4,7 @@
 #include "../config.h"
 #include <filesystem>
 #include <vector>
+#include <string>
 
 namespace tmbl::cartridge {
 
@@ -11,12 +12,20 @@ class cartridge final {
 public:
    void load(const std::filesystem::path &p);
 
+ void title() noexcept;
+  void manufacturer() noexcept;
+
   bool CGB() const noexcept;
+  void newLicenseCode() noexcept;
   bool SGB() const noexcept;
 
   void cartType() noexcept;
   void cartRom() noexcept;
   void cartRam() noexcept;
+  void destinationCode() noexcept;
+  void oldLicenseCode() noexcept;
+  void romVersion() noexcept;
+  int headerChecksum() const noexcept;
 
   enum class cartridge_type {
     ROM_ONLY = 0x00,
@@ -26,7 +35,7 @@ public:
     ROM_MBC1_RAM_BATTERY = 0x03,
 
     ROM_MBC2 = 0x05,
-    ROM_MBC2_BATTERY = 0x06,
+    ROM_MBC2_RAM_BATTERY = 0x06,
 
     ROM_RAM = 0x08,
     ROM_RAM_BATTERY = 0x09,
@@ -49,7 +58,10 @@ public:
     ROM_MBC5_RUMBLE_SRAM = 0x1D,
     ROM_MBC5_RUMBLE_SRAM_BATTERY = 0x1E,
 
-    POCKET_CAMERA = 0x1F,
+    ROM_MBC6_RAM_BATTERY = 0x20,
+    ROM_MBC7_RAM_BATTERY_ACCELEROMETER = 0x22,
+
+    POCKET_CAMERA = 0xFC,
     BANDAI_TAMA5 = 0xFD,
 
     Hudson_HuC_3 = 0xFE,
@@ -64,6 +76,8 @@ public:
     KB_512 = 0x04,
     KB_1024 = 0x05,
     KB_2048 = 0x06,
+    KB_4096 = 0x07,
+    KB_8192 = 0x08,
     KB_1152 = 0x52,
     KB_1280 = 0x53,
     KB_1526 = 0x54
@@ -75,6 +89,7 @@ public:
     KB_8 = 0x02,
     KB_32 = 0x03,
     KB_128 = 0x04,
+    KB_64 = 0x05
   };
 
 private:
@@ -85,6 +100,13 @@ private:
   } cartridge_info;
 
   std::vector<byte> rom_data;
+
+  std::string game_title;
+  std::string manufacturer_code;
+  std::string new_license_code;
+  std::string destination_code;
+  std::string old_license_code;
+  byte rom_version;
 };
 
 }
