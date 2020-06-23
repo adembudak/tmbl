@@ -7,9 +7,11 @@
 | roadmap :checkered_flag: | status :x: :white_check_mark: :heavy_check_mark: |
 |:------:|:---:|
 | implement processor instructions | :heavy_check_mark:  |
-| implement memory instructions | :x:   |
-| implement picture processing unit | :x:   |
+| implement memory instructions | :white_check_mark:   |
+| implement cartridge | :x:   |
+| implement pixel processing unit | :x:   |
 | implement audio processing unit | :x:   |
 | implement graphic API | :x:   |
+| implement i/o controllers | :x:   |
 | implement front-end | :x:   |
 | package for various platforms | :x:   |
