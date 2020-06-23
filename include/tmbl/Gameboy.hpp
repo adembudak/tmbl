@@ -13,14 +13,16 @@ namespace tmbl {
 class Gameboy {
 public:
   void init(const std::filesystem::path &p);
+
   void saveState();
   void loadState();
   void pause();
   void run();
 
+  std::string title;
+
 private:
   cpu::cpu c;
-  cartridge::cartridge game;
 };
 
 }
