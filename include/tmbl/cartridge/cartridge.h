@@ -3,16 +3,16 @@
 
 #include "../config.h"
 #include <filesystem>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace tmbl::cartridge {
 
 class cartridge final {
 public:
-   void load(const std::filesystem::path &p);
+  void load(const std::filesystem::path &p);
 
- void title() noexcept;
+  void title() noexcept;
   void manufacturer() noexcept;
 
   bool CGB() const noexcept;
@@ -25,7 +25,7 @@ public:
   void destinationCode() noexcept;
   void oldLicenseCode() noexcept;
   void romVersion() noexcept;
-  int headerChecksum() const noexcept;
+  byte headerChecksum() const noexcept;
 
   enum class cartridge_type {
     ROM_ONLY = 0x00,
@@ -92,11 +92,21 @@ public:
     KB_64 = 0x05
   };
 
+  enum class gameboy_type {
+    DMG, // Dot matrix Game Boy, 1989
+    MGB, // Game Boy Pocket, 1996
+    MGL, // Game Boy Light, 1998
+    CGB, // Game Boy Color, 1998
+    SGB, // Super Game Boy, 1994,
+    SGB2 // Super Game Boy 2, 1998
+  };
+
 private:
   struct {
     cartridge_type type;
     cartridge_rom rom;
     cartridge_ram ram;
+    bool has_battery = false;
   } cartridge_info;
 
   std::vector<byte> rom_data;
@@ -109,6 +119,6 @@ private:
   byte rom_version;
 };
 
-}
+} // namespace tmbl::cartridge
 
 #endif
