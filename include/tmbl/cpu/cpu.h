@@ -8,10 +8,13 @@
 #include "../bus/bus.h"
 #include "../config.h"
 
+#include <memory>
+
 namespace tmbl::cpu {
 
 class cpu final {
 public:
+  explicit cpu(std::shared_ptr<bus::bus> b);
   void run();
 
 private:

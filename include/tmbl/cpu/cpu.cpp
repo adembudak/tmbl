@@ -2,6 +2,7 @@
 #include <stdexcept>
 
 namespace tmbl::cpu {
+cpu::cpu(std::shared_ptr<bus::bus> b) : bus(std::move(b)) {}
 
 void cpu::run() {
   // clang-format off
@@ -2451,7 +2452,6 @@ void cpu::LD(const u8 n, Orientation o) noexcept {
 }
 
 void cpu::LD(Orientation o) noexcept {
-
   u16 C_reg_val = BC.lo();
 
   switch (o) {
@@ -3311,7 +3311,6 @@ void cpu::JR(const u8 cc, const i8 e) noexcept {
 }
 
 void cpu::CALL(const u16 nn) noexcept {
-
   bus->write(SP - 1, PC.hi());
   bus->write(SP - 2, PC.lo());
 
