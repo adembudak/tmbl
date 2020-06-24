@@ -170,7 +170,7 @@ private:
   mutable reg16 DE;
   mutable reg16 HL;
 
-  bus::bus bus;
+  std::shared_ptr<bus::bus> bus;
   clock c;
 
   flag IME = false;
