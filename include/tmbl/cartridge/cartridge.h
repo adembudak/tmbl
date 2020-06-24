@@ -2,6 +2,7 @@
 #define CARTRIDGE_h
 
 #include "../config.h"
+#include "mbc/mbc.h"
 #include "mbc/mbc0/mbc0.h"
 #include <filesystem>
 #include <string>
@@ -14,7 +15,7 @@ class cartridge final {
 public:
   explicit cartridge(const std::filesystem::path &p);
 
-  std::string title() noexcept;
+  const std::string title() const noexcept;
   std::string manufacturer() noexcept;
 
   bool CGB() const noexcept;
@@ -30,8 +31,8 @@ public:
   byte headerChecksum() const noexcept;
 
 private:
-  std::vector<byte> rom_data;
-  std::vector<byte> ram_data;
+  std::vector<byte> rom_data{};
+  std::vector<byte> ram_data{};
 
   bool has_ram = false;
   bool has_battery = false;
@@ -45,10 +46,10 @@ private:
   int rom_banks = 0;
   int ram_banks = 0;
 
-  std::string destination_code;
-  byte rom_version;
+  std::string destination_code{};
+  byte rom_version{};
 
-  std::variant<mbc0 /*, mbc1, mbc2, mbc3, mbc5*/> mbc_type;
+  std::unique_ptr<mbc> mbc_type;
 };
 
 } // namespace tmbl::cartridge

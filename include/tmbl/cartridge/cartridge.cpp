@@ -1,8 +1,8 @@
 #include "cartridge.h"
 
+#include <cassert>
 #include <filesystem>
 #include <fstream>
-#include <iostream>
 #include <memory>
 #include <numeric>
 
@@ -74,45 +74,32 @@ enum cartridge_ram {
   RAM_KB_64 = 0x05
 };
 
-enum class gameboy_type {
-  DMG, // Dot matrix Game Boy, 1989
-  MGB, // Game Boy Pocket, 1996
-  MGL, // Game Boy Light, 1998
-  CGB, // Game Boy Color, 1998
-  SGB, // Super Game Boy, 1994,
-  SGB2 // Super Game Boy 2, 1998
-};
-
-cartridge::cartridge(const std::filesystem::path &p)
-    : mbc_type{mbc0(std::make_shared<cartridge>(*this))} {
-
-  rom_data.reserve(8 * 1024 * 1024);
-
+std::vector<byte> dumpROM(const std::filesystem::path &p) {
   std::ifstream stream(p, std::ios::binary);
-  std::copy(std::istreambuf_iterator<char>(stream), {}, rom_data.begin());
-  rom_data.shrink_to_fit();
-
-  if (auto expected = headerChecksum(); expected != rom_data.at(0x014D)) {
-    std::cerr << "ROM header checksum failed!\n";
-  }
+  return {std::istreambuf_iterator{stream}, {}};
 }
 
-std::string cartridge::title() noexcept {
-  std::string game_title;
-  for (auto start = 0x104; start < 0x134; ++start) {
-    game_title.push_back(rom_data[start]);
-  }
+cartridge::cartridge(const std::filesystem::path &p) : rom_data(dumpROM(p)) {
+  cartType();
+  cartRom();
+  cartRam();
+  romVersion();
 
-  return game_title;
+  auto checksum = [this]() {
+    return std::accumulate(
+        rom_data.data() + 0x0134, rom_data.data() + 0x014D, 0,
+        [](const byte sum, const byte val) { return sum - val - 1; });
+  }();
+
+  assert(checksum == rom_data[0x014C]);
+}
+
+const std::string cartridge::title() const noexcept {
+  return {std::data(rom_data) + 0x0134, std::data(rom_data) + 0x013F};
 }
 
 std::string cartridge::manufacturer() noexcept {
-
-  std::string manufacturer_code;
-  for (auto start = 0x134; start < 0x143; ++start)
-    manufacturer_code.push_back(rom_data[start]);
-
-  return manufacturer_code;
+  return {std::data(rom_data) + 0x013F, std::data(rom_data) + 0x0142};
 }
 
 bool cartridge::CGB() const noexcept {
@@ -192,14 +179,14 @@ bool cartridge::SGB() const noexcept {
 void cartridge::cartType() noexcept {
   switch (rom_data[0x147]) {
   case cartridge_type::ROM_ONLY:
-    mbc_type = mbc0{std::make_shared<cartridge>(*this)};
+    mbc_type = std::make_unique<mbc0>();
     has_ram = false;
     has_battery = false;
     has_timer = false;
 
   case cartridge_type::ROM_MBC1:
-    // mbc_type = mbc1{std::make_shared<cartridge>(*this)};
     // TODO: implement MBC1
+    // mbc_type = std::make_unique<mbc1>();
     has_ram = false;
     // has battery means the game state can be saved.
     has_battery = false;
@@ -207,55 +194,56 @@ void cartridge::cartType() noexcept {
     break;
 
   case cartridge_type::ROM_MBC1_RAM:
-    // mbc_type = mbc1{std::make_shared<cartridge>(*this)};
+    // mbc_type = std::make_unique<mbc1>();
     has_ram = true;
     has_battery = false;
     has_timer = false;
     break;
 
   case cartridge_type::ROM_MBC1_RAM_BATTERY:
-    // mbc_type = mbc1{std::make_shared<cartridge>(*this)};
+    // mbc_type = std::make_unique<mbc1>();
     has_ram = true;
     has_battery = true;
     has_timer = false;
     break;
 
   case cartridge_type::ROM_MBC2:
-    // mbc_type = mbc2{std::make_shared<cartridge>(*this)};
+    // mbc_type = std::make_unique<mbc2>();
     has_ram = false;
     has_battery = false;
     has_timer = false;
     break;
 
   case cartridge_type::ROM_MBC2_RAM_BATTERY:
-    // mbc_type = mbc2{std::make_shared<cartridge>(*this)};
+    // mbc_type = std::make_unique<mbc2>();
     has_ram = true;
     has_battery = true;
     has_timer = false;
     break;
 
   case cartridge_type::ROM_MBC3_TIMER_BATTERY:
-    // mbc_type = mbc3{std::make_shared<cartridge>(*this)};
+    // mbc_type = std::make_unique<mbc3>();
     has_ram = false;
     has_battery = true;
     has_timer = true;
     break;
 
   case cartridge_type::ROM_MBC3_TIMER_RAM_BATTERY:
-    // mbc_type = mbc3{std::make_shared<cartridge>(*this)};
+    // mbc_type = std::make_unique<mbc3>();
     has_ram = true;
     has_battery = true;
     has_timer = true;
     break;
 
   case cartridge_type::ROM_MBC3:
-    // mbc_type = mbc3{std::make_shared<cartridge>(*this)};
+    // mbc_type = std::make_unique<mbc3>();
     has_ram = false;
     has_battery = false;
     has_timer = false;
     break;
 
   case cartridge_type::ROM_MBC3_RAM:
+    // mbc_type = std::make_unique<mbc3>();
     // mbc_type = mbc3{std::make_shared<cartridge>(*this)};
     has_ram = true;
     has_battery = false;
@@ -263,7 +251,7 @@ void cartridge::cartType() noexcept {
     break;
 
   case cartridge_type::ROM_MBC3_RAM_BATTERY:
-    // mbc_type = mbc3{std::make_shared<cartridge>(*this)};
+    // mbc_type = std::make_unique<mbc3>();
     has_ram = true;
     has_battery = false;
     has_timer = true;
@@ -276,48 +264,47 @@ void cartridge::cartType() noexcept {
 void cartridge::cartRom() noexcept {
   switch (rom_data[0x0148]) {
   case cartridge_rom::ROM_KB_32:
-    // sizeof(byte) == 8
-    rom_size = 32 * 8;
+    rom_size = 32 * 1024;
     rom_banks = 2;
     break;
 
   case cartridge_rom::ROM_KB_64:
-    rom_size = 64 * 8;
+    rom_size = 64 * 1024;
     rom_banks = 4;
     break;
 
   case cartridge_rom::ROM_KB_128:
-    rom_size = 128 * 8;
+    rom_size = 128 * 1024;
     rom_banks = 8;
     break;
 
   case cartridge_rom::ROM_KB_256:
-    rom_size = 256 * 8;
+    rom_size = 256 * 1024;
     rom_banks = 16;
     break;
 
   case cartridge_rom::ROM_KB_512:
-    rom_size = 512 * 8;
+    rom_size = 512 * 1024;
     rom_banks = 32;
     break;
 
   case cartridge_rom::ROM_KB_1024:
-    rom_size = 1024 * 8;
+    rom_size = 1024 * 1024;
     rom_banks = 64;
     break;
 
   case cartridge_rom::ROM_KB_2048:
-    rom_size = 2048 * 8;
+    rom_size = 2048 * 1024;
     rom_banks = 128;
     break;
 
   case cartridge_rom::ROM_KB_4096:
-    rom_size = 4096 * 8;
+    rom_size = 4096 * 1024;
     rom_banks = 256;
     break;
 
   case cartridge_rom::ROM_KB_8192:
-    rom_size = 8192 * 8;
+    rom_size = 8192 * 1024;
     rom_banks = 512;
     break;
   }
@@ -331,27 +318,27 @@ void cartridge::cartRam() noexcept {
     break;
 
   case cartridge_ram::RAM_KB_2:
-    ram_size = 0;
+    ram_size = 2 * 1024;
     ram_banks = 0;
     break;
 
   case cartridge_ram::RAM_KB_8:
-    ram_size = 8 * 8;
+    ram_size = 8 * 1024;
     ram_banks = 1;
     break;
 
   case cartridge_ram::RAM_KB_32:
-    ram_size = 32 * 8;
+    ram_size = 32 * 1024;
     ram_banks = 4;
     break;
 
   case cartridge_ram::RAM_KB_128:
-    ram_size = 128 * 8;
+    ram_size = 128 * 1024;
     ram_banks = 16;
     break;
 
   case cartridge_ram::RAM_KB_64:
-    ram_size = 64 * 8;
+    ram_size = 64 * 1024;
     ram_banks = 8;
     break;
   }

@@ -9,9 +9,6 @@ namespace tmbl::cartridge {
 
 class mbc0 final : public mbc {
 public:
-  explicit mbc0(std::shared_ptr<cartridge> cartridge)
-      : mbc(std::move(cartridge)) {}
-
 private:
 };
 
