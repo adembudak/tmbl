@@ -3,7 +3,6 @@
 
 #include "config.h"
 #include "cpu/cpu.h"
-#include "cartridge/cartridge.h"
 #include "memory/memory.h"
 
 #include <filesystem>
@@ -12,7 +11,7 @@ namespace tmbl {
 
 class Gameboy {
 public:
-  void init(const std::filesystem::path &p);
+  void plug(const std::filesystem::path &cart);
 
   void saveState();
   void loadState();
