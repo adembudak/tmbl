@@ -91,7 +91,7 @@ cartridge::cartridge(const std::filesystem::path &p) : rom_data(dumpROM(p)) {
         [](const byte sum, const byte val) { return sum - val - 1; });
   }();
 
-  assert(checksum == rom_data[0x014C]);
+  assert(checksum == rom_data[0x014D]);
 }
 
 const std::string cartridge::title() const noexcept {
