@@ -4,7 +4,6 @@
 #include "registers/reg16.h"
 #include "registers/reg8.h"
 #include "clock/clock.h"
-#include "../memory/memory.h"
 #include "../bus/bus.h"
 #include "../config.h"
 
