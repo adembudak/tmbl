@@ -26,48 +26,6 @@ public:
   void write(const cpu::reg16 rr, const byte b);
   void write(const cpu::reg16 rr1, const cpu::reg16 rr2);
 
-  // port mode registers
-  byte &IP() noexcept;
-  byte &SB() noexcept;
-  byte &SC() noexcept;
-  byte &DIV() noexcept;
-  byte &TIMA() noexcept;
-  byte &TMA() noexcept;
-  byte &TAC() noexcept;
-
-  // bank control registers -CGB only
-  byte &KEY1() noexcept;
-  byte &RP() noexcept;
-
-  // Interrupt flags
-  byte &IF() noexcept;
-  byte &IE() noexcept;
-
-  // display registers
-  byte &LCDC() noexcept;
-  byte &STAT() noexcept;
-  byte &SCY() noexcept;
-  byte &SCX() noexcept;
-  byte &LY() noexcept;
-  byte &LYC() noexcept;
-  byte &DMA() noexcept;
-  byte &BGP() noexcept;
-  byte &OBP0() noexcept;
-  byte &OBP1() noexcept;
-  byte &WY() noexcept;
-  byte &WX() noexcept;
-
-  // display registers -  CGB only
-  byte &HDMA1() noexcept;
-  byte &HDMA2() noexcept;
-  byte &HDMA3() noexcept;
-  byte &HDMA4() noexcept;
-  byte &HDMA5() noexcept;
-  byte &BCPS() noexcept;
-  byte &BCPD() noexcept;
-  byte &OCPS() noexcept;
-  byte &OCPD() noexcept;
-
   byte *const rom_begin = std::data(m_data) + 0x0000U;
   byte *const rom_end = std::data(m_data) + 0x07FFFU;
 
