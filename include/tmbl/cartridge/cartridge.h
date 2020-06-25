@@ -1,6 +1,7 @@
 #ifndef CARTRIDGE_h
 #define CARTRIDGE_h
 
+#include "../bus/bus.h"
 #include "../config.h"
 #include "mbc/mbc.h"
 #include "mbc/mbc0/mbc0.h"
@@ -13,7 +14,8 @@ namespace tmbl::cartridge {
 
 class cartridge final {
 public:
-  explicit cartridge(const std::filesystem::path &p);
+  explicit cartridge(const std::filesystem::path &p,
+                     std::shared_ptr<bus::bus> b);
 
   const std::string title() const noexcept;
   std::string manufacturer() noexcept;
@@ -50,6 +52,7 @@ private:
   byte rom_version{};
 
   std::unique_ptr<mbc> mbc_type;
+  std::shared_ptr<bus::bus> bus;
 };
 
 } // namespace tmbl::cartridge

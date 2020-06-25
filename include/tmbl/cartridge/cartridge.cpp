@@ -79,7 +79,9 @@ std::vector<byte> dumpROM(const std::filesystem::path &p) {
   return {std::istreambuf_iterator{stream}, {}};
 }
 
-cartridge::cartridge(const std::filesystem::path &p) : rom_data(dumpROM(p)) {
+cartridge::cartridge(const std::filesystem::path &p,
+                     std::shared_ptr<bus::bus> b)
+    : rom_data(dumpROM(p)), bus(std::move(b)) {
   cartType();
   cartRom();
   cartRam();
