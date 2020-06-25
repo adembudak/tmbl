@@ -218,3 +218,107 @@ TEST(EightBitRegisterType, NonmemberOperatorBinaryXOR) {
   ASSERT_EQ(result.value(), 0b1101'0000);
 }
 
+TEST(EightBitRegisterType, Bit0) {
+  reg8 B;
+
+  B = 0b1111'1111;
+  B.bit0(reset);
+  ASSERT_EQ(B.bit0(std::nullopt), reset);
+  ASSERT_EQ(B.value(), 0b1111'1110);
+
+  B.bit0(set);
+  ASSERT_EQ(B.bit0(std::nullopt), set);
+  ASSERT_EQ(B.value(), 0b1111'1111);
+}
+
+TEST(EightBitRegisterType, Bit1) {
+  reg8 A;
+
+  A = 0b1111'1111;
+  A.bit1(reset);
+  ASSERT_EQ(A.bit1(std::nullopt), reset);
+  ASSERT_EQ(A.value(), 0b1111'1101);
+
+  A.bit1(set);
+  ASSERT_EQ(A.bit1(), set);
+  ASSERT_EQ(A.value(), 0b1111'1111);
+}
+
+TEST(EightBitRegisterType, Bit2) {
+  reg8 A;
+
+  A = 0b1111'1111;
+  A.bit2(reset);
+  ASSERT_EQ(A.bit2(std::nullopt), reset);
+  ASSERT_EQ(A.value(), 0b1111'1011);
+
+  A.bit2(set);
+  ASSERT_EQ(A.bit2(), set);
+  ASSERT_EQ(A.value(), 0b1111'1111);
+}
+
+TEST(EightBitRegisterType, Bit3) {
+  reg8 A;
+
+  A = 0b1111'1111;
+  A.bit3(reset);
+  ASSERT_EQ(A.bit3(std::nullopt), reset);
+  ASSERT_EQ(A.value(), 0b1111'0111);
+
+  A.bit3(set);
+  ASSERT_EQ(A.bit3(), set);
+  ASSERT_EQ(A.value(), 0b1111'1111);
+}
+
+TEST(EightBitRegisterType, Bit4) {
+  reg8 A;
+
+  A = 0b1111'1111;
+  A.bit4(reset);
+  ASSERT_EQ(A.bit4(std::nullopt), reset);
+  ASSERT_EQ(A.value(), 0b1110'1111);
+
+  A.bit4(set);
+  ASSERT_EQ(A.bit4(), set);
+  ASSERT_EQ(A.value(), 0b1111'1111);
+}
+
+TEST(EightBitRegisterType, Bit5) {
+  reg8 A;
+
+  A = 0b1111'1111;
+  A.bit5(reset);
+  ASSERT_EQ(A.bit5(std::nullopt), reset);
+  ASSERT_EQ(A.value(), 0b1101'1111);
+
+  A.bit5(set);
+  ASSERT_EQ(A.bit5(), set);
+  ASSERT_EQ(A.value(), 0b1111'1111);
+}
+
+TEST(EightBitRegisterType, Bit6) {
+  reg8 A;
+
+  A = 0b1111'1111;
+  A.bit6(reset);
+  ASSERT_EQ(A.bit6(std::nullopt), reset);
+  ASSERT_EQ(A.value(), 0b1011'1111);
+
+  A.bit6(set);
+  ASSERT_EQ(A.bit6(), set);
+  ASSERT_EQ(A.value(), 0b1111'1111);
+}
+
+TEST(EightBitRegisterType, Bit7) {
+  reg8 A;
+
+  A = 0b1111'1111;
+  A.bit7(reset);
+  ASSERT_EQ(A.bit7(std::nullopt), reset);
+  ASSERT_EQ(A.value(), 0b0111'1111);
+
+  A.bit7(set);
+  ASSERT_EQ(A.bit7(), set);
+  ASSERT_EQ(A.value(), 0b1111'1111);
+}
+

@@ -3,6 +3,7 @@
 
 #include "../../config.h"
 #include <cstddef>
+#include <optional>
 
 namespace tmbl::cpu {
 
@@ -50,6 +51,17 @@ public:
 
   u8 lsb() const noexcept;
   u8 msb() const noexcept;
+
+  flag bit0(std::optional<flag> f = std::nullopt) noexcept;
+  flag bit1(std::optional<flag> f = std::nullopt) noexcept;
+  flag bit2(std::optional<flag> f = std::nullopt) noexcept;
+  flag bit3(std::optional<flag> f = std::nullopt) noexcept;
+
+  [[maybe_unused]] flag bit4(std::optional<flag> f = std::nullopt) noexcept;
+
+  flag bit5(std::optional<flag> f = std::nullopt) noexcept;
+  flag bit6(std::optional<flag> f = std::nullopt) noexcept;
+  flag bit7(std::optional<flag> f = std::nullopt) noexcept;
 
   static u8 min() noexcept;
   static u8 max() noexcept;
