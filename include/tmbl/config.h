@@ -17,6 +17,9 @@ using cflag = const flag;
 constexpr cflag set = true;
 constexpr cflag reset = false;
 
+using OnOff = const bool;
+constexpr OnOff on = true;
+constexpr OnOff off = false;
 }
 
 #endif
