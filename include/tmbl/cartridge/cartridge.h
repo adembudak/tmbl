@@ -4,7 +4,7 @@
 #include "../bus/bus.h"
 #include "../config.h"
 #include "mbc/mbc.h"
-#include "mbc/mbc0/mbc0.h"
+#include "mbc/mbc1/mbc1.h"
 #include <filesystem>
 #include <string>
 #include <variant>

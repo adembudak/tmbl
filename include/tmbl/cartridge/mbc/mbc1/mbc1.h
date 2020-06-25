@@ -7,7 +7,7 @@
 
 namespace tmbl::cartridge {
 
-class mbc0 final : public mbc {
+class mbc1 final : public mbc {
 public:
 private:
 };

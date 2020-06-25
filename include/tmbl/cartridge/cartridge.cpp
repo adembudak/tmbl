@@ -87,7 +87,7 @@ cartridge::cartridge(const std::filesystem::path &p,
   cartRam();
   romVersion();
 
-  auto checksum = [this]() {
+  const auto checksum = [this]() {
     return std::accumulate(
         rom_data.data() + 0x0134, rom_data.data() + 0x014D, 0,
         [](const byte sum, const byte val) { return sum - val - 1; });
@@ -181,14 +181,14 @@ bool cartridge::SGB() const noexcept {
 void cartridge::cartType() noexcept {
   switch (rom_data[0x147]) {
   case cartridge_type::ROM_ONLY:
-    mbc_type = std::make_unique<mbc0>();
     has_ram = false;
     has_battery = false;
     has_timer = false;
+    std::copy(rom_data.begin(), rom_data.end(), bus->rom_begin);
 
   case cartridge_type::ROM_MBC1:
     // TODO: implement MBC1
-    // mbc_type = std::make_unique<mbc1>();
+    mbc_type = std::make_unique<mbc1>();
     has_ram = false;
     // has battery means the game state can be saved.
     has_battery = false;
@@ -510,11 +510,4 @@ std::string cartridge::oldLicenseCode() noexcept {
 }
 
 void cartridge::romVersion() noexcept { rom_version = rom_data[0x014C]; }
-
-byte cartridge::headerChecksum() const noexcept {
-  return std::accumulate(
-      rom_data.data() + 0x0134, rom_data.data() + 0x014D, 0,
-      [](const byte sum, const byte val) { return sum - val - 1; });
-}
-
 } // namespace tmbl::cartridge
