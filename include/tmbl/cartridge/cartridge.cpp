@@ -94,6 +94,8 @@ cartridge::cartridge(const std::filesystem::path &p,
   }();
 
   assert(checksum == rom_data[0x014D]);
+  sgb_enabled = SGB();
+  cgb_enabled = CGB();
 }
 
 const std::string cartridge::title() const noexcept {

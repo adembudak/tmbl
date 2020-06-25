@@ -42,6 +42,9 @@ private:
 
   bool ram_disabled = false;
 
+  bool cgb_enabled = false;
+  bool sgb_enabled = false;
+
   int rom_size = 0;
   int ram_size = 0;
 
