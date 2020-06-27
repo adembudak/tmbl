@@ -81,7 +81,7 @@ std::vector<byte> dumpROM(const std::filesystem::path &p) {
 
 cartridge::cartridge(const std::filesystem::path &p,
                      std::shared_ptr<bus::bus> b)
-    : rom_data(dumpROM(p)), bus(std::move(b)) {
+    : rom(dumpROM(p)), bus(std::move(b)) {
   cartType();
   cartRom();
   cartRam();
@@ -89,29 +89,29 @@ cartridge::cartridge(const std::filesystem::path &p,
 
   const auto checksum = [this]() {
     return std::accumulate(
-        rom_data.data() + 0x0134, rom_data.data() + 0x014D, 0,
+        rom.data() + 0x0134, rom.data() + 0x014D, 0,
         [](const byte sum, const byte val) { return sum - val - 1; });
   }();
 
-  assert(checksum == rom_data[0x014D]);
+  assert(checksum == rom[0x014D]);
   sgb_enabled = SGB();
   cgb_enabled = CGB();
 }
 
 const std::string cartridge::title() const noexcept {
-  return {std::data(rom_data) + 0x0134, std::data(rom_data) + 0x013F};
+  return {std::data(rom) + 0x0134, std::data(rom) + 0x013F};
 }
 
 std::string cartridge::manufacturer() noexcept {
-  return {std::data(rom_data) + 0x013F, std::data(rom_data) + 0x0142};
+  return {std::data(rom) + 0x013F, std::data(rom) + 0x0142};
 }
 
 bool cartridge::CGB() const noexcept {
-  return rom_data[0x0143] == 0x0080 ? true : false;
+  return rom[0x0143] == 0x0080 ? true : false;
 }
 
 std::string cartridge::newLicenseCode() noexcept {
-  switch (rom_data[0x0144] << 8 | rom_data[0x0145]) {
+  switch (rom[0x0144] << 8 | rom[0x0145]) {
   case 0x00: return "none";
   case 0x13: return "electronic arts";
   case 0x20: return "kss";
@@ -177,16 +177,17 @@ std::string cartridge::newLicenseCode() noexcept {
 }
 
 bool cartridge::SGB() const noexcept {
-  return rom_data[0x0146] == 0x0003 ? true : false;
+  return rom[0x0146] == 0x0003 ? true : false;
 }
 
 void cartridge::cartType() noexcept {
-  switch (rom_data[0x147]) {
+  switch (rom[0x147]) {
   case cartridge_type::ROM_ONLY:
     has_ram = false;
     has_battery = false;
     has_timer = false;
-    std::copy(rom_data.begin(), rom_data.end(), bus->rom_begin);
+    has_rumble = false;
+    std::copy(rom.begin(), rom.end(), bus->rom0_begin);
 
   case cartridge_type::ROM_MBC1:
     // TODO: implement MBC1
@@ -195,6 +196,7 @@ void cartridge::cartType() noexcept {
     // has battery means the game state can be saved.
     has_battery = false;
     has_timer = false;
+    has_rumble = false;
     break;
 
   case cartridge_type::ROM_MBC1_RAM:
@@ -202,6 +204,7 @@ void cartridge::cartType() noexcept {
     has_ram = true;
     has_battery = false;
     has_timer = false;
+    has_rumble = false;
     break;
 
   case cartridge_type::ROM_MBC1_RAM_BATTERY:
@@ -209,6 +212,7 @@ void cartridge::cartType() noexcept {
     has_ram = true;
     has_battery = true;
     has_timer = false;
+    has_rumble = false;
     break;
 
   case cartridge_type::ROM_MBC2:
@@ -216,6 +220,7 @@ void cartridge::cartType() noexcept {
     has_ram = false;
     has_battery = false;
     has_timer = false;
+    has_rumble = false;
     break;
 
   case cartridge_type::ROM_MBC2_RAM_BATTERY:
@@ -223,6 +228,7 @@ void cartridge::cartType() noexcept {
     has_ram = true;
     has_battery = true;
     has_timer = false;
+    has_rumble = false;
     break;
 
   case cartridge_type::ROM_MBC3_TIMER_BATTERY:
@@ -230,6 +236,7 @@ void cartridge::cartType() noexcept {
     has_ram = false;
     has_battery = true;
     has_timer = true;
+    has_rumble = false;
     break;
 
   case cartridge_type::ROM_MBC3_TIMER_RAM_BATTERY:
@@ -237,6 +244,7 @@ void cartridge::cartType() noexcept {
     has_ram = true;
     has_battery = true;
     has_timer = true;
+    has_rumble = false;
     break;
 
   case cartridge_type::ROM_MBC3:
@@ -244,21 +252,69 @@ void cartridge::cartType() noexcept {
     has_ram = false;
     has_battery = false;
     has_timer = false;
+    has_rumble = false;
     break;
 
   case cartridge_type::ROM_MBC3_RAM:
     // mbc_type = std::make_unique<mbc3>();
-    // mbc_type = mbc3{std::make_shared<cartridge>(*this)};
     has_ram = true;
     has_battery = false;
     has_timer = false;
+    has_rumble = false;
     break;
 
   case cartridge_type::ROM_MBC3_RAM_BATTERY:
     // mbc_type = std::make_unique<mbc3>();
     has_ram = true;
+    has_battery = true;
+    has_timer = false;
+    has_rumble = false;
+    break;
+
+  case cartridge_type::ROM_MBC5:
+    // mbc_type = std::make_unique<mbc5>();
+    has_ram = false;
     has_battery = false;
-    has_timer = true;
+    has_timer = false;
+    has_rumble = false;
+    break;
+
+  case cartridge_type::ROM_MBC5_RAM:
+    has_ram = true;
+    has_battery = false;
+    has_timer = false;
+    has_rumble = false;
+    break;
+
+  case cartridge_type::ROM_MBC5_RAM_BATTERY:
+    has_ram = true;
+    has_battery = true;
+    has_timer = false;
+    has_rumble = false;
+    break;
+
+  case cartridge_type::ROM_MBC5_RUMBLE:
+    // mbc_type = std::make_unique<mbc5>();
+    has_ram = false;
+    has_battery = false;
+    has_timer = false;
+    has_rumble = true;
+    break;
+
+  case cartridge_type::ROM_MBC5_RUMBLE_SRAM:
+    // mbc_type = std::make_unique<mbc5>();
+    has_ram = true;
+    has_battery = false;
+    has_timer = false;
+    has_rumble = true;
+    break;
+
+  case cartridge_type::ROM_MBC5_RUMBLE_SRAM_BATTERY:
+    // mbc_type = std::make_unique<mbc5>();
+    has_ram = true;
+    has_battery = true;
+    has_timer = false;
+    has_rumble = true;
     break;
 
   default: break;
@@ -266,7 +322,7 @@ void cartridge::cartType() noexcept {
 }
 
 void cartridge::cartRom() noexcept {
-  switch (rom_data[0x0148]) {
+  switch (rom[0x0148]) {
   case cartridge_rom::ROM_KB_32:
     rom_size = 32 * 1024;
     rom_banks = 2;
@@ -315,7 +371,7 @@ void cartridge::cartRom() noexcept {
 }
 
 void cartridge::cartRam() noexcept {
-  switch (rom_data[0x0149]) {
+  switch (rom[0x0149]) {
   case cartridge_ram::RAM_None:
     ram_size = 0;
     ram_banks = 0;
@@ -349,16 +405,16 @@ void cartridge::cartRam() noexcept {
 }
 
 void cartridge::destinationCode() noexcept {
-  destination_code = rom_data[0x014A] ? "JP" : "";
+  destination_code = rom[0x014A] ? "JP" : "";
 }
 
 std::string cartridge::oldLicenseCode() noexcept {
-  if (rom_data[0x014B] == 0x0033)
+  if (rom[0x014B] == 0x0033)
     return newLicenseCode();
   else {
     // typing/editing all of these took less than 5 minutes with Vim <3
     // https://raw.githubusercontent.com/gb-archive/salvage/master/txt-files/gbrom.txt
-    switch (rom_data[0x014B]) {
+    switch (rom[0x014B]) {
     case 0x00: return "none";
     case 0x09: return "hot-b";
     case 0x0C: return "elite systems";
@@ -511,5 +567,5 @@ std::string cartridge::oldLicenseCode() noexcept {
   }
 }
 
-void cartridge::romVersion() noexcept { rom_version = rom_data[0x014C]; }
+void cartridge::romVersion() noexcept { rom_version = rom[0x014C]; }
 } // namespace tmbl::cartridge

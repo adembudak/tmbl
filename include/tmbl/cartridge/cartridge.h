@@ -33,12 +33,13 @@ public:
   byte headerChecksum() const noexcept;
 
 private:
-  std::vector<byte> rom_data{};
-  std::vector<byte> ram_data{};
+  std::vector<byte> rom{};
+  std::vector<byte> external_ram{};
 
   bool has_ram = false;
   bool has_battery = false;
   bool has_timer = false;
+  bool has_rumble = false;
 
   bool ram_disabled = false;
 
