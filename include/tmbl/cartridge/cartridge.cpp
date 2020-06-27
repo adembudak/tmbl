@@ -79,9 +79,7 @@ std::vector<byte> dumpROM(const std::filesystem::path &p) {
   return {std::istreambuf_iterator{stream}, {}};
 }
 
-cartridge::cartridge(const std::filesystem::path &p,
-                     std::shared_ptr<bus::bus> b)
-    : rom(dumpROM(p)), bus(std::move(b)) {
+cartridge::cartridge(const std::filesystem::path &p) : rom(dumpROM(p)) {
   cartType();
   cartRom();
   cartRam();
@@ -187,7 +185,6 @@ void cartridge::cartType() noexcept {
     has_battery = false;
     has_timer = false;
     has_rumble = false;
-    std::copy(rom.begin(), rom.end(), bus->rom0_begin);
 
   case cartridge_type::ROM_MBC1:
     // TODO: implement MBC1

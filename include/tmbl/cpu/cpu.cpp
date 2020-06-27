@@ -1,8 +1,8 @@
 #include "cpu.h"
+
 #include <stdexcept>
 
 namespace tmbl::cpu {
-cpu::cpu(std::shared_ptr<bus::bus> b) : bus(std::move(b)) {}
 
 void cpu::run() {
   // clang-format off

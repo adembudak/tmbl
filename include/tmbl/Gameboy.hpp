@@ -3,7 +3,6 @@
 
 #include "config.h"
 #include "cpu/cpu.h"
-#include "bus/bus.h"
 
 #include <filesystem>
 
@@ -22,7 +21,6 @@ public:
 
 private:
   cpu::cpu c;
-  bus::bus b;
 };
 
 }

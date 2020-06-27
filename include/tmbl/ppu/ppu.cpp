@@ -1,7 +1,6 @@
 #include "ppu.h"
 
 namespace tmbl::ppu {
-ppu::ppu(std::shared_ptr<bus::bus> b) : bus(std::move(b)) {}
 
 [[maybe_unused]] bool ppu::lcdPower(std::optional<flag> f) noexcept {
   if (f.has_value()) {
