@@ -53,7 +53,7 @@ private:
   std::string destination_code{};
   byte rom_version{};
 
-  std::unique_ptr<mbc> mbc_type;
+  std::shared_ptr<mbc> mbc_type;
 };
 
 } // namespace tmbl::cartridge

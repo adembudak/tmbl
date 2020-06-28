@@ -1,14 +1,26 @@
-#include "tmbl/Gameboy.hpp"
+#include "tmbl/cpu/cpu.h"
+#include "tmbl/cartridge/cartridge.h"
+#include "tmbl/bus/bus.h"
 
 #include <SDL2/SDL.h>
 #include <iostream>
 
-void echo(const char *message) { std::cout << message << '\n'; }
-
 int main(int /*argc*/, char * /*argv*/[]) {
-  tmbl::Gameboy machine;
-  SDL_Window *window = SDL_CreateWindow(machine.title.c_str(), SDL_WINDOWPOS_CENTERED,
+  using namespace tmbl;
+
+  SDL_Window *window = SDL_CreateWindow(/*machine.title.c_str()*/ "", SDL_WINDOWPOS_CENTERED,
                                         SDL_WINDOWPOS_CENTERED, 160, 144, SDL_WINDOW_SHOWN);
+
+  cartridge::cartridge cart("/home/adem/Projects/tombul/build/frontends/SDL/tetris.gb");
+
+  auto pBus{std::make_shared<bus::bus>()};
+  pBus->pCart = std::make_shared<cartridge::cartridge>(cart);
+
+  auto title = pBus->pCart->title();
+  SDL_SetWindowTitle(window, title.c_str());
+
+  cpu::cpu c(pBus);
+  c.run();
 
   SDL_EventState(SDL_DROPFILE, SDL_ENABLE);
   SDL_bool done = SDL_FALSE;
@@ -25,13 +37,11 @@ int main(int /*argc*/, char * /*argv*/[]) {
         case SDL_DROPFILE:
           char *cartridge_file = event.drop.file;
 
-          machine.plug(cartridge_file);
-          SDL_SetWindowTitle(window, machine.title.c_str());
-
           SDL_free(cartridge_file);
           break;
       }
     }
+    std::this_thread::sleep_for(std::chrono::milliseconds{1});
   }
 
   SDL_DestroyWindow(window);

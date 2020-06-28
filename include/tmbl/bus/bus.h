@@ -2,7 +2,9 @@
 #define BUS_H
 
 #include "../config.h"
+#include "../cartridge/cartridge.h"
 #include <array>
+#include <memory>
 
 namespace tmbl::cpu {
 class reg8;
@@ -58,6 +60,9 @@ public:
 
   byte *const hram_begin = std::data(m_data) + 0xFF80U;
   byte *const hram_end = std::data(m_data) + 0xFFFEU;
+
+public:
+  std::shared_ptr<cartridge::cartridge> pCart; //= std::make_shared<cartridge::cartridge>();
 
 private:
   mutable std::array<byte, 64 * 1024> m_data{};
