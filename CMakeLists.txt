@@ -11,6 +11,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(TOMBUL_BUILD_TESTS "Build tests" OFF)
+option(TOMBUL_BUILD_WITH_SDL_FRONTEND "Build if you want to see something playable." OFF)
 
 include(CTest)
 enable_testing()
@@ -26,4 +27,8 @@ add_definitions(-Wall -Werror -fpermissive -Wconversion)
 
 if(TOMBUL_BUILD_TESTS)
   add_subdirectory(tests)
+endif()
+
+if(TOMBUL_BUILD_WITH_SDL_FRONTEND)
+	add_subdirectory(frontends)
 endif()

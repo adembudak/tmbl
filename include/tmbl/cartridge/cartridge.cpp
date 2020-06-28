@@ -91,9 +91,8 @@ cartridge::cartridge(const std::filesystem::path &p) : rom(dumpROM(p)) {
         [](const byte sum, const byte val) { return sum - val - 1; });
   }();
 
-  assert(checksum == rom[0x014D]);
-  sgb_enabled = SGB();
   cgb_enabled = CGB();
+  sgb_enabled = SGB();
 }
 
 const std::string cartridge::title() const noexcept {
