@@ -13,7 +13,15 @@ namespace tmbl::cpu {
 
 class cpu final {
 public:
-  explicit cpu(std::shared_ptr<bus::bus> b_) : bus(b_) {}
+  explicit cpu(std::shared_ptr<bus::bus> b_) : bus(b_) {
+    A = 0x01;
+    F = 0xB0;
+    BC = 0x0013;
+    DE = 0x00D8;
+    HL = 0x014D;
+    SP = 0xFFFE;
+  }
+
   void run();
 
 private:
