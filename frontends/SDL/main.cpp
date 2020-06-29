@@ -8,16 +8,15 @@
 int main(int /*argc*/, char * /*argv*/[]) {
   using namespace tmbl;
 
-  SDL_Window *window = SDL_CreateWindow(/*machine.title.c_str()*/ "", SDL_WINDOWPOS_CENTERED,
-                                        SDL_WINDOWPOS_CENTERED, 160, 144, SDL_WINDOW_SHOWN);
+  SDL_Window *window = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 160,
+                                        144, SDL_WINDOW_SHOWN);
 
   cartridge::cartridge cart("/home/adem/Projects/tombul/build/frontends/SDL/tetris.gb");
 
   auto pBus{std::make_shared<bus::bus>()};
-  pBus->pCart = std::make_shared<cartridge::cartridge>(cart);
+  pBus->plug(cart);
 
-  auto title = pBus->pCart->title();
-  SDL_SetWindowTitle(window, title.c_str());
+  SDL_SetWindowTitle(window, pBus->title().c_str());
 
   cpu::cpu c(pBus);
   c.run();

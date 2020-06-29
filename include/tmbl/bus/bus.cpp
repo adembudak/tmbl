@@ -2,6 +2,8 @@
 #include "../cpu/registers/reg8.h"
 #include "../cpu/registers/reg16.h"
 
+#include <string>
+
 namespace tmbl::bus {
 
 bus::bus() {
@@ -39,7 +41,12 @@ bus::bus() {
   m_data[0xFFFF] = 0x00; // IE
 }
 
-byte &bus::IF() const { return m_data[0xFFFF]; }
+byte &bus::IE() const { return m_data[0xFFFF]; }
+
+void bus::plug(const cartridge::cartridge &cart) noexcept {
+  pCart = std::make_shared<cartridge::cartridge>(cart);
+}
+std::string bus::title() const noexcept { return pCart->title(); }
 
 [[nodiscard]] byte bus::read(const cpu::reg8 r) { return read_byte(r.value()); }
 [[nodiscard]] byte bus::read(const cpu::reg16 rr) { return read_byte(rr.value()); }
@@ -86,7 +93,7 @@ byte bus::read_byte(u16 index) const noexcept {
   } else if (memoryPortion(0xFF80, 0xFFFE, index)) {
     return m_data[index];
   }
-  return IF();
+  return IE();
 };
 
 void bus::write_byte(u16 index, byte val) noexcept {
@@ -115,7 +122,7 @@ void bus::write_byte(u16 index, byte val) noexcept {
   } else if (memoryPortion(0xFF80, 0xFFFE, index)) {
     m_data[index] = val;
   } else {
-    IF() = val;
+    IE() = val;
   }
 }
 

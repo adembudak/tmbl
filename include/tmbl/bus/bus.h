@@ -3,8 +3,10 @@
 
 #include "../config.h"
 #include "../cartridge/cartridge.h"
+
 #include <array>
 #include <memory>
+#include <string>
 
 namespace tmbl::cpu {
 class reg8;
@@ -17,7 +19,9 @@ class bus final {
 public:
   bus();
 
-  byte &IF() const;
+  byte &IE() const;
+  void plug(const cartridge::cartridge &cart) noexcept;
+  std::string title() const noexcept;
 
   [[nodiscard]] byte read(const cpu::reg8 r);
   [[nodiscard]] byte read(const cpu::reg16 rr);
@@ -65,9 +69,6 @@ public:
   byte *const hram_begin = std::data(m_data) + 0xFF80U;
   byte *const hram_end = std::data(m_data) + 0xFFFEU;
 
-public:
-  std::shared_ptr<cartridge::cartridge> pCart;
-
 private:
   byte read_byte(u16 index) const noexcept;
   void write_byte(u16 index, byte val) noexcept;
@@ -77,6 +78,7 @@ private:
                           0x00, 0x0C, 0x00, 0x0D, 0x00, 0x08, 0x11, 0x1F, 0x88, 0x89, 0x00, 0x0E,
                           0xDC, 0xCC, 0x6E, 0xE6, 0xDD, 0xDD, 0xD9, 0x99, 0xBB, 0xBB, 0x67, 0x63,
                           0x6E, 0x0E, 0xEC, 0xCC, 0xDD, 0xDC, 0x99, 0x9F, 0xBB, 0xB9, 0x33, 0x3E};
+  std::shared_ptr<cartridge::cartridge> pCart;
 };
 }
 
