@@ -30,10 +30,10 @@ public:
   void romVersion() noexcept;
   byte headerChecksum() const noexcept;
 
-private:
   std::vector<byte> rom{};
   std::vector<byte> external_ram{};
 
+private:
   bool has_ram = false;
   bool has_battery = false;
   bool has_timer = false;
