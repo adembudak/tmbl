@@ -11,7 +11,7 @@ namespace tmbl::cpu {
 
 /*!
    A type for 8 bit registers.
-   In practive used only for A(ccumulator) and F(lag) registers
+   In practice used only for A(ccumulator) and F(lag) registers
    
    Register F
    | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |                                                                       
@@ -52,16 +52,14 @@ public:
   u8 lsb() const noexcept;
   u8 msb() const noexcept;
 
-  flag bit0(std::optional<flag> f = std::nullopt) noexcept;
-  flag bit1(std::optional<flag> f = std::nullopt) noexcept;
-  flag bit2(std::optional<flag> f = std::nullopt) noexcept;
-  flag bit3(std::optional<flag> f = std::nullopt) noexcept;
-
+  [[maybe_unused]] flag bit0(std::optional<flag> f = std::nullopt) noexcept;
+  [[maybe_unused]] flag bit1(std::optional<flag> f = std::nullopt) noexcept;
+  [[maybe_unused]] flag bit2(std::optional<flag> f = std::nullopt) noexcept;
+  [[maybe_unused]] flag bit3(std::optional<flag> f = std::nullopt) noexcept;
   [[maybe_unused]] flag bit4(std::optional<flag> f = std::nullopt) noexcept;
-
-  flag bit5(std::optional<flag> f = std::nullopt) noexcept;
-  flag bit6(std::optional<flag> f = std::nullopt) noexcept;
-  flag bit7(std::optional<flag> f = std::nullopt) noexcept;
+  [[maybe_unused]] flag bit5(std::optional<flag> f = std::nullopt) noexcept;
+  [[maybe_unused]] flag bit6(std::optional<flag> f = std::nullopt) noexcept;
+  [[maybe_unused]] flag bit7(std::optional<flag> f = std::nullopt) noexcept;
 
   static u8 min() noexcept;
   static u8 max() noexcept;
