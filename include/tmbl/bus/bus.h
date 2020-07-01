@@ -19,7 +19,18 @@ class bus final {
 public:
   bus();
 
-  byte &IE() const;
+  // selects wram bank
+  // 0-1 bank0
+  // 1-7 bank1-bank7
+  u8 SVBK() noexcept;
+
+  // selects vram bank
+  // 0 bank0
+  // 1 bank1
+  u8 VBK() noexcept;
+
+  byte &IE() const noexcept;
+
   void plug(const cartridge::cartridge &cart) noexcept;
   std::string title() const noexcept;
 
@@ -36,11 +47,11 @@ public:
   void write(const cpu::reg16 rr, const byte b);
   void write(const cpu::reg16 rr1, const cpu::reg16 rr2);
 
-  byte *const rom0_begin = std::data(m_data) + 0x0000U;
-  byte *const rom0_end = std::data(m_data) + 0x3FFFU;
+  byte *const rom_bank0_begin = std::data(m_data) + 0x0000U;
+  byte *const rom_bank0_end = std::data(m_data) + 0x3FFFU;
 
-  byte *const romN_begin = std::data(m_data) + 0x4000U;
-  byte *const romN_end = std::data(m_data) + 0x07FFFU;
+  byte *const rom_bankN_begin = std::data(m_data) + 0x4000U;
+  byte *const rom_bankN_end = std::data(m_data) + 0x07FFFU;
 
   byte *const vram_begin = std::data(m_data) + 0x8000U;
   byte *const vram_end = std::data(m_data) + 0x9FFFU;
@@ -48,11 +59,11 @@ public:
   byte *const sram_begin = std::data(m_data) + 0xA000U;
   byte *const sram_end = std::data(m_data) + 0xBFFFU;
 
-  byte *const wram0_begin = std::data(m_data) + 0xC000U;
-  byte *const wram0_end = std::data(m_data) + 0xCFFFU;
+  byte *const wram_bank0_begin = std::data(m_data) + 0xC000U;
+  byte *const wram_bank0_end = std::data(m_data) + 0xCFFFU;
 
-  byte *const wramN_begin = std::data(m_data) + 0xD000U;
-  byte *const wramN_end = std::data(m_data) + 0xDFFFU;
+  byte *const wram_bankN_begin = std::data(m_data) + 0xD000U;
+  byte *const wram_bankN_end = std::data(m_data) + 0xDFFFU;
 
   byte *const wram_echo_begin = std::data(m_data) + 0xE000U;
   byte *const wram_echo_end = std::data(m_data) + 0xFDFFU;

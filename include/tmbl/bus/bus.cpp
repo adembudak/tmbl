@@ -41,7 +41,18 @@ bus::bus() {
   m_data[0xFFFF] = 0x00; // IE
 }
 
-byte &bus::IE() const { return m_data[0xFFFF]; }
+u8 bus::SVBK() noexcept {
+  if (!pCart->CGB())
+    return 0;
+  else if ((m_data[0xFF70] & 0b0000'0111U) == 0)
+    return 1;
+  else
+    return m_data[0xFF70] & 0b0000'0111U;
+}
+
+u8 bus::VBK() noexcept { return !pCart->CGB() ? 0 : m_data[0xFF4F] & 0b0000'0001U; }
+
+byte &bus::IE() const noexcept { return m_data[0xFFFF]; }
 
 void bus::plug(const cartridge::cartridge &cart) noexcept {
   pCart = std::make_shared<cartridge::cartridge>(cart);
