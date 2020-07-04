@@ -6,7 +6,7 @@
 #include <memory>
 #include <numeric>
 
-namespace tmbl::cartridge {
+namespace tmbl {
 
 enum cartridge_type {
   ROM_ONLY = 0x00,
@@ -564,4 +564,4 @@ std::string cartridge::oldLicenseCode() noexcept {
 }
 
 void cartridge::romVersion() noexcept { rom_version = rom[0x014C]; }
-} // namespace tmbl::cartridge
+} // namespace tmbl

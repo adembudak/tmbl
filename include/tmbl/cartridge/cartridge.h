@@ -9,7 +9,7 @@
 #include <variant>
 #include <vector>
 
-namespace tmbl::cartridge {
+namespace tmbl {
 
 class cartridge final {
 public:
@@ -56,6 +56,6 @@ private:
   std::shared_ptr<mbc> mbc_type;
 };
 
-} // namespace tmbl::cartridge
+} // namespace tmbl
 
 #endif

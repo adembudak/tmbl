@@ -3,22 +3,21 @@
 
 #include "../config.h"
 #include "../cartridge/cartridge.h"
+#include "../cpu/registers/reg8.h"
 
 #include <array>
 #include <memory>
 #include <string>
 
-namespace tmbl::cpu {
+namespace tmbl {
 class reg8;
 class reg16;
 }
 
-namespace tmbl::bus {
+namespace tmbl {
 
 class bus final {
 public:
-  bus();
-
   // selects wram bank
   // 0-1 bank0
   // 1-7 bank1-bank7
@@ -31,21 +30,21 @@ public:
 
   byte &IE() const noexcept;
 
-  void plug(const cartridge::cartridge &cart) noexcept;
+  void plug(const cartridge &cart) noexcept;
   std::string title() const noexcept;
 
-  [[nodiscard]] byte read(const cpu::reg8 r);
-  [[nodiscard]] byte read(const cpu::reg16 rr);
+  [[nodiscard]] byte read(const reg8 r);
+  [[nodiscard]] byte read(const reg16 rr);
   [[nodiscard]] byte read(const u8 n);
   [[nodiscard]] byte read(const u16 nn);
 
-  void write(const cpu::reg8 r, const u8 n);
-  void write(const cpu::reg16 rr, const cpu::reg8 r);
-  void write(const cpu::reg16 rr, const u16 nn);
-  void write(const u16 nn, const cpu::reg8 r);
+  void write(const reg8 r, const u8 n);
+  void write(const reg16 rr, const reg8 r);
+  void write(const reg16 rr, const u16 nn);
+  void write(const u16 nn, const reg8 r);
   void write(const u16 nn, const byte b);
-  void write(const cpu::reg16 rr, const byte b);
-  void write(const cpu::reg16 rr1, const cpu::reg16 rr2);
+  void write(const reg16 rr, const byte b);
+  void write(const reg16 rr1, const reg16 rr2);
 
   byte *const rom_bank0_begin = std::data(m_data) + 0x0000U;
   byte *const rom_bank0_end = std::data(m_data) + 0x3FFFU;
@@ -80,16 +79,32 @@ public:
   byte *const hram_begin = std::data(m_data) + 0xFF80U;
   byte *const hram_end = std::data(m_data) + 0xFFFEU;
 
+  auto data() const noexcept { return m_data; }
+
+  // Meyers' Sincleton
+  // see: More Effective C++ pp.131
+  static bus &get() {
+    static bus s;
+    return s;
+  }
+
+private:
+  bus();
+  ~bus() = default;
+
+  bus(const bus &other) = delete;
+  bus &operator=(const bus &rhs) = delete;
+
+  bus(bus &&other) = delete;
+  bus &operator=(bus &&rhs) = delete;
+
 private:
   byte read_byte(u16 index) const noexcept;
   void write_byte(u16 index, byte val) noexcept;
 
   mutable std::array<byte, 64 * 1024> m_data{};
-  const byte bootrom[256]{0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B, 0x03, 0x73, 0x00, 0x83,
-                          0x00, 0x0C, 0x00, 0x0D, 0x00, 0x08, 0x11, 0x1F, 0x88, 0x89, 0x00, 0x0E,
-                          0xDC, 0xCC, 0x6E, 0xE6, 0xDD, 0xDD, 0xD9, 0x99, 0xBB, 0xBB, 0x67, 0x63,
-                          0x6E, 0x0E, 0xEC, 0xCC, 0xDD, 0xDC, 0x99, 0x9F, 0xBB, 0xB9, 0x33, 0x3E};
-  std::shared_ptr<cartridge::cartridge> pCart;
+
+  std::shared_ptr<cartridge> pCart;
 };
 }
 

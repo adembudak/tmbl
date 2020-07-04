@@ -1,7 +1,7 @@
 #ifndef MBC_H
 #define MBC_H
 
-namespace tmbl::cartridge {
+namespace tmbl {
 
 class cartridge;
 
@@ -10,6 +10,6 @@ public:
   virtual ~mbc() = default;
 };
 
-} // namespace tmbl::cartridge
+} // namespace tmbl
 
 #endif

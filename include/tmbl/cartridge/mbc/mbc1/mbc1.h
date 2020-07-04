@@ -5,13 +5,13 @@
 
 #include "../mbc.h"
 
-namespace tmbl::cartridge {
+namespace tmbl {
 
 class mbc1 final : public mbc {
 public:
 private:
 };
 
-} // namespace tmbl::cartridge
+} // namespace tmbl
 
 #endif

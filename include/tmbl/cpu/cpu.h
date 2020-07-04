@@ -9,18 +9,11 @@
 
 #include <memory>
 
-namespace tmbl::cpu {
+namespace tmbl {
 
 class cpu final {
 public:
-  explicit cpu(std::shared_ptr<bus::bus> b_) : bus(b_) {
-    A = 0x01;
-    F = 0xB0;
-    BC = 0x0013;
-    DE = 0x00D8;
-    HL = 0x014D;
-    SP = 0xFFFE;
-  }
+  cpu();
 
   void run();
 
@@ -180,7 +173,6 @@ private:
   mutable reg16 DE;
   mutable reg16 HL;
 
-  std::shared_ptr<bus::bus> bus;
   clock c;
 
   flag IME = false;

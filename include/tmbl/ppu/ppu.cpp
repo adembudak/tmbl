@@ -1,6 +1,6 @@
 #include "ppu.h"
 
-namespace tmbl::ppu {
+namespace tmbl {
 
 [[maybe_unused]] bool ppu::lcdPower(std::optional<flag> f) noexcept {
   if (f.has_value()) {

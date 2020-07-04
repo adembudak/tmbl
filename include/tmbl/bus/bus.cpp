@@ -4,10 +4,9 @@
 
 #include <string>
 
-namespace tmbl::bus {
+namespace tmbl {
 
 bus::bus() {
-  std::copy(std::cbegin(bootrom), std::cend(bootrom), m_data.data() + 104);
   m_data[0xFF05] = 0x00; // TIMA
   m_data[0xFF06] = 0x00; // TMA
   m_data[0xFF07] = 0x00; // TAC
@@ -54,25 +53,22 @@ u8 bus::VBK() noexcept { return !pCart->CGB() ? 0 : m_data[0xFF4F] & 0b0000'0001
 
 byte &bus::IE() const noexcept { return m_data[0xFFFF]; }
 
-void bus::plug(const cartridge::cartridge &cart) noexcept {
-  pCart = std::make_shared<cartridge::cartridge>(cart);
-}
+void bus::plug(const cartridge &cart) noexcept { pCart = std::make_shared<cartridge>(cart); }
+
 std::string bus::title() const noexcept { return pCart->title(); }
 
-[[nodiscard]] byte bus::read(const cpu::reg8 r) { return read_byte(r.value()); }
-[[nodiscard]] byte bus::read(const cpu::reg16 rr) { return read_byte(rr.value()); }
+[[nodiscard]] byte bus::read(const reg8 r) { return read_byte(r.value()); }
+[[nodiscard]] byte bus::read(const reg16 rr) { return read_byte(rr.value()); }
 [[nodiscard]] byte bus::read(const u8 n) { return read_byte(n); }
 [[nodiscard]] byte bus::read(const u16 nn) { return read_byte(nn); }
 
-void bus::write(const cpu::reg8 r, const u8 n) { write_byte(r.value(), n); }
-void bus::write(const cpu::reg16 rr, const cpu::reg8 r) { write_byte(rr.value(), r.value()); }
-void bus::write(const cpu::reg16 rr, const u16 nn) { write_byte(rr.value(), nn); }
-void bus::write(const u16 nn, const cpu::reg8 r) { write_byte(nn, r.value()); }
+void bus::write(const reg8 r, const u8 n) { write_byte(r.value(), n); }
+void bus::write(const reg16 rr, const reg8 r) { write_byte(rr.value(), r.value()); }
+void bus::write(const reg16 rr, const u16 nn) { write_byte(rr.value(), nn); }
+void bus::write(const u16 nn, const reg8 r) { write_byte(nn, r.value()); }
 void bus::write(const u16 nn, const byte b) { write_byte(nn, b); }
-void bus::write(const cpu::reg16 rr, const byte b) { write_byte(rr.value(), b); }
-void bus::write(const cpu::reg16 rr1, const cpu::reg16 rr2) {
-  write_byte(rr1.value(), rr2.value());
-}
+void bus::write(const reg16 rr, const byte b) { write_byte(rr.value(), b); }
+void bus::write(const reg16 rr1, const reg16 rr2) { write_byte(rr1.value(), rr2.value()); }
 
 byte bus::read_byte(u16 index) const noexcept {
   auto memoryPortion = [](const u16 lo, const u16 hi, u16 index) {
@@ -80,7 +76,7 @@ byte bus::read_byte(u16 index) const noexcept {
   };
 
   if (memoryPortion(0x0000, 0x00FF, index)) {
-    return bootrom[index];
+    return m_data[index];
   } else if (memoryPortion(0x00FF, 0x3FFF, index)) {
     return pCart->rom[index];
   } else if (memoryPortion(0x4000, 0x7FFF, index)) {

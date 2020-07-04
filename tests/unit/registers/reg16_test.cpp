@@ -5,7 +5,6 @@
 #include <gtest/gtest.h>
 
 using namespace tmbl;
-using namespace tmbl::cpu;
 
 TEST(SixteenBitRegisterType, memberOperatorEqualu16) {
   reg16 HL;

@@ -4,7 +4,7 @@
 #include <chrono>
 #include <thread>
 
-namespace tmbl::cpu {
+namespace tmbl {
 
 class clock final {
 public:

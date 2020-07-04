@@ -3,7 +3,7 @@
 
 #include "../../config.h"
 
-namespace tmbl::cpu {
+namespace tmbl {
 
 class reg8;
 

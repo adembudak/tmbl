@@ -1,7 +1,7 @@
 #include "reg16.h"
 #include "reg8.h"
 
-namespace tmbl::cpu {
+namespace tmbl {
 
 reg16 &reg16::operator=(const u16 nn) {
   m_data = nn;

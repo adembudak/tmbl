@@ -11,14 +11,13 @@ int main(int /*argc*/, char * /*argv*/[]) {
   SDL_Window *window = SDL_CreateWindow("", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 160,
                                         144, SDL_WINDOW_SHOWN);
 
-  cartridge::cartridge cart("/home/adem/Projects/tombul/build/frontends/SDL/tetris.gb");
+  cartridge cart("/home/adem/Projects/tombul/build/frontends/SDL/tetris.gb");
 
-  auto pBus{std::make_shared<bus::bus>()};
-  pBus->plug(cart);
+  bus::get().plug(cart);
 
-  SDL_SetWindowTitle(window, pBus->title().c_str());
+  SDL_SetWindowTitle(window, bus::get().title().c_str());
 
-  cpu::cpu c(pBus);
+  cpu c;
   c.run();
 
   SDL_EventState(SDL_DROPFILE, SDL_ENABLE);

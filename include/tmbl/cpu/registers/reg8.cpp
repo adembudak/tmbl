@@ -1,7 +1,7 @@
 #include "reg8.h"
 #include <stdexcept>
 
-namespace tmbl::cpu {
+namespace tmbl {
 
 reg8 &reg8::operator=(const u8 n) noexcept {
   m_data = n;

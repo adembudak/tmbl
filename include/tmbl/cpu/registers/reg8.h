@@ -5,7 +5,7 @@
 #include <cstddef>
 #include <optional>
 
-namespace tmbl::cpu {
+namespace tmbl {
 
 // clang-format off
 
