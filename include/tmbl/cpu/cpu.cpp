@@ -2397,26 +2397,26 @@ void cpu::LD(reg8 &r, const u8 n) noexcept {
 }
 
 void cpu::LD(reg8 &r, const reg16 rr) noexcept {
-  r = bus::get().read(rr);
+  r = busInstance.read(rr);
 
   c.tick(2);
 }
 
 void cpu::LD(const reg16 rr, const reg8 r) noexcept {
-  bus::get().write(rr, r);
+  busInstance.write(rr, r);
 
   c.tick(2);
 }
 
 void cpu::LDi() noexcept {
-  bus::get().write(HL, A);
+  busInstance.write(HL, A);
   HL += 1;
 
   c.tick(2);
 }
 
 void cpu::LDi([[maybe_unused]] int dummy) noexcept {
-  A = bus::get().read(HL);
+  A = busInstance.read(HL);
   HL += 1;
 
   c.tick(2);
@@ -2424,25 +2424,25 @@ void cpu::LDi([[maybe_unused]] int dummy) noexcept {
 
 void cpu::LDd() noexcept {
   HL -= 1;
-  bus::get().write(HL, A);
+  busInstance.write(HL, A);
 
   c.tick(2);
 }
 
 void cpu::LDd([[maybe_unused]] int dummy) noexcept {
   HL -= 1;
-  A = bus::get().read(HL);
+  A = busInstance.read(HL);
 
   c.tick(2);
 }
 
 void cpu::LD(const u16 nn) noexcept {
-  bus::get().write(nn, A);
+  busInstance.write(nn, A);
   c.tick(4);
 }
 
 void cpu::LD(const u16 nn, [[maybe_unused]] int dummy) noexcept {
-  A = bus::get().read(nn);
+  A = busInstance.read(nn);
 
   c.tick(4);
 }
@@ -2450,10 +2450,10 @@ void cpu::LD(const u16 nn, [[maybe_unused]] int dummy) noexcept {
 void cpu::LD(const u8 n, Orientation o) noexcept {
   switch (o) {
     case Orientation::READ_FROM_IO_PORT:
-      A = bus::get().read(u16(0xFF00 + n));
+      A = busInstance.read(u16(0xFF00 + n));
       break;
     case Orientation::WRITE_TO_IO_PORT:
-      bus::get().write(u16(0xFF00 + n), A);
+      busInstance.write(u16(0xFF00 + n), A);
       break;
   }
 
@@ -2465,10 +2465,10 @@ void cpu::LD(Orientation o) noexcept {
 
   switch (o) {
     case Orientation::READ_FROM_IO_PORT:
-      A = bus::get().read(u16(0xFF00 + C_reg_val));
+      A = busInstance.read(u16(0xFF00 + C_reg_val));
       break;
     case Orientation::WRITE_TO_IO_PORT:
-      bus::get().write(u16(0xFF00 + C_reg_val), A);
+      busInstance.write(u16(0xFF00 + C_reg_val), A);
       break;
   }
 
@@ -2476,7 +2476,7 @@ void cpu::LD(Orientation o) noexcept {
 }
 
 void cpu::LD(const reg16 rr, const u8 n, [[maybe_unused]] int dummy) noexcept {
-  bus::get().write(rr, n);
+  busInstance.write(rr, n);
 
   c.tick(3);
 }
@@ -2502,14 +2502,14 @@ void cpu::LD(const i8 e) noexcept {
 
 void cpu::LD(const u16 nn, const reg16 rr) noexcept {
   //  m[nn] = rr.lo();
-  bus::get().write(nn, rr.lo());
-  bus::get().write(nn + 1, rr.hi());
+  busInstance.write(nn, rr.lo());
+  busInstance.write(nn + 1, rr.hi());
 
   c.tick(5);
 }
 void cpu::PUSH(const reg16 rr) noexcept {
-  bus::get().write(SP - 1, rr.lo());
-  bus::get().write(SP - 2, rr.hi());
+  busInstance.write(SP - 1, rr.lo());
+  busInstance.write(SP - 2, rr.hi());
 
   SP -= 2;
 
@@ -2517,8 +2517,8 @@ void cpu::PUSH(const reg16 rr) noexcept {
 }
 
 void cpu::POP(reg16 &rr) noexcept {
-  rr.lo(bus::get().read(SP));
-  rr.hi(bus::get().read(SP + 1));
+  rr.lo(busInstance.read(SP));
+  rr.hi(busInstance.read(SP + 1));
   SP += 2;
 
   c.tick(3);
@@ -2550,13 +2550,13 @@ void cpu::ADD(const u8 n) noexcept {
 
 void cpu::ADD(const reg16 rr) noexcept {
   F.N(reset);
-  u8 n = bus::get().read(rr);
+  u8 n = busInstance.read(rr);
   ((n + A.value()) == (reg8::max() + 1)) ? F.Z(set) : F.Z(reset);
   ((n + A.loNibble()) > 0b0000'1111) ? F.H(set) : F.H(reset);
   (n + A.value() > reg8::max()) ? F.C(set) : F.C(reset);
 
   reg8 tmp;
-  tmp = bus::get().read(rr);
+  tmp = busInstance.read(rr);
   A = A + tmp;
 
   c.tick(2);
@@ -2602,13 +2602,13 @@ void cpu::ADC(const reg16 rr) noexcept {
     A += 1;
   }
 
-  u8 n = bus::get().read(rr);
+  u8 n = busInstance.read(rr);
   ((n + A.value()) == (reg8::max() + 1)) ? F.Z(set) : F.Z(reset);
   ((n + A.loNibble()) > 0b0000'1111) ? F.H(set) : F.H(reset);
   (n + A.value() > reg8::max()) ? F.C(set) : F.C(reset);
 
   reg8 tmp;
-  tmp = bus::get().read(rr);
+  tmp = busInstance.read(rr);
 
   A = A + tmp;
   c.tick(2);
@@ -2642,13 +2642,13 @@ void cpu::SUB(const u8 n) noexcept {
 void cpu::SUB(const reg16 rr) noexcept {
   F.N(set);
 
-  u8 n = bus::get().read(rr);
+  u8 n = busInstance.read(rr);
   ((A.value() - n) == reg8::min()) ? F.Z(set) : F.Z(reset);
   (A.loNibble() < n) ? F.H(set) : F.H(reset);
   (A.value() < n) ? F.C(set) : F.C(reset);
 
   reg8 tmp;
-  tmp = bus::get().read(rr);
+  tmp = busInstance.read(rr);
 
   A = A - tmp;
   c.tick(2);
@@ -2693,13 +2693,13 @@ void cpu::SBC(const reg16 rr) noexcept {
     A -= 1;
   }
 
-  u8 n = bus::get().read(rr);
+  u8 n = busInstance.read(rr);
   ((A.value() - n) == reg8::min()) ? F.Z(set) : F.Z(reset);
   (A.loNibble() < n) ? F.H(set) : F.H(reset);
   (A.value() < n) ? F.C(set) : F.C(reset);
 
   reg8 tmp;
-  tmp = bus::get().read(rr);
+  tmp = busInstance.read(rr);
 
   A = A - tmp;
   c.tick(2);
@@ -2734,10 +2734,10 @@ void cpu::AND(const reg16 rr) noexcept {
   F.H(set);
   F.N(reset);
 
-  (A.value() == 0 || bus::get().read(rr) == 0) ? F.Z(set) : F.Z(reset);
+  (A.value() == 0 || busInstance.read(rr) == 0) ? F.Z(set) : F.Z(reset);
 
   reg8 tmp;
-  tmp = bus::get().read(rr);
+  tmp = busInstance.read(rr);
 
   A = A & tmp;
   c.tick(2);
@@ -2772,10 +2772,10 @@ void cpu::OR(const reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
-  (A.value() == 0 || bus::get().read(rr) == 0) ? F.Z(set) : F.Z(reset);
+  (A.value() == 0 || busInstance.read(rr) == 0) ? F.Z(set) : F.Z(reset);
 
   reg8 tmp;
-  tmp = bus::get().read(rr);
+  tmp = busInstance.read(rr);
 
   A = A | tmp;
   c.tick(2);
@@ -2811,10 +2811,10 @@ void cpu::XOR(const reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
-  (A.value() == bus::get().read(rr)) ? F.Z(set) : F.Z(reset);
+  (A.value() == busInstance.read(rr)) ? F.Z(set) : F.Z(reset);
 
   reg8 tmp;
-  tmp = bus::get().read(rr);
+  tmp = busInstance.read(rr);
 
   A = A ^ tmp;
   c.tick(2);
@@ -2847,7 +2847,7 @@ void cpu::CP(const reg16 rr) noexcept {
   F.N(set);
 
   reg8 tmp;
-  tmp = bus::get().read(rr);
+  tmp = busInstance.read(rr);
 
   (tmp.value() > A.value()) ? F.C(set) : F.C(reset);
   (tmp.loNibble() > A.loNibble()) ? F.H(set) : F.H(reset);
@@ -2869,13 +2869,13 @@ void cpu::INC(reg8 &r) noexcept {
 void cpu::INC() noexcept {
   F.N(reset);
 
-  byte val = bus::get().read(HL);
+  byte val = busInstance.read(HL);
   u8 lower_nibble = val | 0b0000'1111U;
 
   (lower_nibble == 0b0000'1111) ? F.H(set) : F.H(reset);
   (val == 0b1111'1111) ? F.Z(set) : F.Z(reset);
 
-  bus::get().write(HL, byte(val + 1));
+  busInstance.write(HL, byte(val + 1));
   c.tick(3);
 }
 
@@ -2892,13 +2892,13 @@ void cpu::DEC(reg8 &r) noexcept {
 void cpu::DEC() noexcept {
   F.N(set);
 
-  byte val = bus::get().read(HL);
+  byte val = busInstance.read(HL);
   u8 lower_nibble = val | 0b0000'1111U;
 
   (lower_nibble == 0) ? F.H(set) : F.H(reset);
   (val == 1) ? F.Z(set) : F.Z(reset);
 
-  bus::get().write(HL, byte(val - 1));
+  busInstance.write(HL, byte(val - 1));
   c.tick(3);
 }
 
@@ -3005,10 +3005,10 @@ void cpu::RLC(const reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
-  bus::get().write(rr, rotl(bus::bus::get().read(rr), 1));
+  busInstance.write(rr, rotl(busInstance.read(rr), 1));
 
   reg8 tmp;
-  tmp = bus::get().read(rr);
+  tmp = busInstance.read(rr);
 
   (tmp.msb() == 1) ? F.C(set) : F.C(reset);
   (tmp.value() == reg8::min()) ? F.Z(set) : F.Z(reset);
@@ -3037,15 +3037,15 @@ void cpu::RL(const reg16 rr) noexcept {
   F.N(reset);
 
   u8 mask_for_0th_bit = F.C() ? 1 : 0;
-  bus::get().write(rr, rotl(bus::bus::get().read(rr), 1));
+  busInstance.write(rr, rotl(busInstance.read(rr), 1));
 
   reg8 tmp;
-  tmp = bus::get().read(rr);
+  tmp = busInstance.read(rr);
 
   (tmp.msb() == 1) ? F.C(set) : F.C(reset);
   (tmp.value() == reg8::min()) ? F.Z(set) : F.Z(reset);
 
-  bus::get().write(rr, byte(bus::bus::get().read(rr) | mask_for_0th_bit));
+  busInstance.write(rr, byte(busInstance.read(rr) | mask_for_0th_bit));
 
   c.tick(4);
 }
@@ -3065,12 +3065,12 @@ void cpu::RRC(const reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
-  bus::get().write(rr, rotr(bus::bus::get().read(rr), 1));
+  busInstance.write(rr, rotr(busInstance.read(rr), 1));
 
   // create a temporary reg8 to reach individual bits of the byte
   // more easily, and set flags via it.
   reg8 tmp;
-  tmp = bus::get().read(rr);
+  tmp = busInstance.read(rr);
   (tmp.msb() == 1) ? F.C(set) : F.C(reset);
   (tmp.value() == 0) ? F.Z(set) : F.Z(reset);
 
@@ -3099,14 +3099,14 @@ void cpu::RR(const reg16 rr) noexcept {
 
   u8 mask_for_7th_bit = F.C() ? 0b1000'0000 : 0b0000'0000;
 
-  bus::get().write(rr, rotr(bus::bus::get().read(rr), 1));
+  busInstance.write(rr, rotr(busInstance.read(rr), 1));
   reg8 tmp;
-  tmp = bus::get().read(rr);
+  tmp = busInstance.read(rr);
 
   (tmp.lsb() == 1) ? F.C(set) : F.C(reset);
   (tmp.value() == reg8::min()) ? F.Z(set) : F.Z(reset);
 
-  bus::get().write(rr, byte((bus::bus::get().read(rr) | mask_for_7th_bit)));
+  busInstance.write(rr, byte((busInstance.read(rr) | mask_for_7th_bit)));
 
   c.tick(4);
 }
@@ -3126,15 +3126,15 @@ void cpu::SLA(const reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
-  auto val = bus::get().read(rr);
+  auto val = busInstance.read(rr);
   reg8 tmp;
   tmp = val;
 
   (tmp.msb() == 1) ? F.C(set) : F.C(reset);
 
-  bus::get().write(rr, val <<= 1);
+  busInstance.write(rr, val <<= 1);
 
-  (bus::get().read(rr) == 0U) ? F.Z(set) : F.Z(reset);
+  (busInstance.read(rr) == 0U) ? F.Z(set) : F.Z(reset);
 
   c.tick(4);
 }
@@ -3157,15 +3157,15 @@ void cpu::SRA(const reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
-  byte val = bus::get().read(rr);
+  byte val = busInstance.read(rr);
   reg8 tmp;
   tmp = val;
   u8 old_msb_mask = (tmp.msb() == 1) ? 0b1000'0000 : 0b0000'0000;
   (tmp.lsb() == 1) ? F.C(set) : F.C(reset);
 
-  bus::get().write(rr, val >>= 1);
-  bus::get().write(rr, byte(bus::bus::get().read(rr) | old_msb_mask));
-  (bus::get().read(rr) == 0U) ? F.Z(set) : F.Z(reset);
+  busInstance.write(rr, val >>= 1);
+  busInstance.write(rr, byte(busInstance.read(rr) | old_msb_mask));
+  (busInstance.read(rr) == 0U) ? F.Z(set) : F.Z(reset);
 
   c.tick(4);
 }
@@ -3185,13 +3185,13 @@ void cpu::SRL(const reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
-  byte val = bus::get().read(rr);
+  byte val = busInstance.read(rr);
   reg8 tmp;
   tmp = val;
   (tmp.lsb() == 1) ? F.C(set) : F.C(reset);
 
-  bus::get().write(rr, val >>= 1);
-  (bus::get().read(rr) == 0U) ? F.Z(set) : F.Z(reset);
+  busInstance.write(rr, val >>= 1);
+  (busInstance.read(rr) == 0U) ? F.Z(set) : F.Z(reset);
 
   c.tick(4);
 }
@@ -3213,9 +3213,9 @@ void cpu::SWAP(const reg16 rr) noexcept {
   F.H(reset);
   F.N(reset);
 
-  bus::get().write(rr, byte(rotl(bus::bus::get().read(rr), 4)));
+  busInstance.write(rr, byte(rotl(busInstance.read(rr), 4)));
 
-  (bus::get().read(rr) == 0U) ? F.Z(set) : F.Z(reset);
+  (busInstance.read(rr) == 0U) ? F.Z(set) : F.Z(reset);
 
   c.tick(4);
 }
@@ -3234,7 +3234,7 @@ void cpu::BIT(const reg16 rr, const u8 pos) {
   F.N(reset);
 
   reg8 tmp;
-  tmp = bus::get().read(rr);
+  tmp = busInstance.read(rr);
 
   tmp.test(pos) ? F.Z(reset) : F.Z(set);
 
@@ -3258,7 +3258,7 @@ void cpu::SET(const reg16 rr, const u8 pos) {
     throw std::out_of_range("reg8");
   }
 
-  bus::get().write(rr, byte(bus::bus::get().read(rr) | (1U << pos)));
+  busInstance.write(rr, byte(busInstance.read(rr) | (1U << pos)));
 
   c.tick(4);
 }
@@ -3278,7 +3278,7 @@ void cpu::RES(const reg16 rr, const u8 pos) {
     throw std::out_of_range("reg8");
   }
 
-  bus::get().write(rr, byte(bus::bus::get().read(rr) & ~(1U << pos)));
+  busInstance.write(rr, byte(busInstance.read(rr) & ~(1U << pos)));
 
   c.tick(4);
 }
@@ -3320,8 +3320,8 @@ void cpu::JR(const u8 cc, const i8 e) noexcept {
 }
 
 void cpu::CALL(const u16 nn) noexcept {
-  bus::get().write(SP - 1, PC.hi());
-  bus::get().write(SP - 2, PC.lo());
+  busInstance.write(SP - 1, PC.hi());
+  busInstance.write(SP - 2, PC.lo());
 
   PC = nn;
   SP = SP - 2;
@@ -3331,8 +3331,8 @@ void cpu::CALL(const u16 nn) noexcept {
 
 void cpu::CALL(const u8 cc, const u16 nn) noexcept {
   if ((cc == 0 && !F.Z()) || (cc == 1 && F.Z()) || (cc == 2 && !F.C()) || (cc == 3 && F.C())) {
-    bus::get().write(SP - 1, PC.hi());
-    bus::get().write(SP - 2, PC.lo());
+    busInstance.write(SP - 1, PC.hi());
+    busInstance.write(SP - 2, PC.lo());
 
     PC = nn;
     SP = SP - 2;
@@ -3344,16 +3344,16 @@ void cpu::CALL(const u8 cc, const u16 nn) noexcept {
 }
 
 void cpu::RET() noexcept {
-  PC.lo(bus::get().read(SP));
-  PC.hi(bus::get().read(SP + 1));
+  PC.lo(busInstance.read(SP));
+  PC.hi(busInstance.read(SP + 1));
   SP = SP + 2;
 
   c.tick(4);
 }
 
 void cpu::RETI() noexcept {
-  PC.lo(bus::get().read(SP));
-  PC.hi(bus::get().read(SP + 1));
+  PC.lo(busInstance.read(SP));
+  PC.hi(busInstance.read(SP + 1));
   SP = SP + 2;
 
   IME = set;
@@ -3363,8 +3363,8 @@ void cpu::RETI() noexcept {
 
 void cpu::RET(const u8 cc) noexcept {
   if ((cc == 0 && !F.Z()) || (cc == 1 && F.Z()) || (cc == 2 && !F.C()) || (cc == 3 && F.C())) {
-    PC.lo(bus::get().read(SP));
-    PC.hi(bus::get().read(SP + 1));
+    PC.lo(busInstance.read(SP));
+    PC.hi(busInstance.read(SP + 1));
     SP = SP + 2;
 
     c.tick(5);
@@ -3374,8 +3374,8 @@ void cpu::RET(const u8 cc) noexcept {
 }
 
 void cpu::RST(const u8 t) noexcept {
-  bus::get().write(SP - 1, PC.hi());
-  bus::get().write(SP - 2, PC.lo());
+  busInstance.write(SP - 1, PC.hi());
+  busInstance.write(SP - 2, PC.lo());
   SP = SP - 2;
 
   PC.lo(0b0000'0000);
@@ -3502,6 +3502,6 @@ template <typename T> T cpu::rotr(T x, int s) noexcept {
   }
 }
 
-byte cpu::fetch(reg16 rr) { return bus::get().read(rr); }
+byte cpu::fetch(reg16 rr) { return busInstance.read(rr); }
 
 }

@@ -6,16 +6,14 @@
 #include "../bus/bus.h"
 
 #include <optional>
-#include <memory>
-
 namespace tmbl {
 
 class ppu final {
 
 private:
-  byte SCY() { return bus::get().data().at(0xFF42); }
-  byte SCX() { return bus::get().data().at(0xFF43); }
-  byte LY() const { return bus::get().data().at(0xFF44); }
+  byte SCY() { return busInstance.data().at(0xFF42); }
+  byte SCX() { return busInstance.data().at(0xFF43); }
+  byte LY() const { return busInstance.data().at(0xFF44); }
 
   byte LYC();
 
@@ -57,6 +55,8 @@ private:
 private:
   reg8 LCDC;
   reg8 STAT;
+
+  bus &busInstance = bus::get();
 };
 }
 

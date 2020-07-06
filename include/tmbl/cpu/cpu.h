@@ -7,8 +7,6 @@
 #include "../bus/bus.h"
 #include "../config.h"
 
-#include <memory>
-
 namespace tmbl {
 
 class cpu final {
@@ -174,6 +172,7 @@ private:
   mutable reg16 HL;
 
   clock c;
+  bus &busInstance = bus::get();
 
   flag IME = false;
 };
