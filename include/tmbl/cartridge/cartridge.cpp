@@ -1,6 +1,5 @@
 #include "cartridge.h"
 
-#include <cassert>
 #include <filesystem>
 #include <fstream>
 #include <memory>
@@ -184,6 +183,7 @@ void cartridge::cartType() noexcept {
     has_battery = false;
     has_timer = false;
     has_rumble = false;
+    break;
 
   case cartridge_type::ROM_MBC1:
     // TODO: implement MBC1

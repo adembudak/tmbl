@@ -3,7 +3,6 @@
 #include "tmbl/bus/bus.h"
 
 #include <SDL2/SDL.h>
-#include <iostream>
 
 int main(int /*argc*/, char * /*argv*/[]) {
   using namespace tmbl;
@@ -39,7 +38,7 @@ int main(int /*argc*/, char * /*argv*/[]) {
           break;
       }
     }
-    std::this_thread::sleep_for(std::chrono::milliseconds{1});
+    SDL_Delay(1);
   }
 
   SDL_DestroyWindow(window);
