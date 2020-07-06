@@ -2,19 +2,17 @@
 #define BUS_H
 
 #include "../config.h"
-#include "../cartridge/cartridge.h"
-#include "../cpu/registers/reg8.h"
 
 #include <array>
 #include <memory>
 #include <string>
+#include <iterator>
 
 namespace tmbl {
+
 class reg8;
 class reg16;
-}
-
-namespace tmbl {
+class cartridge;
 
 class bus final {
 public:

@@ -2,14 +2,14 @@
 #define CARTRIDGE_h
 
 #include "../config.h"
-#include "mbc/mbc.h"
-#include "mbc/mbc1/mbc1.h"
+
 #include <filesystem>
+#include <memory>
 #include <string>
-#include <variant>
 #include <vector>
 
 namespace tmbl {
+class mbc;
 
 class cartridge final {
 public:

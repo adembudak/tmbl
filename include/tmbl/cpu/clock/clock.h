@@ -2,7 +2,8 @@
 #define CLOCK_H
 
 #include <chrono>
-#include <thread>
+#include <ratio>
+#include <cstdint>
 
 namespace tmbl {
 

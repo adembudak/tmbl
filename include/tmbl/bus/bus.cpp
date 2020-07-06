@@ -1,4 +1,5 @@
 #include "bus.h"
+#include "../cartridge/cartridge.h"
 #include "../cpu/registers/reg8.h"
 #include "../cpu/registers/reg16.h"
 

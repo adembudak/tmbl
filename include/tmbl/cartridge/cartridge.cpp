@@ -1,4 +1,6 @@
 #include "cartridge.h"
+#include "mbc/mbc.h"
+#include "mbc/mbc1/mbc1.h"
 
 #include <filesystem>
 #include <fstream>
