@@ -12,7 +12,7 @@ enable_testing()
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(TOMBUL_BUILD_TESTS "Build tests" OFF)
@@ -26,6 +26,8 @@ add_definitions(-Wall -Werror -fpermissive -Wconversion)
 
 if(TOMBUL_LINT_WHEN_BUILDING)
   include(cmake/clang_tidy.cmake)
+  include(cmake/cppcheck.cmake)
+  include(cmake/include_what_you_use.cmake)
 endif()
 
 if(TOMBUL_CACHE_BUILD)
