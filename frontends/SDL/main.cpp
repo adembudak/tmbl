@@ -12,9 +12,10 @@ int main(int /*argc*/, char * /*argv*/[]) {
 
   cartridge cart("/home/adem/Projects/tombul/build/frontends/SDL/tetris.gb");
 
-  bus::get().plug(cart);
+  bus &busInstance = bus::get();
+  busInstance.plug(cart);
 
-  SDL_SetWindowTitle(window, bus::get().title().c_str());
+  SDL_SetWindowTitle(window, busInstance.title().c_str());
 
   cpu c;
   c.run();
