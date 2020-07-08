@@ -14,44 +14,6 @@ flag bit5(byte &b, std::optional<flag> f = std::nullopt) noexcept;
 flag bit6(byte &b, std::optional<flag> f = std::nullopt) noexcept;
 flag bit7(byte &b, std::optional<flag> f = std::nullopt) noexcept;
 
-byte ppu::SCY(std::optional<byte> b) noexcept {
-  if (b.has_value()) {
-    reg_SCX = b.value();
-  }
-
-  return reg_SCX;
-}
-
-byte ppu::SCX(std::optional<byte> b) noexcept {
-  if (b.has_value())
-    reg_SCY = b.value();
-
-  return reg_SCY;
-}
-
-byte ppu::LY() const noexcept { return reg_LY; }
-void ppu::LYC(std::optional<byte> b) noexcept {
-  if (b.has_value())
-    reg_LYC = b.value();
-
-  if (reg_LYC == reg_LY)
-    bit2(reg_STAT, set);
-}
-
-byte ppu::WY(std::optional<byte> b) noexcept {
-  if (b.has_value())
-    reg_WY = b.value();
-
-  return reg_WY;
-}
-
-byte ppu::WX(std::optional<byte> b) noexcept {
-  if (b.has_value())
-    reg_WX = b.value();
-
-  return reg_WX;
-}
-
 bool ppu::lcdPower(std::optional<flag> f) noexcept {
   if (f.has_value()) {
     bit7(reg_LCDC, f.value());
@@ -153,6 +115,65 @@ bool ppu::hblankIRQ(std::optional<flag> f) noexcept {
 }
 
 flag ppu::match() const noexcept { return reg_LY == reg_LYC; }
+
+byte ppu::SCY(std::optional<byte> b) noexcept {
+  if (b.has_value()) {
+    reg_SCX = b.value();
+  }
+
+  return reg_SCX;
+}
+
+byte ppu::SCX(std::optional<byte> b) noexcept {
+  if (b.has_value())
+    reg_SCY = b.value();
+
+  return reg_SCY;
+}
+
+byte ppu::LY() const noexcept { return reg_LY; }
+void ppu::LYC(std::optional<byte> b) noexcept {
+  if (b.has_value())
+    reg_LYC = b.value();
+
+  if (reg_LYC == reg_LY)
+    bit2(reg_STAT, set);
+}
+
+byte ppu::BGP(std::optional<byte> b) noexcept {
+  if (b.has_value())
+    reg_BGP = b.value();
+
+  return reg_BGP;
+}
+
+byte ppu::OBP0(std::optional<byte> b) noexcept {
+  if (b.has_value())
+    reg_OBP0 = b.value();
+
+  return reg_OBP0;
+}
+
+byte ppu::OBP1(std::optional<byte> b) noexcept {
+  if (b.has_value())
+    reg_OBP1 = b.value();
+
+  return reg_OBP1;
+}
+
+byte ppu::WY(std::optional<byte> b) noexcept {
+  if (b.has_value())
+    reg_WY = b.value();
+
+  return reg_WY;
+}
+
+byte ppu::WX(std::optional<byte> b) noexcept {
+  if (b.has_value())
+    reg_WX = b.value();
+
+  return reg_WX;
+}
 
 // non member bit manuplators for registers
 flag bit0(byte &b, std::optional<flag> f) noexcept {

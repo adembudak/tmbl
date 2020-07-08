@@ -2,10 +2,11 @@
 #define PPU_H
 
 #include "../config.h"
-#include "../cpu/registers/reg8.h"
 #include "../bus/bus.h"
 
 #include <optional>
+#include <utility>
+
 namespace tmbl {
 
 class ppu final {
@@ -14,19 +15,9 @@ public:
   void tickFrame();
 
 private:
-  [[maybe_unused]] byte SCY(std::optional<byte> b) noexcept;
-  [[maybe_unused]] byte SCX(std::optional<byte> b) noexcept;
-
-  byte LY() const noexcept;
-  void LYC(std::optional<byte> b) noexcept;
-
-  [[maybe_unused]] byte WY(std::optional<byte> b) noexcept;
-  [[maybe_unused]] byte WX(std::optional<byte> b) noexcept;
-
   // LCDC accessors
   // true: ldc is on
   // false: ldc is off
-  // TODO: Create a type aliases for std::optional<flag>, what should be the name of it?
   [[maybe_unused]] bool lcdPower(std::optional<flag> f = std::nullopt) noexcept;
 
   // true: 9C00-9FFF
@@ -67,10 +58,31 @@ private:
 
   mode_flag mode() noexcept;
   flag match() const noexcept;
-  [[maybe_unused]] bool coincidenceIRQ(std::optional<flag> f) noexcept;
-  [[maybe_unused]] bool oamIRQ(std::optional<flag> f) noexcept;
-  [[maybe_unused]] bool vblankIRQ(std::optional<flag> f) noexcept;
-  [[maybe_unused]] bool hblankIRQ(std::optional<flag> f) noexcept;
+  [[maybe_unused]] bool coincidenceIRQ(std::optional<flag> f = std::nullopt) noexcept;
+  [[maybe_unused]] bool oamIRQ(std::optional<flag> f = std::nullopt) noexcept;
+  [[maybe_unused]] bool vblankIRQ(std::optional<flag> f = std::nullopt) noexcept;
+  [[maybe_unused]] bool hblankIRQ(std::optional<flag> f = std::nullopt) noexcept;
+
+  // viewport x,y
+  [[maybe_unused]] byte SCY(std::optional<byte> b = std::nullopt) noexcept;
+  [[maybe_unused]] byte SCX(std::optional<byte> b = std::nullopt) noexcept;
+  std::pair<u8, u8> screenPos() noexcept { return {SCX(), SCY()}; }
+
+  // ly-lyc
+  byte LY() const noexcept;
+  void LYC(std::optional<byte> b = std::nullopt) noexcept;
+
+  // bgp
+  [[maybe_unused]] byte BGP(std::optional<byte> b = std::nullopt) noexcept;
+
+  // obp0 obp1
+  [[maybe_unused]] byte OBP0(std::optional<byte> b = std::nullopt) noexcept;
+  [[maybe_unused]] byte OBP1(std::optional<byte> b = std::nullopt) noexcept;
+
+  // window pos. x+7,y
+  [[maybe_unused]] byte WY(std::optional<byte> b = std::nullopt) noexcept;
+  [[maybe_unused]] byte WX(std::optional<byte> b = std::nullopt) noexcept;
+  std::pair<u8, u8> windowPos() noexcept { return {WX(), WY()}; }
 
 private:
   bus &busInstance = bus::get();
@@ -93,7 +105,7 @@ private:
   byte &reg_WY = busInstance.data().at(0xFF4A); // window pos. y
   byte &reg_WX = busInstance.data().at(0xFF4B); // window pos. x
 };
+
 }
 
 #endif
-
