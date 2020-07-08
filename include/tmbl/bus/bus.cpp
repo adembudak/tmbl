@@ -44,15 +44,15 @@ bus::bus() {
 u8 bus::SVBK() noexcept {
   if (!pCart->CGB())
     return 0;
-  else if ((m_data[0xFF70] & 0b0000'0111U) == 0)
+  else if ((reg_SVBK & 0b0000'0111U) == 0)
     return 1;
   else
-    return m_data[0xFF70] & 0b0000'0111U;
+    return reg_SVBK & 0b0000'0111U;
 }
 
-u8 bus::VBK() noexcept { return !pCart->CGB() ? 0 : m_data[0xFF4F] & 0b0000'0001U; }
+u8 bus::VBK() noexcept { return !pCart->CGB() ? 0 : reg_VBK & 0b0000'0001U; }
 
-byte &bus::IE() const noexcept { return m_data[0xFFFF]; }
+byte &bus::IE() const noexcept { return reg_IE; }
 
 void bus::plug(const cartridge &cart) noexcept { pCart = std::make_shared<cartridge>(cart); }
 

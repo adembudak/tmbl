@@ -79,7 +79,7 @@ public:
 
   auto data() const noexcept { return m_data; }
 
-  // Meyers' Sincleton
+  // Meyers' Singleton
   // see: More Effective C++ pp.131
   static bus &get() {
     static bus s;
@@ -101,8 +101,11 @@ private:
   void write_byte(u16 index, byte val) noexcept;
 
   mutable std::array<byte, 64 * 1024> m_data{};
-
   std::shared_ptr<cartridge> pCart;
+
+  byte &reg_IE = m_data[0xFFFF];
+  byte &reg_SVBK = m_data[0xFF70];
+  byte &reg_VBK = m_data[0xFF4F];
 };
 }
 
