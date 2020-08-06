@@ -7,27 +7,12 @@
 
 #include <memory>
 #include <array>
+#include <utility>
 
 namespace tmbl {
 class ppu {
 public:
-  ppu(std::shared_ptr<registers> pRegs, std::shared_ptr<cartridge> pCart)
-      : m_pRegs(pRegs), m_pCart(pCart) {}
-
-  // LCDC register functions
-  // https://archive.org/details/GameBoyProgManVer1.1/page/n56/mode/1up
-  cflag bgDisplayStatus() { return m_pCart->CGB() ? on : LCDC | 0b0000'0001; }
-  cflag objStatus() { return LCDC & 0b0000'0010 ? on : off; }
-  cflag objSizeBig() { return LCDC & 0b0000'0100 ? set : reset; }
-  cflag bgCodeArea() { return LCDC & 0b0000'1000; }
-  cflag bgChrArea() { return LCDC & 0b0001'0000; }
-  cflag windowStatus() { return LCDC & 0b0010'0000 ? on : off; }
-  cflag windowCodeArea() { return LCDC & 0b0100'0000; }
-  cflag lcdControllerStatus() { return LCDC & 0b1000'0000 ? on : off; }
-
-  // STAT register functions
-  // https://archive.org/details/GameBoyProgManVer1.1/page/n57/mode/1up
-
+  ppu(std::shared_ptr<registers> pRegs, std::shared_ptr<cartridge> pCart);
   enum class mode : n8 {
     HORIZONTAL_BLANKING = 0b00,
     VERTICAL_BLANKING = 0b01,
@@ -35,40 +20,35 @@ public:
     TRANSFERING_DATA_TO_LCD = 0b11,
   };
 
-  mode mode_flag() {
-    switch (STAT | 0b0000'0011) {
-      case 0:
-        return mode::HORIZONTAL_BLANKING;
-      case 1:
-        return mode::VERTICAL_BLANKING;
-      case 2:
-        return mode::SEARCHING_OAM;
-      case 3:
-        return mode::TRANSFERING_DATA_TO_LCD;
-    }
-  }
+private:
+  // LCDC register functions begin
+  // https://archive.org/details/GameBoyProgManVer1.1/page/n56/mode/1up
+  cflag bgDisplayStatus() const noexcept;
+  cflag objDisplayStatus() const noexcept;
+  std::pair<n8, n8> objSize() const noexcept;
+  std::pair<n16, n16> bgCodeArea() const noexcept;
+  std::pair<n16, n16> bgChrArea() const noexcept;
+  cflag windowStatus() const noexcept;
+  std::pair<n16, n16> windowCodeArea() const noexcept;
+  cflag lcdControllerStatus() const noexcept;
+  // LCDC register functions end
 
-  void mode_flag(const mode m) {
-    switch (m) {
-      case mode::HORIZONTAL_BLANKING:
-        STAT |= 0b00;
-      case mode::VERTICAL_BLANKING:
-        STAT |= 0b01;
-      case mode::SEARCHING_OAM:
-        STAT |= 0b10;
-      case mode::TRANSFERING_DATA_TO_LCD:
-        STAT |= 0b11;
-    }
-  }
+  // STAT register functions begin
+  // https://archive.org/details/GameBoyProgManVer1.1/page/n57/mode/1up
 
-  cflag match_flag() { return LY == LYC; }
-  void match_flag(cflag val) { val ? STAT |= 0b0000'0100 : STAT &= 0b1111'1011; }
+  mode mode_flag() const noexcept;
+  void mode_flag(const mode m) noexcept;
+
+  cflag match_flag() const noexcept;
+  void match_flag(cflag val) noexcept;
+  // STAT register functions end
 
   // interrupts
   cflag matchHblank() { return STAT & 0b0000'1000; }
   cflag matchVblank() { return STAT & 0b0001'0000; }
   cflag matchSearchOAM() { return STAT & 0b0010'0000; }
   cflag matchCoincidence() { return STAT & 0b0100'0000; }
+  // STAT register functions end
 
   n8 scx() const noexcept { return SCX; }
   n8 scy() const noexcept { return SCY; }
@@ -78,6 +58,8 @@ public:
     LY = val;
     LY == LYC ? match_flag(set) : match_flag(reset);
   }
+
+  n8 vbk() const noexcept { return VBK & 0b0000'0001 ? 1 : 0; }
 
 private:
   std::shared_ptr<registers> m_pRegs;
@@ -104,6 +86,8 @@ private:
   byte &WY = m_pRegs->getAt(0xFF4A);
   byte &WX = m_pRegs->getAt(0xFF4B);
 
+  byte &VBK = m_pRegs->getAt(0xFF4F);
+
   byte &HDMA1 = m_pRegs->getAt(0xFF51);
   byte &HDMA2 = m_pRegs->getAt(0xFF52);
   byte &HDMA3 = m_pRegs->getAt(0xFF53);
@@ -116,7 +100,7 @@ private:
   byte &OCPS = m_pRegs->getAt(0xFF6A);
   byte &OCPD = m_pRegs->getAt(0xFF6B);
 
-  std::array<byte, 8_KB> m_vram{};
+  std::array<byte, 16_KB> m_vram{}; // it's 8KB on DMG
   std::array<byte, 160_B> m_oam{};
 };
 }
