@@ -1,5 +1,6 @@
 #include "tmbl/config.h"
 #include "tmbl/cartridge/cartridge.h"
+#include "tmbl/memory_map.h"
 
 #include <vector>
 #include <fstream>
@@ -72,4 +73,32 @@ cartridge::cartridge(const std::filesystem::path &p) : dumpedGamePak(dumpROM(p))
       }
   }
 }
+
+bool cartridge::CGB() const noexcept { return m_cgb_support; }
+
+std::string cartridge::title() const noexcept { return m_title; }
+
+std::size_t cartridge::banks() const noexcept {
+  if (CGB()) {
+    if (auto pakType = std::get_if<mbc1>(&pak)) {
+      return pakType->bankNumber();
+    }
+  }
+}
+
+byte cartridge::read(const std::size_t index) {
+  if (auto pRom = std::get_if<rom>(&pak)) {
+    if (index >= memory::xram && index <= memory::xram_end)
+      return pRom->read_xram(index);
+    else
+      return pRom->read_rom(index);
+  } else if (auto pMbc1 = std::get_if<mbc1>(&pak)) {
+
+    if (index >= memory::xram && index <= memory::xram_end)
+      return pMbc1->read_rom(index);
+    else
+      return pRom->read_rom(index);
+  } else {
+    // todo other MBCs...
+  }
 }

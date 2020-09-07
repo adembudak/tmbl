@@ -8,7 +8,7 @@ namespace tmbl {
 class mbc1 {
 public:
   mbc1(std::vector<byte> &rom, const std::size_t xram_size = 0);
-  std::size_t bankNumber() const noexcept { return m_rom_bank; }
+  std::size_t bankNumber() const noexcept;
 
   byte read_rom(const std::size_t index);
   byte read_xram(const std::size_t index);

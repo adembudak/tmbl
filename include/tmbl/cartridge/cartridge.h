@@ -30,24 +30,11 @@ public:
 
   explicit cartridge(const std::filesystem::path &p);
 
-  bool CGB() const noexcept { return m_cgb_support; }
-  std::string title() const noexcept { return m_title; }
+  bool CGB() const noexcept;
+  std::string title() const noexcept;
+  std::size_t banks() const noexcept;
 
-  std::size_t banks() const noexcept {
-    if (CGB()) {
-      if (auto pakType = std::get_if<mbc1>(&pak)) {
-        return pakType->bankNumber();
-      }
-    }
-  }
-
-  byte read(std::size_t index) {
-    if (auto pakType = std::get_if<rom>(&pak)) {
-      return pakType->read_rom(index);
-    } else if (auto pakType = std::get_if<mbc1>(&pak)) {
-      //
-    }
-  }
+  byte read(const std::size_t index);
 
 private:
   bool m_cgb_support = false; // supports cgb functions?

@@ -13,4 +13,9 @@ mbc1::mbc1(std::vector<byte> &rom, const std::size_t xram_size)
   m_rom_bank = rom.size() / 16_KB;
 }
 
+std::size_t mbc1::bankNumber() const noexcept { return m_rom_bank; }
+
+byte mbc1::read_rom(const std::size_t index) { return m_rom.at(index); }
+byte mbc1::read_xram(const std::size_t index) { return m_xram.at(index); }
+
 }
