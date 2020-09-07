@@ -12,10 +12,12 @@ namespace tmbl {
 class registers {
 public:
   byte &getAt(const std::size_t index);
+
+  byte read(const std::size_t index);
   void write(const std::size_t index, const byte val);
 
 private:
-  std::array<byte, 160_B> regs{};
+  std::array<byte, 160_B> m_regs{};
 };
 
 }

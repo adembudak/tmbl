@@ -1,11 +1,13 @@
+#include "tmbl/memory_map.h"
 #include "tmbl/io/registers.h"
 
 namespace tmbl {
-byte &registers::getAt(const std::size_t index) { return regs.at(index - 0xFF00); }
+byte &registers::getAt(const std::size_t index) { return m_regs.at(index - memory::io); }
 
+byte registers::read(const std::size_t index) { return m_regs.at(index); }
 void registers::write(const std::size_t index, const byte val) {
-  const std::size_t normalized_index = index - 0xFF00;
-  regs.at(normalized_index) = val;
+  const std::size_t normalized_index = index - memory::io;
+  m_regs.at(normalized_index) = val;
 }
 
 }
