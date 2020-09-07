@@ -3,60 +3,39 @@
 
 #include "../config.h"
 #include "../io/registers.h"
+#include "../io/interrupts/interrupts.h"
 #include "../cartridge/cartridge.h"
+#include "registers/stat.h"
+#include "registers/lcdc.h"
 
 #include <memory>
 #include <array>
 #include <utility>
 
 namespace tmbl {
+
 class ppu {
 public:
-  ppu(std::shared_ptr<registers> pRegs, std::shared_ptr<cartridge> pCart);
-  enum class mode : n8 {
-    HORIZONTAL_BLANKING = 0b00,
-    VERTICAL_BLANKING = 0b01,
-    SEARCHING_OAM = 0b10,
-    TRANSFERING_DATA_TO_LCD = 0b11,
-  };
+  ppu(std::shared_ptr<registers> pRegs, std::shared_ptr<cartridge> pCart,
+      std::shared_ptr<interrupts> pIntr);
+
+  static constexpr n8 screenWidth = 160;
+  static constexpr n8 screenHeight = 144;
+
+  byte readVRAM(const std::size_t index);
+  void writeVRAM(const std::size_t index, const byte val);
+
+  byte readOAM(const std::size_t index);
+  void writeOAM(const std::size_t index, const byte val);
 
 private:
-  // LCDC register functions begin
-  // https://archive.org/details/GameBoyProgManVer1.1/page/n56/mode/1up
-  cflag bgDisplayStatus() const noexcept;
-  cflag objDisplayStatus() const noexcept;
-  std::pair<n8, n8> objSize() const noexcept;
-  std::pair<n16, n16> bgCodeArea() const noexcept;
-  std::pair<n16, n16> bgChrArea() const noexcept;
-  cflag windowStatus() const noexcept;
-  std::pair<n16, n16> windowCodeArea() const noexcept;
-  cflag lcdControllerStatus() const noexcept;
-  // LCDC register functions end
-
-  // STAT register functions begin
-  // https://archive.org/details/GameBoyProgManVer1.1/page/n57/mode/1up
-
-  mode mode_flag() const noexcept;
-  void mode_flag(const mode m) noexcept;
-
-  cflag match_flag() const noexcept;
-  void match_flag(cflag val) noexcept;
-  // STAT register functions end
-
-  // interrupts
-  cflag matchHblank() { return STAT & 0b0000'1000; }
-  cflag matchVblank() { return STAT & 0b0001'0000; }
-  cflag matchSearchOAM() { return STAT & 0b0010'0000; }
-  cflag matchCoincidence() { return STAT & 0b0100'0000; }
-  // STAT register functions end
-
   n8 scx() const noexcept { return SCX; }
   n8 scy() const noexcept { return SCY; }
 
   n8 ly() const noexcept { return LY; }
   void ly(const byte val) noexcept {
     LY = val;
-    LY == LYC ? match_flag(set) : match_flag(reset);
+    LY == LYC ? STAT.match_flag(set) : STAT.match_flag(reset);
   }
 
   n8 vbk() const noexcept { return VBK & 0b0000'0001 ? 1 : 0; }
@@ -64,12 +43,12 @@ private:
 private:
   std::shared_ptr<registers> m_pRegs;
   std::shared_ptr<cartridge> m_pCart;
+  std::shared_ptr<interrupts> m_pIntr;
 
 private:
   // see: https://archive.org/details/GameBoyProgManVer1.1/page/n16/mode/1up
-
-  byte &LCDC = m_pRegs->getAt(0xFF40);
-  byte &STAT = m_pRegs->getAt(0xFF41);
+  lcdc LCDC;
+  stat STAT;
 
   byte &SCY = m_pRegs->getAt(0xFF42);
   byte &SCX = m_pRegs->getAt(0xFF43);
