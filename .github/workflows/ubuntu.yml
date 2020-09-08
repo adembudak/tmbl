@@ -1,0 +1,23 @@
+---
+name: Linux
+
+on:
+  push:
+    branches: master
+
+jobs:
+  build-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 5
+
+      - name: cmake
+        run: |
+            cmake -DCMAKE_BUILD_TYPE=Release S . -B build
+
+      - name: build
+        run: cmake --build build --parallel 4
+...
