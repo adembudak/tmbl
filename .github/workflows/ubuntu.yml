@@ -16,7 +16,11 @@ jobs:
 
       - name: cmake
         run: |
-            cmake -DCMAKE_BUILD_TYPE=Release S . -B build
+            cmake \
+            -DCMAKE_CXX_COMPILER=/usr/bin/g++-9 \
+            -DCMAKE_BUILD_TYPE=Release \
+            -S . \
+            -B build
 
       - name: build
         run: cmake --build build --parallel 4
