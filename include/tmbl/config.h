@@ -2,6 +2,7 @@
 #define CONFIG_H
 
 #include <cstdint>
+#include <cstddef>
 
 namespace tmbl {
 
