@@ -5,7 +5,8 @@ namespace tmbl {
 namespace memory {
 
 // GameBoy memory layout
-//                                                         size      located in
+//                                              address |  size  |   located in
+// -----------------------------------------------------------------------------
 static constexpr std::size_t rom =              0x0000; // 32KB      Cartridge
 static constexpr std::size_t rom_end =          0x7FFF; 
 
