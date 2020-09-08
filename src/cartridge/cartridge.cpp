@@ -102,3 +102,5 @@ byte cartridge::read(const std::size_t index) {
     // todo other MBCs...
   }
 }
+
+}
