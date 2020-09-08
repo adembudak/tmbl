@@ -30,8 +30,8 @@ void stat::mode_flag(const mode m) noexcept {
   }
 }
 
-cflag stat::match_flag() const noexcept { /*return LY == LYC;*/
-}
+cflag stat::match_flag() const noexcept { return false; /*return LY == LYC;*/ }
+
 void stat::match_flag(cflag val) noexcept { val ? STAT |= 0b0000'0100 : STAT &= 0b1111'1011; }
 
 };
