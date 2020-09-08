@@ -1,0 +1,22 @@
+---
+name: Windows
+
+on:
+  push:
+    branches: master
+
+jobs:
+  build-msvc2019:
+    runs-on: windows-latest
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 5
+
+      - name: cmake
+        run: cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=Release -S . -B build
+
+      - name: build
+        run: cmake --build build --parallel 4
+...
