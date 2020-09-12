@@ -12,7 +12,7 @@ public:
   stat(std::shared_ptr<registers> pRegs);
 
   // https://archive.org/details/GameBoyProgManVer1.1/page/n57/mode/1up
-  enum class mode : n8 {
+  enum class mode : uint8 {
     HORIZONTAL_BLANKING = 0b00,
     VERTICAL_BLANKING = 0b01,
     SEARCHING_OAM = 0b10,

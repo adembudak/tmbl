@@ -20,7 +20,7 @@ public:
   using double_speed_duration =
       std::chrono::duration<int, std::ratio_multiply<double_speed, std::pico>>;
 
-  void cycle(const n8 n) noexcept;
+  void cycle(const uint8 n) noexcept;
   void enableDoubleSpeedMode(const bool val);
 
 private:

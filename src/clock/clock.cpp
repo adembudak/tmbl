@@ -4,7 +4,7 @@
 
 namespace tmbl {
 
-void clock::cycle(const n8 n) noexcept {
+void clock::cycle(const uint8 n) noexcept {
   if (m_double_speed_mode) {
     std::this_thread::sleep_for(double_speed_duration{n});
   } else {

@@ -4,7 +4,7 @@ namespace tmbl {
 
 bgp::bgp(std::shared_ptr<registers> pRegs) : m_pRegs(pRegs){};
 
-int bgp::bgPalette(const n8 val) {
+int bgp::bgPalette(const uint8 val) {
   switch (val) {
     case 0:
       return BGP & 0b0000'0011;

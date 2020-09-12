@@ -19,8 +19,8 @@ public:
   ppu(std::shared_ptr<registers> pRegs, std::shared_ptr<cartridge> pCart,
       std::shared_ptr<interrupts> pIntr);
 
-  static constexpr n8 screenWidth = 160;
-  static constexpr n8 screenHeight = 144;
+  static constexpr uint8 screenWidth = 160;
+  static constexpr uint8 screenHeight = 144;
 
   byte readVRAM(const std::size_t index);
   void writeVRAM(const std::size_t index, const byte val);
@@ -29,16 +29,16 @@ public:
   void writeOAM(const std::size_t index, const byte val);
 
 private:
-  n8 scx() const noexcept { return SCX; }
-  n8 scy() const noexcept { return SCY; }
+  uint8 scx() const noexcept { return SCX; }
+  uint8 scy() const noexcept { return SCY; }
 
-  n8 ly() const noexcept { return LY; }
+  uint8 ly() const noexcept { return LY; }
   void ly(const byte val) noexcept {
     LY = val;
     LY == LYC ? STAT.match_flag(set) : STAT.match_flag(reset);
   }
 
-  n8 vbk() const noexcept { return VBK & 0b0000'0001 ? 1 : 0; }
+  uint8 vbk() const noexcept { return VBK & 0b0000'0001 ? 1 : 0; }
 
 private:
   std::shared_ptr<registers> m_pRegs;

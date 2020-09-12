@@ -11,7 +11,7 @@ namespace tmbl {
 class bgp {
 public:
   bgp(std::shared_ptr<registers> pRegs);
-  int bgPalette(const n8 val);
+  int bgPalette(const uint8 val);
   std::array<int, 4> bgPalette();
 
 private:

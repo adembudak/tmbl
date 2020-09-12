@@ -15,11 +15,11 @@ public:
 
   cflag bgDisplayStatus() const noexcept;
   cflag objDisplayStatus() const noexcept;
-  std::pair<n8, n8> objSize() const noexcept;
-  std::pair<n16, n16> bgCodeArea() const noexcept;
-  std::pair<n16, n16> bgChrArea() const noexcept;
+  std::pair<uint8, uint8> objSize() const noexcept;
+  std::pair<uint16, uint16> bgCodeArea() const noexcept;
+  std::pair<uint16, uint16> bgChrArea() const noexcept;
   cflag windowStatus() const noexcept;
-  std::pair<n16, n16> windowCodeArea() const noexcept;
+  std::pair<uint16, uint16> windowCodeArea() const noexcept;
   cflag lcdControllerStatus() const noexcept;
 
 private:
