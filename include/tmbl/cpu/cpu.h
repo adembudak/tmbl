@@ -6,6 +6,11 @@
 #include "tmbl/io/interrupts/interrupts.h"
 #include "tmbl/clock/clock.h"
 
+#include "internals/flags.h"
+#include "internals/n8.h"
+#include "internals/n16.h"
+#include "internals/r16.h"
+
 #include <memory>
 
 namespace tmbl {
@@ -24,12 +29,17 @@ private:
   std::shared_ptr<interrupts> m_pIntr;
 
 private:
-  clock m_clock;
+  r8 A;
+  flags F;
 
+  r16 BC;
+  r16 DE;
+  r16 HL;
+
+  clock m_clock;
   flag IME = reset; // interrupt master enable
   byte &KEY1 = m_pReg->getAt(0xFF4D);
 };
-
 }
 
 #endif
