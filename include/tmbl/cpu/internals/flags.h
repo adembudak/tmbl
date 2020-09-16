@@ -9,6 +9,11 @@ public:
   void H(flag f);
   void C(flag f);
 
+  cflag Z() const noexcept;
+  cflag N() const noexcept;
+  cflag H() const noexcept;
+  cflag C() const noexcept;
+
 private:
   flag m_Z = false;
   flag m_N = false;
