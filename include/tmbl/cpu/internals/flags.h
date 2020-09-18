@@ -4,21 +4,21 @@ namespace tmbl {
 
 class flags final {
 public:
-  void Z(flag f);
-  void N(flag f);
-  void H(flag f);
-  void C(flag f);
+  void z(flag f);
+  void n(flag f);
+  void h(flag f);
+  void c(flag f);
 
-  cflag Z() const noexcept;
-  cflag N() const noexcept;
-  cflag H() const noexcept;
-  cflag C() const noexcept;
+  cflag z() const noexcept;
+  cflag n() const noexcept;
+  cflag h() const noexcept;
+  cflag c() const noexcept;
 
 private:
-  flag m_Z = false;
-  flag m_N = false;
-  flag m_H = false;
-  flag m_C = false;
+  flag m_z = false;
+  flag m_n = false;
+  flag m_h = false;
+  flag m_c = false;
 };
 
 }

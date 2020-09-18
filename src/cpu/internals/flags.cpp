@@ -2,14 +2,14 @@
 
 namespace tmbl {
 
-void flags::Z(flag f) { m_Z = f; }
-void flags::N(flag f) { m_N = f; }
-void flags::H(flag f) { m_H = f; }
-void flags::C(flag f) { m_C = f; }
+void flags::z(flag f) { m_z = f; }
+void flags::n(flag f) { m_n = f; }
+void flags::h(flag f) { m_h = f; }
+void flags::c(flag f) { m_c = f; }
 
-cflag flags::Z() const noexcept { return m_Z; }
-cflag flags::N() const noexcept { return m_N; }
-cflag flags::H() const noexcept { return m_H; }
-cflag flags::C() const noexcept { return m_C; }
+cflag flags::z() const noexcept { return m_z; }
+cflag flags::n() const noexcept { return m_n; }
+cflag flags::h() const noexcept { return m_h; }
+cflag flags::c() const noexcept { return m_c; }
 
 }
