@@ -6,3 +6,6 @@ add_subdirectory(timer)
 
 add_library(registers registers.cpp)
 target_include_directories(registers PUBLIC ../../include)
+
+add_library(io INTERFACE)
+target_link_libraries(io INTERFACE registers interrupts timer)
