@@ -23,6 +23,11 @@ public:
   void enableDoubleSpeedMode();
 
 private:
+  void adc(const r8 r);
+  void adc(const byte b);
+  void adc(const n8 n);
+
+private:
   std::shared_ptr<bus> m_pBus;
   std::shared_ptr<clock> m_pClock;
   std::shared_ptr<registers> m_pReg;
