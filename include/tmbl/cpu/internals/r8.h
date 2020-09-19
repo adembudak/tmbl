@@ -5,9 +5,6 @@ class n8;
 
 class r8 final {
 public:
-  r8() = default;
-  explicit r8(const uint8 val);
-
   //  r8 &operator=(const r8 n); //Spe. Mem. Implicit,  ADC A, r8
   r8 &operator=(const byte b); // ADC A, [HL]
   r8 &operator=(const n8 n);   // ADC A, n8

@@ -18,8 +18,14 @@ uint8 r8::hiNibble() const noexcept { return (m_data & 0b1111'0000) >> 4; }
 
 uint8 r8::value() const noexcept { return m_data; }
 
-r8 operator+(const r8 l, const r8 r) { return r8(l.value() + r.value()); }
+r8 operator+(const r8 l, const r8 r) {
+  byte val = l.value() + r.value();
+
+  r8 k;
+  k = val;
+  return k;
+}
+
 uint8 operator+(const r8 r, const uint8 u) { return r.value() + u; }
 bool operator==(const r8 r, uint8 u) { return r.value() == u; }
-
 }
