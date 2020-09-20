@@ -41,6 +41,9 @@ private:
   r16 DE;
   r16 HL;
 
+  uint16 PC;
+  uint16 SP;
+
   clock m_clock;
   flag IME = reset; // interrupt master enable
   byte &KEY1 = m_pReg->getAt(0xFF4D);
