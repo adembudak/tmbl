@@ -1,3 +1,4 @@
+#include "tmbl/config.h"
 #include "tmbl/cpu/cpu.h"
 
 namespace tmbl {
