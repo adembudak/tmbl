@@ -21,6 +21,7 @@ public:
       std::shared_ptr<clock> pClock);
 
   void enableDoubleSpeedMode();
+  void run();
 
 private:
   void adc(const r8 r);
