@@ -2043,7 +2043,7 @@ void cpu::adc(const r8 r) {
   (A.loNibble() + r.loNibble() + 1 > 0b0000'1111) ? F.h(set) : F.h(reset);
 
   A = A + r + c;
-  A == 0b0000'0000 ? F.z(set) : F.z(reset);
+  A == r8::zero ? F.z(set) : F.z(reset);
   F.n(reset);
   (A.value() < r.value() + c) ? F.c(set) : F.c(reset);
 
@@ -2055,7 +2055,7 @@ void cpu::adc(const byte b) {
   (A.loNibble() + (b & 0b0000'1111) + 1 > 0b0000'1111) ? F.h(set) : F.h(reset);
   A = A + b + c;
 
-  A == 0b0000'0000 ? F.z(set) : F.z(reset);
+  A == r8::zero ? F.z(set) : F.z(reset);
   F.n(reset);
   (A.value() < b + c) ? F.c(set) : F.c(reset);
 
@@ -2068,10 +2068,65 @@ void cpu::adc(const n8 n) {
 
   A = A + n.value() + c;
 
-  A == 0b0000'0000 ? F.z(set) : F.z(reset);
+  A == r8::zero ? F.z(set) : F.z(reset);
   F.n(reset);
 
   (A.value() < n.value() + c) ? F.c(set) : F.c(reset);
+
+  m_clock.cycle(2);
+}
+
+void cpu::add(const r8 r) {
+  (A.loNibble() + r.loNibble() + 1 > 0b0000'1111) ? F.h(set) : F.h(reset);
+
+  A = A + r;
+  A == r8::zero ? F.z(set) : F.z(reset);
+  F.n(reset);
+  A.value() < r.value() ? F.c(set) : F.c(reset);
+
+  m_clock.cycle(1);
+}
+
+void cpu::add(const byte b) {
+  (A.loNibble() + (b & 0b0000'1111) + 1 > 0b0000'1111) ? F.h(set) : F.h(reset);
+  A = A + b;
+
+  A == r8::zero ? F.z(set) : F.z(reset);
+  F.n(reset);
+  A.value() < b ? F.c(set) : F.c(reset);
+
+  m_clock.cycle(2);
+}
+
+void cpu::add(const n8 n) {
+  (A.loNibble() + (n.value() & 0b0000'1111) + 1 > 0b0000'1111) ? F.h(set) : F.h(reset);
+
+  A = A + n.value();
+
+  A == r8::zero ? F.z(set) : F.z(reset);
+
+  F.n(reset);
+
+  A.value() < n.value() ? F.c(set) : F.c(reset);
+
+  m_clock.cycle(2);
+}
+
+void cpu::add(const e8 e) {
+  SP + e.loNibble() > 0b0000'1111 ? F.h(set) : F.h(reset);
+  SP + e.value() > r8::max ? F.c(set) : F.c(reset);
+  F.z(reset);
+  F.n(reset);
+
+  SP += e.value();
+}
+
+void cpu::add(const r16 rr) {
+  HL.lo().value() + rr.lo().value() > r8::max ? F.h(set) : F.h(reset);
+  HL.value() + rr.value() > r16::max ? F.h(set) : F.h(reset);
+  F.n(reset);
+
+  HL = HL + rr;
 
   m_clock.cycle(2);
 }

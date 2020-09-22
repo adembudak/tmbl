@@ -8,6 +8,7 @@
 
 #include "internals/flags.h"
 #include "internals/n8.h"
+#include "internals/e8.h"
 #include "internals/n16.h"
 #include "internals/r16.h"
 
@@ -27,6 +28,12 @@ private:
   void adc(const r8 r);
   void adc(const byte b);
   void adc(const n8 n);
+
+  void add(const r8 r);
+  void add(const byte b);
+  void add(const n8 n);
+  void add(const e8 e);
+  void add(const r16 rr);
 
 private:
   std::shared_ptr<bus> m_pBus;
