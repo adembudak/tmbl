@@ -64,6 +64,7 @@ void cpu::run() {
 
       case 0x09:
         PC += 1;
+        add(BC);
         break;
 
       case 0x0A:
@@ -128,6 +129,7 @@ void cpu::run() {
 
       case 0x19:
         PC += 1;
+        add(DE);
         break;
 
       case 0x1A:
@@ -192,6 +194,7 @@ void cpu::run() {
 
       case 0x29:
         PC += 1;
+        add(HL);
         break;
 
       case 0x2A:
@@ -256,6 +259,7 @@ void cpu::run() {
 
       case 0x39:
         PC += 1;
+        //  add(SP); Fix this, failed overload resolution, calls add(byte b);
         break;
 
       case 0x3A:
@@ -540,34 +544,44 @@ void cpu::run() {
 
       case 0x80:
         PC += 1;
+        add(BC.hi());
         break;
 
       case 0x81:
         PC += 1;
+        add(BC.lo());
         break;
 
       case 0x82:
         PC += 1;
+        add(DE.hi());
         break;
 
       case 0x83:
         PC += 1;
+        add(DE.lo());
         break;
 
       case 0x84:
         PC += 1;
+        add(HL.hi());
         break;
 
       case 0x85:
         PC += 1;
+        add(HL.lo());
         break;
 
       case 0x86:
         PC += 1;
+        // todo: should i increment the PC here?
+        add(m_pBus->readBus(HL.value()));
+        // or here? or none at all.
         break;
 
       case 0x87:
         PC += 1;
+        add(A);
         break;
 
       case 0x88:
@@ -828,6 +842,7 @@ void cpu::run() {
 
       case 0xC6:
         PC += 2;
+        add(m_pBus->readBus(PC++));
         break;
 
       case 0xC7:
@@ -1779,6 +1794,7 @@ void cpu::run() {
 
           case 0xE8:
             PC += 2;
+            add(e8(m_pBus->readBus(PC++)));
             break;
 
           case 0xE9:
