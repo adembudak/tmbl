@@ -1,5 +1,4 @@
-
-#include "tmbl/ppu/registers/lcdc.h"
+#include "tmbl/ppu/internals/lcdc.h"
 
 namespace tmbl {
 

@@ -1,4 +1,4 @@
-#include "tmbl/ppu/registers/bgp.h"
+#include "tmbl/ppu/internals/bgp.h"
 
 namespace tmbl {
 

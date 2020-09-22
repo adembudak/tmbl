@@ -5,8 +5,8 @@
 #include "../io/registers.h"
 #include "../io/interrupts/interrupts.h"
 #include "../cartridge/cartridge.h"
-#include "registers/stat.h"
-#include "registers/lcdc.h"
+#include "internals/stat.h"
+#include "internals/lcdc.h"
 
 #include <memory>
 #include <array>

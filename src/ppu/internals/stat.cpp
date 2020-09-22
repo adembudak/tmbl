@@ -1,4 +1,4 @@
-#include "tmbl/ppu/registers/stat.h"
+#include "tmbl/ppu/internals/stat.h"
 
 namespace tmbl {
 
