@@ -14,6 +14,13 @@ public:
 
   uint8 value() const noexcept;
 
+  static constexpr const uint8 zero = 0;
+  static constexpr const uint8 lower_mask = 0b0000'1111;
+  static constexpr const uint8 upper_mask = 0b1111'0000;
+
+  static constexpr const uint8 min = 0b0000'0000;
+  static constexpr const uint8 max = 0b1111'1111;
+
 private:
   uint8 m_data = 0;
 };
