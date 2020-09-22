@@ -572,34 +572,42 @@ void cpu::run() {
 
       case 0x88:
         PC += 1;
+        adc(BC.hi());
         break;
 
       case 0x89:
         PC += 1;
+        adc(BC.lo());
         break;
 
       case 0x8A:
         PC += 1;
+        adc(DE.hi());
         break;
 
       case 0x8B:
         PC += 1;
+        adc(DE.lo());
         break;
 
       case 0x8C:
         PC += 1;
+        adc(HL.hi());
         break;
 
       case 0x8D:
         PC += 1;
+        adc(HL.lo());
         break;
 
       case 0x8E:
         PC += 1;
+        adc(m_pBus->readBus(HL.value()));
         break;
 
       case 0x8F:
         PC += 1;
+        adc(A);
         break;
 
       case 0x90:
@@ -839,8 +847,8 @@ void cpu::run() {
         break;
 
       case 0xCB:
+        PC += 1;
         switch (fetch()) {
-          PC += 1;
           case 0x00:
             PC += 2;
             break;
@@ -1873,6 +1881,7 @@ void cpu::run() {
 
       case 0xCE:
         PC += 2;
+        adc(n8(m_pBus->readBus(PC++)));
         break;
 
       case 0xCF:
@@ -2030,7 +2039,7 @@ void cpu::run() {
 }
 
 void cpu::adc(const r8 r) {
-  uint c = F.c() == set ? 1 : 0;
+  uint8 c = F.c() == set ? 1 : 0;
   (A.loNibble() + r.loNibble() + 1 > 0b0000'1111) ? F.h(set) : F.h(reset);
 
   A = A + r + c;
@@ -2042,7 +2051,7 @@ void cpu::adc(const r8 r) {
 }
 
 void cpu::adc(const byte b) {
-  uint c = F.c() == set ? 1 : 0;
+  uint8 c = F.c() == set ? 1 : 0;
   (A.loNibble() + (b & 0b0000'1111) + 1 > 0b0000'1111) ? F.h(set) : F.h(reset);
   A = A + b + c;
 
@@ -2054,7 +2063,7 @@ void cpu::adc(const byte b) {
 }
 
 void cpu::adc(const n8 n) {
-  uint c = F.c() == set ? 1 : 0;
+  uint8 c = F.c() == set ? 1 : 0;
   (A.loNibble() + (n.value() & 0b0000'1111) + 1 > 0b0000'1111) ? F.h(set) : F.h(reset);
 
   A = A + n.value() + c;
