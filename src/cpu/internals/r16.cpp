@@ -19,5 +19,6 @@ r16 operator+(r16 l, const r16 r) {
   return ret;
 }
 
+bool operator==(const r16 rr, const uint16 uu) { return rr.value() == uu; }
 }
 
