@@ -20,10 +20,13 @@ void cpu::enableDoubleSpeedMode() {
 }
 
 void cpu::run() {
-  for (;;) {
-    switch (m_pBus->readBus(PC++)) {
-      case 0x00:
 
+  // clang-format off
+  for (;;) {
+    switch (auto fetch = [&]{ return (m_pBus->readBus(PC++) << 8 | m_pBus->readBus(PC++)); }; fetch()) {
+        // clang-format on
+
+      case 0x00:
         PC += 1;
         break;
 
@@ -836,7 +839,7 @@ void cpu::run() {
         break;
 
       case 0xCB:
-        switch (m_pBus->readBus(PC++)) { // cb prefixed
+        switch (fetch()) {
           PC += 1;
           case 0x00:
             PC += 2;
