@@ -2,16 +2,16 @@
 #define BUS_H
 
 #include "../config.h"
-#include "../io/registers.h"
-#include "../io/interrupts/interrupts.h"
-#include "../ppu/ppu.h"
-#include "../cartridge/cartridge.h"
-#include "../builtin/builtin.h"
-
+#include <cstddef>
 #include <memory>
 
 namespace tmbl {
+
+class builtin;
 class cartridge;
+class interrupts;
+class ppu;
+class registers;
 
 class bus {
 public:
@@ -33,3 +33,4 @@ private:
 }
 
 #endif
+

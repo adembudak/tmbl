@@ -1,4 +1,11 @@
 #include "tmbl/bus/bus.h"
+#include "tmbl/builtin/builtin.h"
+#include "tmbl/cartridge/cartridge.h"
+#include "tmbl/config.h"
+#include "tmbl/io/interrupts/interrupts.h"
+#include "tmbl/io/registers.h"
+#include "tmbl/memory_map.h"
+#include "tmbl/ppu/ppu.h"
 
 namespace tmbl {
 
