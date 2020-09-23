@@ -1,6 +1,7 @@
+#include "tmbl/config.h"
 #include "tmbl/clock/clock.h"
+
 #include <thread>
-#include <chrono>
 
 namespace tmbl {
 
