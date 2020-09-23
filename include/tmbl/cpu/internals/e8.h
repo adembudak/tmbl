@@ -1,3 +1,6 @@
+#ifndef E8_H
+#define E8_H
+
 #include "../../config.h"
 
 namespace tmbl {
@@ -15,3 +18,6 @@ private:
 };
 
 }
+
+#endif
+

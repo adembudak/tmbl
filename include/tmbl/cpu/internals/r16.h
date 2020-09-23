@@ -1,3 +1,6 @@
+#ifndef R16_H
+#define R16_H
+
 #include "../../config.h"
 #include "r8.h"
 
@@ -30,3 +33,6 @@ r16 operator+(const r16 l, const r16 r);
 bool operator==(const r16 rr, const uint16 uu);
 
 }
+
+#endif
+

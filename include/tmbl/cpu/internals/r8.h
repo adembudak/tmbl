@@ -1,3 +1,6 @@
+#ifndef R8_H
+#define R8_H
+
 #include "../../config.h"
 
 namespace tmbl {
@@ -30,3 +33,6 @@ uint8 operator+(const r8 r, const uint8 u);
 bool operator==(const r8 r, uint8 u);
 
 }
+
+#endif
+

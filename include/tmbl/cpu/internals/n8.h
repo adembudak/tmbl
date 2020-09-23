@@ -1,3 +1,5 @@
+#ifndef N8_H
+#define N8_H
 #include "../../config.h"
 
 namespace tmbl {
@@ -16,3 +18,5 @@ private:
 };
 
 }
+
+#endif

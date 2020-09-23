@@ -1,3 +1,6 @@
+#ifndef N16_H
+#define N16_H
+
 #include "../../config.h"
 
 namespace tmbl {
@@ -12,3 +15,5 @@ private:
 };
 
 }
+
+#endif

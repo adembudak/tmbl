@@ -1,3 +1,6 @@
+#ifndef FLAGS_H
+#define FLAGS_H
+
 #include "../../config.h"
 
 namespace tmbl {
@@ -22,4 +25,6 @@ private:
 };
 
 }
+
+#endif
 
