@@ -2,7 +2,8 @@
 #define BUILTIN_H
 
 #include "../config.h"
-#include "../memory_map.h"
+
+#include <cstddef>
 #include <array>
 
 namespace tmbl {
@@ -24,3 +25,4 @@ private:
 }
 
 #endif
+

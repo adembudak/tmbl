@@ -1,4 +1,6 @@
 #include "tmbl/builtin/builtin.h"
+#include "tmbl/config.h"
+#include "tmbl/memory_map.h"
 
 namespace tmbl {
 
