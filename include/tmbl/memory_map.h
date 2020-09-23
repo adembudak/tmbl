@@ -1,3 +1,6 @@
+#ifndef MEMORY_MAP_H
+#define MEMORY_MAP_H
+
 #include <cstddef>
 // clang-format off
 
@@ -40,3 +43,5 @@ static constexpr std::size_t IE =               0xFFFF; // 1B        Intterupts
 
  }
 }
+
+#endif
