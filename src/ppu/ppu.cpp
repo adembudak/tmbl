@@ -1,7 +1,11 @@
+#include "tmbl/config.h"
 #include "tmbl/ppu/ppu.h"
-#include <vector>
 
 namespace tmbl {
+
+class cartridge;
+class interrupts;
+class registers;
 
 ppu::ppu(std::shared_ptr<registers> pRegs, std::shared_ptr<cartridge> pCart,
          std::shared_ptr<interrupts> pIntr)

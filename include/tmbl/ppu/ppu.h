@@ -3,16 +3,17 @@
 
 #include "../config.h"
 #include "../io/registers.h"
-#include "../io/interrupts/interrupts.h"
-#include "../cartridge/cartridge.h"
 #include "internals/stat.h"
 #include "internals/lcdc.h"
 
+#include <cstddef>
 #include <memory>
 #include <array>
-#include <utility>
 
 namespace tmbl {
+
+class cartridge;
+class interrupts;
 
 class ppu {
 public:
@@ -85,3 +86,4 @@ private:
 }
 
 #endif
+
