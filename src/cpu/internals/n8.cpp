@@ -1,3 +1,4 @@
+#include "tmbl/config.h"
 #include "tmbl/cpu/internals/n8.h"
 
 namespace tmbl {

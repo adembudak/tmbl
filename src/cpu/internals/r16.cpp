@@ -1,4 +1,6 @@
+#include "tmbl/config.h"
 #include "tmbl/cpu/internals/r16.h"
+#include "tmbl/cpu/internals/r8.h"
 
 namespace tmbl {
 

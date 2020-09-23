@@ -1,3 +1,4 @@
+#include "tmbl/config.h"
 #include "tmbl/cpu/internals/e8.h"
 
 namespace tmbl {

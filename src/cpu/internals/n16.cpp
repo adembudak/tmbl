@@ -1,3 +1,4 @@
+#include "tmbl/config.h"
 #include "tmbl/cpu/internals/n16.h"
 
 namespace tmbl {
