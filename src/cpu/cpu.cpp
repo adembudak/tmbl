@@ -1,5 +1,16 @@
 #include "tmbl/config.h"
 #include "tmbl/cpu/cpu.h"
+#include "tmbl/bus/bus.h"
+#include "tmbl/clock/clock.h"
+#include "tmbl/cpu/internals/e8.h"
+#include "tmbl/cpu/internals/flags.h"
+#include "tmbl/cpu/internals/n8.h"
+#include "tmbl/cpu/internals/r16.h"
+#include "tmbl/cpu/internals/r8.h"
+#include "tmbl/io/interrupts/interrupts.h"
+#include "tmbl/io/registers.h"
+
+#include <memory>
 
 namespace tmbl {
 cpu::cpu(std::shared_ptr<bus> pBus, std::shared_ptr<registers> pReg,
@@ -2146,5 +2157,4 @@ void cpu::add(const r16 rr) {
 
   m_clock.cycle(2);
 }
-
 }
