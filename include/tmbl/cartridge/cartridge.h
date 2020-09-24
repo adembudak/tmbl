@@ -13,6 +13,7 @@
 #include "mbc7/mbc7.h"
 */
 
+#include <cstddef>
 #include <filesystem>
 #include <vector>
 #include <string>
@@ -47,3 +48,4 @@ private:
 }
 
 #endif
+

@@ -1,11 +1,15 @@
 #include "tmbl/config.h"
-#include "tmbl/cartridge/cartridge.h"
 #include "tmbl/memory_map.h"
+#include "tmbl/cartridge/cartridge.h"
+#include "tmbl/cartridge/mbc1/mbc1.h"
+#include "tmbl/cartridge/rom/rom.h"
 
-#include <vector>
+#include <filesystem>
 #include <fstream>
 #include <iterator>
-#include <filesystem>
+#include <string>
+#include <variant>
+#include <vector>
 
 namespace tmbl {
 
