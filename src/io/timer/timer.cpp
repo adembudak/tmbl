@@ -2,6 +2,8 @@
 
 namespace tmbl {
 
+class registers;
+
 timer::timer(std::shared_ptr<registers> pReg) : m_pReg(pReg) {}
 
 }

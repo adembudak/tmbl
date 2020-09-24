@@ -1,9 +1,11 @@
 #ifndef LCDC_H
 #define LCDC_H
 
+#include "tmbl/config.h"
 #include "../../io/registers.h"
 
 #include <memory>
+#include <utility>
 
 namespace tmbl {
 
@@ -30,3 +32,4 @@ private:
 }
 
 #endif
+

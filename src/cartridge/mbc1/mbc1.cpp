@@ -1,6 +1,7 @@
 #include "tmbl/config.h"
 #include "tmbl/cartridge/mbc1/mbc1.h"
 
+#include <cstddef>
 #include <vector>
 
 namespace tmbl {

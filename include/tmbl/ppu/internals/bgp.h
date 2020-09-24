@@ -1,6 +1,7 @@
 #ifndef BGP_H
 #define BGP_H
 
+#include "tmbl/config.h"
 #include "../../io/registers.h"
 
 #include <memory>
@@ -22,3 +23,4 @@ private:
 }
 
 #endif
+

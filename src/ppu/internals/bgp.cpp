@@ -2,6 +2,8 @@
 
 namespace tmbl {
 
+class registers;
+
 bgp::bgp(std::shared_ptr<registers> pRegs) : m_pRegs(pRegs){};
 
 int bgp::bgPalette(const uint8 val) {

@@ -1,4 +1,6 @@
+#include "tmbl/config.h"
 #include "tmbl/cartridge/rom/rom.h"
+#include <utility>
 
 namespace tmbl {
 

@@ -1,6 +1,10 @@
 #include "tmbl/config.h"
 #include "tmbl/ppu/ppu.h"
 
+#include <array>
+#include <cstddef>
+#include <memory>
+
 namespace tmbl {
 
 class cartridge;

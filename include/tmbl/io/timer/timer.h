@@ -1,6 +1,7 @@
 #ifndef TIMER_H
 #define TIMER_H
 
+#include "tmbl/config.h"
 #include "../registers.h"
 #include <memory>
 

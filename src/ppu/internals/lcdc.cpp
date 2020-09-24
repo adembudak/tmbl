@@ -2,6 +2,8 @@
 
 namespace tmbl {
 
+class registers;
+
 lcdc::lcdc(std::shared_ptr<registers> pRegs) : m_pRegs(pRegs) {}
 
 cflag lcdc::bgDisplayStatus() const noexcept {

@@ -2,6 +2,7 @@
 #define ROM_H
 
 #include "../../config.h"
+#include <cstddef>
 #include <array>
 #include <vector>
 
@@ -22,3 +23,4 @@ private:
 }
 
 #endif
+

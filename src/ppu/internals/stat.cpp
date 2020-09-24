@@ -1,6 +1,11 @@
+#include "tmbl/config.h"
 #include "tmbl/ppu/internals/stat.h"
 
+#include <memory>
+
 namespace tmbl {
+
+class registers;
 
 stat::stat(std::shared_ptr<registers> pRegs) : m_pRegs(pRegs) {}
 

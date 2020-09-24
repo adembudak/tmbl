@@ -1,3 +1,4 @@
+#include "tmbl/config.h"
 #include "tmbl/io/interrupts/interrupts.h"
 
 // clang-format off
