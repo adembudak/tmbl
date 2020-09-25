@@ -36,6 +36,7 @@ public:
   std::size_t banks() const noexcept;
 
   byte read(const std::size_t index);
+  byte write(const std::size_t index, const byte val);
 
 private:
   bool m_cgb_support = false; // supports cgb functions?

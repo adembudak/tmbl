@@ -20,7 +20,7 @@ public:
       std::shared_ptr<ppu> pPPU);
 
   byte readBus(const std::size_t index);
-  void writeBus(std::size_t index, const byte val);
+  void writeBus(const std::size_t index, const byte val);
 
 private:
   std::shared_ptr<cartridge> m_pCart;

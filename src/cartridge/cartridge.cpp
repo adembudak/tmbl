@@ -15,10 +15,10 @@ namespace tmbl {
 
 inline std::vector<byte> dumpROM(const std::filesystem::path &p) {
   std::fstream f(p, std::ios::binary);
-  return {std::istreambuf_iterator(f), {}};
+  return std::vector<byte>(std::istreambuf_iterator(f), {});
 }
 
-cartridge::cartridge(const std::filesystem::path &p) : dumpedGamePak(dumpROM(p)) {
+cartridge::cartridge(const std::filesystem::path &p) : dumpedGamePak{dumpROM(p)} {
 
   const std::size_t title = 0x0134;
   const std::size_t title_end = 0x013E + 1; // +1 for the use of iterator overload of std::string.
@@ -94,6 +94,23 @@ byte cartridge::read(const std::size_t index) {
   if (auto pRom = std::get_if<rom>(&pak)) {
     if (index >= memory::xram && index <= memory::xram_end)
       return pRom->read_xram(index);
+    else
+      return pRom->read_rom(index);
+  } else if (auto pMbc1 = std::get_if<mbc1>(&pak)) {
+
+    if (index >= memory::xram && index <= memory::xram_end)
+      return pMbc1->read_rom(index);
+    else
+      return pRom->read_rom(index);
+  } else {
+    // todo other MBCs...
+  }
+}
+
+byte cartridge::write(const std::size_t index, const byte val) {
+  if (auto pRom = std::get_if<rom>(&pak)) {
+    if (index >= memory::xram && index <= memory::xram_end)
+      return pRom->write_xram(index, val);
     else
       return pRom->read_rom(index);
   } else if (auto pMbc1 = std::get_if<mbc1>(&pak)) {
