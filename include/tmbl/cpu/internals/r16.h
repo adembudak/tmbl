@@ -19,8 +19,8 @@ public:
   uint16 value() const noexcept;
 
   static constexpr const uint16 zero = 0;
-  static constexpr const uint16 lower_mask = 0b0000'0000'1111'1111;
-  static constexpr const uint16 upper_mask = 0b1111'1111'0000'0000;
+  static constexpr const uint16 reset_upper = 0b0000'0000'1111'1111;
+  static constexpr const uint16 reset_lower = 0b1111'1111'0000'0000;
 
   static constexpr const uint16 min = 0b0000'0000'0000'0000;
   static constexpr const uint16 max = 0b1111'1111'1111'1111;
