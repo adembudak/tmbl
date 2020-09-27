@@ -35,6 +35,10 @@ private:
   void add(const e8 e);
   void add(const r16 rr);
 
+  void and_(const r8 r); // and is a reserved word so, and_
+  void and_(const byte b);
+  void and_(const n8 n);
+
 private:
   std::shared_ptr<bus> m_pBus;
   std::shared_ptr<clock> m_pClock;

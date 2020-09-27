@@ -1517,34 +1517,42 @@ void cpu::run() {
 
           case 0xA0:
             PC += 2;
+            and_(BC.hi());
             break;
 
           case 0xA1:
             PC += 2;
+            and_(BC.lo());
             break;
 
           case 0xA2:
             PC += 2;
+            and_(DE.hi());
             break;
 
           case 0xA3:
             PC += 2;
+            and_(DE.lo());
             break;
 
           case 0xA4:
             PC += 2;
+            and_(HL.hi());
             break;
 
           case 0xA5:
             PC += 2;
+            and_(HL.lo());
             break;
 
           case 0xA6:
             PC += 2;
+            and_(m_pBus->readBus(HL.value()));
             break;
 
           case 0xA7:
             PC += 2;
+            and_(A);
             break;
 
           case 0xA8:
@@ -1797,6 +1805,7 @@ void cpu::run() {
 
           case 0xE6:
             PC += 2;
+            and_(n8(m_pBus->readBus(PC++)));
             break;
 
           case 0xE7:
@@ -2157,4 +2166,41 @@ void cpu::add(const r16 rr) {
 
   m_clock.cycle(2);
 }
+
+void cpu::and_(const r8 r) {
+  A = A.value() & r.value();
+
+  A == r8::zero ? F.z(set) : F.z(reset);
+
+  F.n(reset);
+  F.h(set);
+  F.c(reset);
+
+  m_clock.cycle(1);
+}
+
+void cpu::and_(const byte b) {
+  A = A.value() & b;
+
+  A == r8::zero ? F.z(set) : F.z(reset);
+
+  F.n(reset);
+  F.h(set);
+  F.c(reset);
+
+  m_clock.cycle(1);
+}
+
+void cpu::and_(const n8 n) {
+  A = A.value() & n.value();
+
+  A == r8::zero ? F.z(set) : F.z(reset);
+
+  F.n(reset);
+  F.h(set);
+  F.c(reset);
+
+  m_clock.cycle(1);
+}
+
 }
