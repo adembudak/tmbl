@@ -39,3 +39,5 @@ bool operator<(const r8 left, const r8 right) { return left.value() < right.valu
 bool operator<=(const r8 left, const r8 right) { return !(left > right); }
 bool operator>=(const r8 left, const r8 right) { return !(left < right); }
 
+}
+
