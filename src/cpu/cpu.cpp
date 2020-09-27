@@ -585,9 +585,7 @@ void cpu::run() {
 
       case 0x86:
         PC += 1;
-        // todo: should i increment the PC here?
         add(m_pBus->readBus(HL.value()));
-        // or here? or none at all.
         break;
 
       case 0x87:
@@ -797,34 +795,42 @@ void cpu::run() {
 
       case 0xB8:
         PC += 1;
+        cp(BC.hi());
         break;
 
       case 0xB9:
         PC += 1;
+        cp(BC.lo());
         break;
 
       case 0xBA:
         PC += 1;
+        cp(DE.hi());
         break;
 
       case 0xBB:
         PC += 1;
+        cp(DE.lo());
         break;
 
       case 0xBC:
         PC += 1;
+        cp(HL.hi());
         break;
 
       case 0xBD:
         PC += 1;
+        cp(HL.lo());
         break;
 
       case 0xBE:
         PC += 1;
+        cp(m_pBus->readBus(HL.value()));
         break;
 
       case 0xBF:
         PC += 1;
+        cp(A);
         break;
 
       case 0xC0:
@@ -1903,6 +1909,7 @@ void cpu::run() {
 
           case 0xFE:
             PC += 2;
+            cp(n8(m_pBus->readBus(PC++)));
             break;
         }
         break;
@@ -2201,6 +2208,28 @@ void cpu::and_(const n8 n) {
   F.c(reset);
 
   m_clock.cycle(1);
+}
+
+void cpu::cp(const r8 r) {
+  A == r ? F.z(set) : F.z(reset);
+  F.n(set);
+  r.loNibble() > A.loNibble() ? F.h(set) : F.h(reset);
+  A < r ? F.c(set) : F.c(reset);
+}
+
+void cpu::cp(const byte b) {
+  A == b ? F.z(set) : F.z(reset);
+  F.n(set);
+
+  (b & r8::reset_upper) > A.loNibble() ? F.h(set) : F.h(reset);
+  A.value() < b ? F.c(set) : F.c(reset);
+}
+
+void cpu::cp(const n8 n) {
+  A.value() == n.value() ? F.z(set) : F.z(reset);
+  F.n(set);
+  (n.loNibble() > A.loNibble()) ? F.h(set) : F.h(reset);
+  A.value() < n.value() ? F.c(set) : F.c(reset);
 }
 
 }

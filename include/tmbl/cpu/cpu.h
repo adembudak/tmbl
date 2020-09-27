@@ -39,6 +39,10 @@ private:
   void and_(const byte b);
   void and_(const n8 n);
 
+  void cp(const r8 r);
+  void cp(const byte b);
+  void cp(const n8 n);
+
 private:
   std::shared_ptr<bus> m_pBus;
   std::shared_ptr<clock> m_pClock;
