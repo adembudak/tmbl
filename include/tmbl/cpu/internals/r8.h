@@ -15,6 +15,12 @@ public:
   uint8 loNibble() const noexcept;
   uint8 hiNibble() const noexcept;
 
+  r8 &operator++() noexcept;
+  const r8 operator++(int dummy) noexcept;
+
+  r8 &operator--() noexcept;
+  const r8 operator--(int dummy) noexcept;
+
   uint8 value() const noexcept;
 
   static constexpr const uint8 zero = 0;

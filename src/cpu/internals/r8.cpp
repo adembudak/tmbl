@@ -17,6 +17,28 @@ uint8 r8::loNibble() const noexcept { return m_data & 0b0000'1111; }
 
 uint8 r8::hiNibble() const noexcept { return (m_data & 0b1111'0000) >> 4; }
 
+r8 &r8::operator++() noexcept {
+  m_data++;
+  return *this;
+}
+
+const r8 r8::operator++(int /*dummy*/) noexcept {
+  r8 temp = *this;
+  ++*this;
+  return temp;
+}
+
+r8 &r8::operator--() noexcept {
+  m_data--;
+  return *this;
+}
+
+const r8 r8::operator--(int /*dummy*/) noexcept {
+  r8 temp = *this;
+  --*this;
+  return temp;
+}
+
 uint8 r8::value() const noexcept { return m_data; }
 
 r8 operator+(const r8 l, const r8 r) {
