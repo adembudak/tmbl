@@ -59,6 +59,7 @@ void cpu::run() {
 
       case 0x05:
         PC += 1;
+        dec(BC.hi());
         break;
 
       case 0x06:
@@ -84,6 +85,7 @@ void cpu::run() {
 
       case 0x0B:
         PC += 1;
+        dec(BC);
         break;
 
       case 0x0C:
@@ -92,6 +94,7 @@ void cpu::run() {
 
       case 0x0D:
         PC += 1;
+        add(BC.lo());
         break;
 
       case 0x0E:
@@ -104,6 +107,7 @@ void cpu::run() {
 
       case 0x10:
         PC += 1;
+        dec(DE.hi());
         break;
 
       case 0x11:
@@ -149,6 +153,7 @@ void cpu::run() {
 
       case 0x1B:
         PC += 1;
+        dec(DE);
         break;
 
       case 0x1C:
@@ -157,6 +162,7 @@ void cpu::run() {
 
       case 0x1D:
         PC += 1;
+        add(DE.lo());
         break;
 
       case 0x1E:
@@ -169,6 +175,7 @@ void cpu::run() {
 
       case 0x20:
         PC += 2;
+        dec(HL.hi());
         break;
 
       case 0x21:
@@ -214,6 +221,7 @@ void cpu::run() {
 
       case 0x2B:
         PC += 1;
+        dec(HL);
         break;
 
       case 0x2C:
@@ -222,6 +230,7 @@ void cpu::run() {
 
       case 0x2D:
         PC += 1;
+        dec(HL.lo());
         break;
 
       case 0x2E:
@@ -234,6 +243,7 @@ void cpu::run() {
 
       case 0x30:
         PC += 2;
+        dec(HL.value());
         break;
 
       case 0x31:
@@ -279,6 +289,7 @@ void cpu::run() {
 
       case 0x3B:
         PC += 1;
+        SP--;
         break;
 
       case 0x3C:
@@ -287,6 +298,7 @@ void cpu::run() {
 
       case 0x3D:
         PC += 1;
+        dec(A);
         break;
 
       case 0x3E:
@@ -2215,6 +2227,8 @@ void cpu::cp(const r8 r) {
   F.n(set);
   r.loNibble() > A.loNibble() ? F.h(set) : F.h(reset);
   A < r ? F.c(set) : F.c(reset);
+
+  m_clock.cycle(1);
 }
 
 void cpu::cp(const byte b) {
@@ -2223,6 +2237,8 @@ void cpu::cp(const byte b) {
 
   (b & r8::reset_upper) > A.loNibble() ? F.h(set) : F.h(reset);
   A.value() < b ? F.c(set) : F.c(reset);
+
+  m_clock.cycle(2);
 }
 
 void cpu::cp(const n8 n) {
@@ -2230,6 +2246,36 @@ void cpu::cp(const n8 n) {
   F.n(set);
   (n.loNibble() > A.loNibble()) ? F.h(set) : F.h(reset);
   A.value() < n.value() ? F.c(set) : F.c(reset);
+
+  m_clock.cycle(2);
+}
+
+void cpu::dec(r8 &r) {
+  --r;
+
+  r == r8::zero ? F.z(set) : F.z(reset);
+  F.n(set);
+  r == r8::reset_lower ? F.h(set) : F.h(reset);
+
+  m_clock.cycle(1);
+}
+
+void cpu::dec(const uint16 uu) {
+  byte val = m_pBus->readBus(uu);
+  --val;
+  m_pBus->writeBus(uu, val);
+
+  val == 0 ? F.z(set) : F.z(reset);
+  F.n(set);
+  val == 0b0000'1111 ? F.h(set) : F.h(reset);
+
+  m_clock.cycle(3);
+}
+
+void cpu::dec(r16 &rr) {
+  rr.lo()--;
+
+  m_clock.cycle(2);
 }
 
 }

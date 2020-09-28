@@ -43,6 +43,20 @@ private:
   void cp(const byte b);
   void cp(const n8 n);
 
+  void dec(r8 &r);
+  void dec(const uint16 uu);
+  void dec(r16 &rr);
+  //  void dec(SP)
+
+  void inc(r8 &r);
+  void inc(const byte b);
+  void inc(r16 &rr);
+  //  void inc(SP)
+
+  void or_(const r8 r);
+  void or_(const byte b);
+  void or_(const n8 n);
+
 private:
   std::shared_ptr<bus> m_pBus;
   std::shared_ptr<clock> m_pClock;
