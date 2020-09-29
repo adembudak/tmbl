@@ -787,34 +787,42 @@ void cpu::run() {
 
       case 0xB0:
         PC += 1;
+        or_(BC.hi());
         break;
 
       case 0xB1:
         PC += 1;
+        or_(BC.lo());
         break;
 
       case 0xB2:
         PC += 1;
+        or_(DE.hi());
         break;
 
       case 0xB3:
         PC += 1;
+        or_(DE.lo());
         break;
 
       case 0xB4:
         PC += 1;
+        or_(HL.hi());
         break;
 
       case 0xB5:
         PC += 1;
+        or_(HL.lo());
         break;
 
       case 0xB6:
         PC += 1;
+        or_(m_pBus->readBus(HL.value()));
         break;
 
       case 0xB7:
         PC += 1;
+        or_(A);
         break;
 
       case 0xB8:
@@ -2073,6 +2081,7 @@ void cpu::run() {
 
       case 0xF6:
         PC += 2;
+        or_(n8(m_pBus->readBus(PC++)));
         break;
 
       case 0xF7:
@@ -2316,6 +2325,27 @@ void cpu::inc(const uint16 uu) {
 
 void cpu::inc(r16 &rr) {
   rr.hi()++;
+
+  m_clock.cycle(2);
+}
+
+void cpu::or_(const r8 r) {
+  A = A.value() | r.value();
+  A == r8::zero ? F.z(set) : F.z(reset);
+
+  m_clock.cycle(2);
+}
+
+void cpu::or_(const byte b) {
+  A = A.value() | b;
+  A == r8::zero ? F.z(set) : F.z(reset);
+
+  m_clock.cycle(2);
+}
+
+void cpu::or_(const n8 n) {
+  A = A.value() | n.value();
+  A == r8::zero ? F.z(set) : F.z(reset);
 
   m_clock.cycle(2);
 }

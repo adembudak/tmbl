@@ -46,12 +46,10 @@ private:
   void dec(r8 &r);
   void dec(const uint16 uu);
   void dec(r16 &rr);
-  //  void dec(SP)
 
   void inc(r8 &r);
   void inc(const uint16 uu);
   void inc(r16 &rr);
-  //  void inc(SP)
 
   void or_(const r8 r);
   void or_(const byte b);
