@@ -51,10 +51,12 @@ void cpu::run() {
 
       case 0x03:
         PC += 1;
+        inc(BC);
         break;
 
       case 0x04:
         PC += 1;
+        inc(BC.hi());
         break;
 
       case 0x05:
@@ -90,6 +92,7 @@ void cpu::run() {
 
       case 0x0C:
         PC += 1;
+        inc(BC.lo());
         break;
 
       case 0x0D:
@@ -120,10 +123,12 @@ void cpu::run() {
 
       case 0x13:
         PC += 1;
+        inc(DE);
         break;
 
       case 0x14:
         PC += 1;
+        inc(DE.hi());
         break;
 
       case 0x15:
@@ -157,6 +162,7 @@ void cpu::run() {
         break;
 
       case 0x1C:
+        inc(DE.lo());
         PC += 1;
         break;
 
@@ -188,10 +194,12 @@ void cpu::run() {
 
       case 0x23:
         PC += 1;
+        inc(HL);
         break;
 
       case 0x24:
         PC += 1;
+        inc(HL.hi());
         break;
 
       case 0x25:
@@ -226,6 +234,7 @@ void cpu::run() {
 
       case 0x2C:
         PC += 1;
+        inc(HL.lo());
         break;
 
       case 0x2D:
@@ -256,10 +265,12 @@ void cpu::run() {
 
       case 0x33:
         PC += 1;
+        ++SP;
         break;
 
       case 0x34:
         PC += 1;
+        inc(HL.value());
         break;
 
       case 0x35:
@@ -294,6 +305,7 @@ void cpu::run() {
 
       case 0x3C:
         PC += 1;
+        inc(A);
         break;
 
       case 0x3D:
@@ -2255,7 +2267,7 @@ void cpu::dec(r8 &r) {
 
   r == r8::zero ? F.z(set) : F.z(reset);
   F.n(set);
-  r == r8::reset_lower ? F.h(set) : F.h(reset);
+  r == r8::reset_upper ? F.h(set) : F.h(reset);
 
   m_clock.cycle(1);
 }
@@ -2278,4 +2290,35 @@ void cpu::dec(r16 &rr) {
   m_clock.cycle(2);
 }
 
+void cpu::inc(r8 &r) {
+  r.loNibble() == r8::reset_upper ? F.h(set) : F.h(reset);
+
+  ++r;
+
+  r == r8::zero ? F.z(set) : F.z(reset);
+  F.n(reset);
+
+  m_clock.cycle(1);
 }
+
+void cpu::inc(const uint16 uu) {
+
+  byte val = m_pBus->readBus(uu);
+  val == 0b0000'1111 ? F.h(set) : F.h(reset);
+  ++val;
+  m_pBus->writeBus(uu, val);
+
+  val == 0 ? F.z(set) : F.z(reset);
+  F.n(set);
+
+  m_clock.cycle(3);
+}
+
+void cpu::inc(r16 &rr) {
+  rr.hi()++;
+
+  m_clock.cycle(2);
+}
+
+}
+

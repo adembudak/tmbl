@@ -49,7 +49,7 @@ private:
   //  void dec(SP)
 
   void inc(r8 &r);
-  void inc(const byte b);
+  void inc(const uint16 uu);
   void inc(r16 &rr);
   //  void inc(SP)
 
@@ -71,8 +71,8 @@ private:
   r16 DE;
   r16 HL;
 
-  uint16 PC;
-  uint16 SP;
+  uint16 PC{};
+  uint16 SP{};
 
   clock m_clock;
   flag IME = reset; // interrupt master enable
