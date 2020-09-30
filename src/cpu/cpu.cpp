@@ -659,34 +659,43 @@ void cpu::run() {
 
       case 0x90:
         PC += 1;
+        sub(BC.hi());
         break;
 
       case 0x91:
         PC += 1;
+        sub(BC.lo());
         break;
 
       case 0x92:
         PC += 1;
+        sub(DE.hi());
         break;
 
       case 0x93:
         PC += 1;
+        sub(DE.lo());
         break;
 
       case 0x94:
         PC += 1;
+        sub(HL.hi());
         break;
 
       case 0x95:
         PC += 1;
+        sub(HL.lo());
         break;
 
       case 0x96:
         PC += 1;
+        sub(m_pBus->readBus(HL.value()));
+        break;
         break;
 
       case 0x97:
         PC += 1;
+        sub(A);
         break;
 
       case 0x98:
@@ -1787,6 +1796,7 @@ void cpu::run() {
 
           case 0xD6:
             PC += 2;
+            sub(n8(m_pBus->readBus(PC++)));
             break;
 
           case 0xD7:
@@ -2396,6 +2406,45 @@ void cpu::sbc(const n8 n) {
   F.n(set);
 
   A = A - (n.value() + 1);
+
+  A == r8::zero ? F.z(set) : F.z(reset);
+  m_clock.cycle(2);
+}
+
+void cpu::sub(const r8 r) {
+
+  r > A ? F.c(set) : F.c(reset);
+
+  A.loNibble() < r.loNibble() ? F.h(set) : F.h(reset);
+  F.n(set);
+
+  A = A - r;
+
+  A == r8::zero ? F.z(set) : F.z(reset);
+
+  m_clock.cycle(1);
+}
+
+void cpu::sub(const byte b) {
+
+  b > A.value() ? F.c(set) : F.c(reset);
+  A.loNibble() < (b & 0b0000'1111) ? F.h(set) : F.h(reset);
+  F.n(set);
+
+  A = A - b;
+
+  A == r8::zero ? F.z(set) : F.z(reset);
+
+  m_clock.cycle(2);
+}
+
+void cpu::sub(const n8 n) {
+  n.value() > A.value() ? F.z(set) : F.z(reset);
+
+  n.loNibble() > A.loNibble() ? F.h(set) : F.h(reset);
+  F.n(set);
+
+  A = A - n.value();
 
   A == r8::zero ? F.z(set) : F.z(reset);
   m_clock.cycle(2);
