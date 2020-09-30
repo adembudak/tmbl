@@ -772,34 +772,42 @@ void cpu::run() {
 
       case 0xA8:
         PC += 1;
+        xor_(BC.hi());
         break;
 
       case 0xA9:
         PC += 1;
+        xor_(BC.lo());
         break;
 
       case 0xAA:
         PC += 1;
+        xor_(DE.hi());
         break;
 
       case 0xAB:
         PC += 1;
+        xor_(DE.lo());
         break;
 
       case 0xAC:
         PC += 1;
+        xor_(HL.hi());
         break;
 
       case 0xAD:
         PC += 1;
+        xor_(HL.lo());
         break;
 
       case 0xAE:
         PC += 1;
+        xor_(m_pBus->readBus(HL.value()));
         break;
 
       case 0xAF:
         PC += 1;
+        xor_(A);
         break;
 
       case 0xB0:
@@ -2072,6 +2080,7 @@ void cpu::run() {
 
       case 0xEE:
         PC += 2;
+        xor_(n8(m_pBus->readBus(PC++)));
         break;
 
       case 0xEF:
@@ -2448,6 +2457,33 @@ void cpu::sub(const n8 n) {
 
   A == r8::zero ? F.z(set) : F.z(reset);
   m_clock.cycle(2);
+}
+
+void cpu::xor_(const r8 r) {
+  A = A.value() ^ r.value();
+
+  A == r8::zero ? F.z(set) : F.z(reset);
+  F.n(reset);
+  F.h(reset);
+  F.c(reset);
+}
+
+void cpu::xor_(const byte b) {
+  A = A.value() ^ b;
+
+  A == r8::zero ? F.z(set) : F.z(reset);
+  F.n(reset);
+  F.h(reset);
+  F.c(reset);
+}
+
+void cpu::xor_(const n8 n) {
+  A = A.value() ^ n.value();
+
+  A == r8::zero ? F.z(set) : F.z(reset);
+  F.n(reset);
+  F.h(reset);
+  F.c(reset);
 }
 
 }
