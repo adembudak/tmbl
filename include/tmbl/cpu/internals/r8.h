@@ -36,6 +36,10 @@ private:
 
 r8 operator+(const r8 l, const r8 r);
 uint8 operator+(const r8 r, const uint8 u);
+
+r8 operator-(const r8 l, const r8 r);
+uint8 operator-(const r8 r, const uint8 u);
+
 bool operator==(const r8 r, uint8 u);
 
 bool operator==(const r8 left, const r8 right);

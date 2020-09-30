@@ -50,6 +50,17 @@ r8 operator+(const r8 l, const r8 r) {
 }
 
 uint8 operator+(const r8 r, const uint8 u) { return r.value() + u; }
+
+r8 operator-(const r8 l, const r8 r) {
+  byte val = l.value() - r.value();
+
+  r8 k;
+  k = val;
+  return k;
+}
+
+uint8 operator-(const r8 r, const uint8 u) { return r.value() - u; }
+
 bool operator==(const r8 r, uint8 u) { return r.value() == u; }
 
 bool operator==(const r8 left, const r8 right) { return left.value() == right.value(); }
