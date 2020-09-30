@@ -691,34 +691,42 @@ void cpu::run() {
 
       case 0x98:
         PC += 1;
+        sbc(BC.hi());
         break;
 
       case 0x99:
         PC += 1;
+        sbc(BC.lo());
         break;
 
       case 0x9A:
         PC += 1;
+        sbc(DE.hi());
         break;
 
       case 0x9B:
         PC += 1;
+        sbc(DE.lo());
         break;
 
       case 0x9C:
         PC += 1;
+        sbc(HL.hi());
         break;
 
       case 0x9D:
         PC += 1;
+        sbc(HL.lo());
         break;
 
       case 0x9E:
         PC += 1;
+        sbc(m_pBus->readBus(HL.value()));
         break;
 
       case 0x9F:
         PC += 1;
+        sbc(A);
         break;
 
       case 0xA0:
@@ -2009,6 +2017,7 @@ void cpu::run() {
 
       case 0xDE:
         PC += 2;
+        sbc(n8(m_pBus->readBus(PC++)));
         break;
 
       case 0xDF:
@@ -2347,6 +2356,48 @@ void cpu::or_(const n8 n) {
   A = A.value() | n.value();
   A == r8::zero ? F.z(set) : F.z(reset);
 
+  m_clock.cycle(2);
+}
+
+void cpu::sbc(const r8 r) {
+  uint8 carry = F.c() == set ? 1 : 0;
+
+  (r + carry) > A.value() ? F.c(set) : F.c(reset);
+  A.loNibble() < ((r + carry) & r8::reset_upper) ? F.h(set) : F.h(reset);
+  F.n(set);
+
+  A = A - (r + carry);
+
+  A == r8::zero ? F.z(set) : F.z(reset);
+
+  m_clock.cycle(1);
+}
+
+void cpu::sbc(const byte b) {
+  uint8 carry = F.c() == set ? 1 : 0;
+
+  (b + carry) > A.value() ? F.c(set) : F.c(reset);
+  A.loNibble() < ((b + carry) & 0b0000'1111) ? F.h(set) : F.h(reset);
+  F.n(set);
+
+  A = A - (b + carry);
+
+  A == r8::zero ? F.z(set) : F.z(reset);
+
+  m_clock.cycle(2);
+}
+
+void cpu::sbc(const n8 n) {
+  uint8 carry = F.c() == set ? 1 : 0;
+  n.value() + carry > A.value() ? F.z(set) : F.z(reset);
+
+  // can i make make this more expressive?
+  ((n.value() + carry) & 0b0000'1111) > A.loNibble() ? F.h(set) : F.h(reset);
+  F.n(set);
+
+  A = A - (n.value() + 1);
+
+  A == r8::zero ? F.z(set) : F.z(reset);
   m_clock.cycle(2);
 }
 

@@ -55,6 +55,18 @@ private:
   void or_(const byte b);
   void or_(const n8 n);
 
+  void sbc(const r8 r);
+  void sbc(const byte b);
+  void sbc(const n8 n);
+
+  void sub(const r8 r);
+  void sub(const byte b);
+  void sub(const n8 n);
+
+  void xor_(const r8 r);
+  void xor_(const byte b);
+  void xor_(const n8 n);
+
 private:
   std::shared_ptr<bus> m_pBus;
   std::shared_ptr<clock> m_pClock;
