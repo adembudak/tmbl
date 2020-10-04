@@ -71,7 +71,7 @@ private:
   void bit(const uint8 pos, const byte b);
 
   void res(const uint8 pos, r8 &r);
-  void res(const uint8 pos, const byte b);
+  void res(const uint8 pos, const uint16 uu);
 
 private:
   std::shared_ptr<bus> m_pBus;

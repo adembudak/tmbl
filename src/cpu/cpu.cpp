@@ -2642,7 +2642,7 @@ void cpu::bit(const uint8 pos, const byte b) {
 
 void cpu::res(const uint8 pos, r8 &r) {
   uint8 reset_bit = ~(0b1 << pos);
-  r = r & reset_bit;
+  r = r.value() & reset_bit;
 
   m_clock.cycle(2);
 }
@@ -2651,7 +2651,7 @@ void cpu::res(const uint8 pos, const uint16 uu) {
   uint8 reset_bit = ~(0b1 << pos);
 
   byte val = m_pBus->readBus(uu);
-  val = val & test_bit;
+  val = val & reset_bit;
 
   m_pBus->writeBus(uu, val);
 
