@@ -179,6 +179,7 @@ void cpu::run() {
 
       case 0x1F:
         PC += 1;
+        rra();
         break;
 
       case 0x20:
@@ -2889,7 +2890,7 @@ void cpu::rr(r8 &r) {
   uint8 old_first = r.value() & 0b0000'0001;
   r = (r.value() >> 1) | (carry << 7);
 
-  F.z(reset);
+  r == r8::zero ? F.z(set) : F.z(reset);
   F.n(reset);
   F.h(reset);
   old_first ? F.c(set) : F.c(reset);
@@ -2906,7 +2907,7 @@ void cpu::rr(const uint16 uu) {
 
   m_pBus->writeBus(uu, val);
 
-  F.z(reset);
+  val == 0 ? F.z(set) : F.z(reset);
   F.n(reset);
   F.h(reset);
   old_first ? F.c(set) : F.c(reset);
@@ -2914,4 +2915,16 @@ void cpu::rr(const uint16 uu) {
   m_clock.cycle(4);
 }
 
+void cpu::rra() {
+  uint8 carry = F.c() == set ? 1 : 0;
+  uint8 old_first = A.value() & 0b0000'0001;
+  A = (A.value() >> 1) | (carry << 7);
+
+  F.z(reset);
+  F.n(reset);
+  F.h(reset);
+  old_first ? F.c(set) : F.c(reset);
+
+  m_clock.cycle(1);
+}
 }
