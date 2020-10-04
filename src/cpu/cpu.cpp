@@ -1062,34 +1062,42 @@ void cpu::run() {
 
           case 0x18:
             PC += 2;
+            rr(BC.hi());
             break;
 
           case 0x19:
             PC += 2;
+            rr(BC.lo());
             break;
 
           case 0x1A:
             PC += 2;
+            rr(DE.hi());
             break;
 
           case 0x1B:
             PC += 2;
+            rr(DE.lo());
             break;
 
           case 0x1C:
             PC += 2;
+            rr(HL.hi());
             break;
 
           case 0x1D:
             PC += 2;
+            rr(HL.lo());
             break;
 
           case 0x1E:
             PC += 2;
+            rr(HL.value());
             break;
 
           case 0x1F:
             PC += 2;
+            rr(A);
             break;
 
           case 0x20:
@@ -2865,7 +2873,7 @@ void cpu::rlc(const uint16 uu) {
 
 void cpu::rlca() {
 
-  uint8 old_seventh_bit = r.value() >> 7;
+  uint8 old_seventh_bit = A.value() >> 7;
   A = (A.value() << 1) | old_seventh_bit;
 
   F.z(reset);
@@ -2873,7 +2881,37 @@ void cpu::rlca() {
   F.h(reset);
   old_seventh_bit ? F.c(set) : F.c(reset);
 
-  m_clock.cycle
+  m_clock.cycle(1);
+}
+
+void cpu::rr(r8 &r) {
+  uint8 carry = F.c() == set ? 1 : 0;
+  uint8 old_first = r.value() & 0b0000'0001;
+  r = (r.value() >> 1) | (carry << 7);
+
+  F.z(reset);
+  F.n(reset);
+  F.h(reset);
+  old_first ? F.c(set) : F.c(reset);
+
+  m_clock.cycle(2);
+}
+void cpu::rr(const uint16 uu) {
+  byte val = m_pBus->readBus(uu);
+
+  uint8 old_first = val & 0b0000'0001;
+  uint8 carry = F.c() == set ? 1 : 0;
+
+  val = (val >> 1) | (carry << 7);
+
+  m_pBus->writeBus(uu, val);
+
+  F.z(reset);
+  F.n(reset);
+  F.h(reset);
+  old_first ? F.c(set) : F.c(reset);
+
+  m_clock.cycle(4);
 }
 
 }
