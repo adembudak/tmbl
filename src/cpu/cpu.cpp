@@ -141,6 +141,7 @@ void cpu::run() {
 
       case 0x17:
         PC += 1;
+        rla();
         break;
 
       case 0x18:
@@ -1012,34 +1013,42 @@ void cpu::run() {
 
           case 0x10:
             PC += 2;
+            rl(BC.hi());
             break;
 
           case 0x11:
             PC += 2;
+            rl(BC.lo());
             break;
 
           case 0x12:
             PC += 2;
+            rl(DE.hi());
             break;
 
           case 0x13:
             PC += 2;
+            rl(DE.lo());
             break;
 
           case 0x14:
             PC += 2;
+            rl(HL.hi());
             break;
 
           case 0x15:
             PC += 2;
+            rl(HL.lo());
             break;
 
           case 0x16:
             PC += 2;
+            rl(HL.value());
             break;
 
           case 0x17:
             PC += 2;
+            rl(A);
             break;
 
           case 0x18:
@@ -2776,6 +2785,46 @@ void cpu::swap(const uint16 uu) {
   F.c(reset);
 
   m_clock.cycle(4);
+}
+
+void cpu::rl(r8 &r) {
+  uint8 old_carry = F.c() == set ? 1 : 0;
+
+  r = (r.value() << 1) | old_carry;
+
+  r == r8::zero ? F.z(set) : F.z(reset);
+  F.n(reset);
+  F.h(reset);
+  r.value() & 0b1000'0000 ? F.c(set) : F.c(reset);
+
+  m_clock.cycle(2);
+}
+void cpu::rl(const uint16 uu) {
+  uint8 old_carry = F.c() == set ? 1 : 0;
+
+  byte val = m_pBus->readBus(uu);
+  val = (val << 1) | old_carry;
+  m_pBus->writeBus(uu, val);
+
+  val == 0 ? F.z(set) : F.z(reset);
+  F.n(reset);
+  F.h(reset);
+  val & 0b1000'0000 ? F.c(set) : F.c(reset);
+
+  m_clock.cycle(4);
+}
+
+void cpu::rla() {
+  uint8 old_carry = F.c() == set ? 1 : 0;
+
+  A = (A.value() << 1) | old_carry;
+
+  F.z(reset);
+  F.n(reset);
+  F.h(reset);
+  A.value() & 0b1000'0000 ? F.c(set) : F.c(reset);
+ 
+  m_clock.cycle(1);
 }
 
 }

@@ -79,6 +79,26 @@ private:
   void swap(r8 &r);
   void swap(const uint16 uu);
 
+  void rl(r8 &r);
+  void rl(const uint16 uu);
+
+  void rla();
+
+  void rlc(r8 &r);
+  void rlc(const uint16 uu);
+
+  void rlca();
+
+  void rr(r8 &r);
+  void rr(const uint16 uu);
+
+  void rra();
+
+  void rrc(r8 &r);
+  void rrc(const uint16 uu);
+
+  void rrca();
+
 private:
   std::shared_ptr<bus> m_pBus;
   std::shared_ptr<clock> m_pClock;
@@ -103,4 +123,3 @@ private:
 }
 
 #endif
-
