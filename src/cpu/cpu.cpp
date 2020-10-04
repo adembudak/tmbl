@@ -70,6 +70,7 @@ void cpu::run() {
 
       case 0x07:
         PC += 1;
+        rlca();
         break;
 
       case 0x08:
@@ -2854,12 +2855,25 @@ void cpu::rlc(const uint16 uu) {
   val = (val << 1) | old_seventh_bit;
   m_pBus->writeBus(uu, val);
 
-  uu == 0 ? F.z(set) : F.z(reset);
+  val == 0 ? F.z(set) : F.z(reset);
   F.n(reset);
   F.h(reset);
   old_seventh_bit ? F.c(set) : F.c(reset);
 
   m_clock.cycle(4);
+}
+
+void cpu::rlca() {
+
+  uint8 old_seventh_bit = r.value() >> 7;
+  A = (A.value() << 1) | old_seventh_bit;
+
+  F.z(reset);
+  F.n(reset);
+  F.h(reset);
+  old_seventh_bit ? F.c(set) : F.c(reset);
+
+  m_clock.cycle
 }
 
 }
