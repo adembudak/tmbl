@@ -740,34 +740,42 @@ void cpu::run() {
 
       case 0xA0:
         PC += 1;
+        and_(BC.hi());
         break;
 
       case 0xA1:
         PC += 1;
+        and_(BC.lo());
         break;
 
       case 0xA2:
         PC += 1;
+        and_(DE.hi());
         break;
 
       case 0xA3:
         PC += 1;
+        and_(DE.hi());
         break;
 
       case 0xA4:
         PC += 1;
+        and_(HL.hi());
         break;
 
       case 0xA5:
         PC += 1;
+        and_(HL.lo());
         break;
 
       case 0xA6:
         PC += 1;
+        and_(m_pBus->readBus(HL.value()));
         break;
 
       case 0xA7:
         PC += 1;
+        and_(A);
         break;
 
       case 0xA8:
@@ -935,7 +943,7 @@ void cpu::run() {
         PC += 3;
         break;
 
-      case 0xCB:
+      case 0xCB: // 0xCB Prefixed:
         PC += 1;
         switch (fetch()) {
           case 0x00:
@@ -1516,266 +1524,322 @@ void cpu::run() {
 
           case 0x80:
             PC += 2;
+            res(0, BC.hi());
             break;
 
           case 0x81:
             PC += 2;
+            res(0, BC.lo());
             break;
 
           case 0x82:
             PC += 2;
+            res(0, DE.hi());
             break;
 
           case 0x83:
             PC += 2;
+            res(0, DE.lo());
             break;
 
           case 0x84:
             PC += 2;
+            res(0, HL.hi());
             break;
 
           case 0x85:
             PC += 2;
+            res(0, HL.lo());
             break;
 
           case 0x86:
             PC += 2;
+            res(0, HL.value());
             break;
 
           case 0x87:
             PC += 2;
+            res(0, A);
             break;
 
           case 0x88:
             PC += 2;
+            res(1, BC.hi());
             break;
 
           case 0x89:
             PC += 2;
+            res(1, BC.lo());
             break;
 
           case 0x8A:
             PC += 2;
+            res(1, DE.hi());
             break;
 
           case 0x8B:
             PC += 2;
+            res(1, DE.lo());
             break;
 
           case 0x8C:
             PC += 2;
+            res(1, HL.hi());
             break;
 
           case 0x8D:
             PC += 2;
+            res(1, HL.lo());
             break;
 
           case 0x8E:
             PC += 2;
+            res(1, HL.value());
             break;
 
           case 0x8F:
             PC += 2;
+            res(1, A);
             break;
 
           case 0x90:
             PC += 2;
+            res(2, BC.hi());
             break;
 
           case 0x91:
             PC += 2;
+            res(2, BC.lo());
             break;
 
           case 0x92:
             PC += 2;
+            res(2, DE.hi());
             break;
 
           case 0x93:
             PC += 2;
+            res(2, DE.lo());
             break;
 
           case 0x94:
             PC += 2;
+            res(2, HL.hi());
             break;
 
           case 0x95:
             PC += 2;
+            res(2, HL.lo());
             break;
 
           case 0x96:
             PC += 2;
+            res(2, HL.value());
             break;
 
           case 0x97:
             PC += 2;
+            res(2, A);
             break;
 
           case 0x98:
             PC += 2;
+            res(3, BC.hi());
             break;
 
           case 0x99:
             PC += 2;
+            res(3, BC.lo());
             break;
 
           case 0x9A:
             PC += 2;
+            res(3, DE.hi());
             break;
 
           case 0x9B:
             PC += 2;
+            res(3, DE.lo());
             break;
 
           case 0x9C:
             PC += 2;
+            res(3, HL.hi());
             break;
 
           case 0x9D:
             PC += 2;
+            res(3, HL.lo());
             break;
 
           case 0x9E:
             PC += 2;
+            res(3, HL.value());
             break;
 
           case 0x9F:
             PC += 2;
+            res(3, A);
             break;
 
           case 0xA0:
             PC += 2;
-            and_(BC.hi());
+            res(4, BC.hi());
             break;
 
           case 0xA1:
             PC += 2;
-            and_(BC.lo());
+            res(4, BC.lo());
             break;
 
           case 0xA2:
             PC += 2;
-            and_(DE.hi());
+            res(4, DE.hi());
             break;
 
           case 0xA3:
             PC += 2;
-            and_(DE.lo());
+            res(4, DE.lo());
             break;
 
           case 0xA4:
             PC += 2;
-            and_(HL.hi());
+            res(4, HL.hi());
             break;
 
           case 0xA5:
             PC += 2;
-            and_(HL.lo());
+            res(4, HL.lo());
             break;
 
           case 0xA6:
             PC += 2;
-            and_(m_pBus->readBus(HL.value()));
+            res(4, HL.value());
             break;
 
           case 0xA7:
             PC += 2;
-            and_(A);
+            res(4, A);
             break;
 
           case 0xA8:
             PC += 2;
+            res(5, BC.hi());
             break;
 
           case 0xA9:
             PC += 2;
+            res(5, BC.lo());
             break;
 
           case 0xAA:
             PC += 2;
+            res(5, DE.hi());
             break;
 
           case 0xAB:
             PC += 2;
+            res(5, DE.lo());
             break;
 
           case 0xAC:
             PC += 2;
+            res(5, HL.hi());
             break;
 
           case 0xAD:
             PC += 2;
+            res(5, HL.lo());
             break;
 
           case 0xAE:
             PC += 2;
+            res(5, HL.value());
             break;
 
           case 0xAF:
             PC += 2;
+            res(5, A);
             break;
 
           case 0xB0:
             PC += 2;
+            res(6, BC.hi());
             break;
 
           case 0xB1:
             PC += 2;
+            res(6, BC.lo());
             break;
 
           case 0xB2:
             PC += 2;
+            res(6, DE.hi());
             break;
 
           case 0xB3:
             PC += 2;
+            res(6, DE.lo());
             break;
 
           case 0xB4:
             PC += 2;
+            res(6, HL.hi());
             break;
 
           case 0xB5:
             PC += 2;
+            res(6, HL.lo());
             break;
 
           case 0xB6:
             PC += 2;
+            res(6, HL.value());
             break;
 
           case 0xB7:
             PC += 2;
+            res(6, A);
             break;
 
           case 0xB8:
             PC += 2;
+            res(7, BC.hi());
             break;
 
           case 0xB9:
             PC += 2;
+            res(7, BC.lo());
             break;
 
           case 0xBA:
             PC += 2;
+            res(7, DE.hi());
             break;
 
           case 0xBB:
             PC += 2;
+            res(7, DE.lo());
             break;
 
           case 0xBC:
             PC += 2;
+            res(7, HL.hi());
             break;
 
           case 0xBD:
             PC += 2;
+            res(7, HL.lo());
             break;
 
           case 0xBE:
             PC += 2;
+            res(7, HL.value());
             break;
 
           case 0xBF:
             PC += 2;
+            res(7, A);
             break;
 
           case 0xC0:
@@ -1868,7 +1932,6 @@ void cpu::run() {
 
           case 0xD6:
             PC += 2;
-            sub(n8(m_pBus->readBus(PC++)));
             break;
 
           case 0xD7:
@@ -1933,7 +1996,6 @@ void cpu::run() {
 
           case 0xE6:
             PC += 2;
-            and_(n8(m_pBus->readBus(PC++)));
             break;
 
           case 0xE7:
@@ -1942,7 +2004,6 @@ void cpu::run() {
 
           case 0xE8:
             PC += 2;
-            add(e8(m_pBus->readBus(PC++)));
             break;
 
           case 0xE9:
@@ -2031,7 +2092,6 @@ void cpu::run() {
 
           case 0xFE:
             PC += 2;
-            cp(n8(m_pBus->readBus(PC++)));
             break;
         }
         break;
@@ -2075,6 +2135,7 @@ void cpu::run() {
 
       case 0xD6:
         PC += 2;
+        sub(n8(m_pBus->readBus(PC++)));
         break;
 
       case 0xD7:
@@ -2124,7 +2185,8 @@ void cpu::run() {
 
       case 0xE6:
         PC += 2;
-        break;
+        and_(n8(m_pBus->readBus(PC++)));
+        break;            
 
       case 0xE7:
         PC += 1;
@@ -2132,6 +2194,7 @@ void cpu::run() {
 
       case 0xE8:
         PC += 2;
+        add(e8(m_pBus->readBus(PC++)));
         break;
 
       case 0xE9:
@@ -2198,6 +2261,7 @@ void cpu::run() {
 
       case 0xFE:
         PC += 2;
+        cp(n8(m_pBus->readBus(PC++)));
         break;
 
       case 0xFF:
@@ -2556,21 +2620,42 @@ void cpu::xor_(const n8 n) {
   m_clock.cycle(2);
 }
 
- void cpu::bit(const uint8 pos, const r8 r) { 
-     r == r8::zero ? F.z(set) : F.z(reset);
-     F.n(reset);
-     F.h(set);
+void cpu::bit(const uint8 pos, const r8 r) {
+  uint8 test_bit = 0b1 << pos;
 
-     m_clock.cycle(2);
- }
+  test_bit &r.value() ? F.z(set) : F.z(reset);
+  F.n(reset);
+  F.h(set);
 
- void cpu::bit(const uint8 pos, const byte b) {
-   b == 0 ? F.z(set) : F.z(reset);
-   F.n(reset);
-   F.h(set);
-
-   m_clock.cycle(3); 
- }
-
+  m_clock.cycle(2);
 }
 
+void cpu::bit(const uint8 pos, const byte b) {
+  uint8 test_bit = 0b1 << pos;
+
+  test_bit & b ? F.z(set) : F.z(reset);
+  F.n(reset);
+  F.h(set);
+
+  m_clock.cycle(3);
+}
+
+void cpu::res(const uint8 pos, r8 &r) {
+  uint8 reset_bit = ~(0b1 << pos);
+  r = r & reset_bit;
+
+  m_clock.cycle(2);
+}
+
+void cpu::res(const uint8 pos, const uint16 uu) {
+  uint8 reset_bit = ~(0b1 << pos);
+
+  byte val = m_pBus->readBus(uu);
+  val = val & test_bit;
+
+  m_pBus->writeBus(uu, val);
+
+  m_clock.cycle(4);
+}
+
+}

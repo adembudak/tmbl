@@ -70,6 +70,9 @@ private:
   void bit(const uint8 pos, const r8 r);
   void bit(const uint8 pos, const byte b);
 
+  void res(const uint8 pos, r8 &r);
+  void res(const uint8 pos, const byte b);
+
 private:
   std::shared_ptr<bus> m_pBus;
   std::shared_ptr<clock> m_pClock;
