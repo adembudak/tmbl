@@ -1140,34 +1140,42 @@ void cpu::run() {
 
           case 0x30:
             PC += 2;
+            swap(BC.hi());
             break;
 
           case 0x31:
             PC += 2;
+            swap(BC.lo());
             break;
 
           case 0x32:
             PC += 2;
+            swap(DE.hi());
             break;
 
           case 0x33:
             PC += 2;
+            swap(DE.lo());
             break;
 
           case 0x34:
             PC += 2;
+            swap(HL.hi());
             break;
 
           case 0x35:
             PC += 2;
+            swap(HL.lo());
             break;
 
           case 0x36:
             PC += 2;
+            swap(HL.value());
             break;
 
           case 0x37:
             PC += 2;
+            swap(A);
             break;
 
           case 0x38:
@@ -2740,6 +2748,32 @@ void cpu::set_(const uint8 pos, const uint16 uu) {
   val = val & set_bit_mask;
 
   m_pBus->writeBus(uu, val);
+
+  m_clock.cycle(4);
+}
+
+void cpu::swap(r8 &r) {
+  // swap lower and upper nibble
+
+  r = (r.loNibble() << 4) | r.hiNibble() >> 4;
+
+  r == r8::zero ? F.z(set) : F.z(reset);
+  F.n(reset);
+  F.h(reset);
+  F.c(reset);
+
+  m_clock.cycle(2);
+}
+
+void cpu::swap(const uint16 uu) {
+  byte val = m_pBus->readBus(uu);
+  val = (val & 0b0000'1111) << 4 | (val & 0b1111'0000) >> 4;
+  m_pBus->writeBus(uu, val);
+
+  val == 0 ? F.z(set) : F.z(reset);
+  F.n(reset);
+  F.h(reset);
+  F.c(reset);
 
   m_clock.cycle(4);
 }
