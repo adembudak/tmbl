@@ -949,34 +949,42 @@ void cpu::run() {
         switch (fetch()) {
           case 0x00:
             PC += 2;
+            rlc(BC.hi());
             break;
 
           case 0x01:
             PC += 2;
+            rlc(BC.lo());
             break;
 
           case 0x02:
             PC += 2;
+            rlc(DE.hi());
             break;
 
           case 0x03:
             PC += 2;
+            rlc(DE.lo());
             break;
 
           case 0x04:
             PC += 2;
+            rlc(HL.hi());
             break;
 
           case 0x05:
             PC += 2;
+            rlc(HL.lo());
             break;
 
           case 0x06:
             PC += 2;
+            rlc(HL.value());
             break;
 
           case 0x07:
             PC += 2;
+            rlc(A);
             break;
 
           case 0x08:
@@ -2823,8 +2831,35 @@ void cpu::rla() {
   F.n(reset);
   F.h(reset);
   A.value() & 0b1000'0000 ? F.c(set) : F.c(reset);
- 
+
   m_clock.cycle(1);
+}
+
+void cpu::rlc(r8 &r) {
+  uint8 old_seventh_bit = r.value() >> 7;
+  r = (r.value() << 1) | old_seventh_bit;
+
+  r == r8::zero ? F.z(set) : F.z(reset);
+  F.n(reset);
+  F.h(reset);
+  old_seventh_bit ? F.c(set) : F.c(reset);
+
+  m_clock.cycle(2);
+}
+
+void cpu::rlc(const uint16 uu) {
+  byte val = m_pBus->readBus(uu);
+
+  uint8 old_seventh_bit = val >> 7;
+  val = (val << 1) | old_seventh_bit;
+  m_pBus->writeBus(uu, val);
+
+  uu == 0 ? F.z(set) : F.z(reset);
+  F.n(reset);
+  F.h(reset);
+  old_seventh_bit ? F.c(set) : F.c(reset);
+
+  m_clock.cycle(4);
 }
 
 }
