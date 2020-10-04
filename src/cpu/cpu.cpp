@@ -1843,255 +1843,323 @@ void cpu::run() {
             break;
 
           case 0xC0:
+            set_(0, BC.hi());
             PC += 2;
             break;
 
           case 0xC1:
             PC += 2;
+            set_(0, BC.lo());
             break;
 
           case 0xC2:
             PC += 2;
+            set_(0, DE.hi());
             break;
 
           case 0xC3:
             PC += 2;
+            set_(0, DE.lo());
             break;
 
           case 0xC4:
             PC += 2;
+            set_(0, HL.hi());
             break;
 
           case 0xC5:
             PC += 2;
+            set_(0, HL.lo());
             break;
 
           case 0xC6:
             PC += 2;
+            set_(0, HL.value());
             break;
 
           case 0xC7:
             PC += 2;
+            set_(0, A);
             break;
 
           case 0xC8:
             PC += 2;
+            set_(1, BC.hi());
             break;
 
           case 0xC9:
             PC += 2;
+            set_(1, BC.lo());
             break;
 
           case 0xCA:
             PC += 2;
+            set_(1, DE.hi());
             break;
 
           case 0xCB:
             PC += 2;
+            set_(1, DE.lo());
             break;
 
           case 0xCC:
             PC += 2;
+            set_(1, HL.hi());
             break;
 
           case 0xCD:
             PC += 2;
+            set_(1, HL.lo());
             break;
 
           case 0xCE:
             PC += 2;
+            set_(1, HL.value());
             break;
 
           case 0xCF:
             PC += 2;
+            set_(1, A);
             break;
 
           case 0xD0:
             PC += 2;
+            set_(2, BC.hi());
             break;
 
           case 0xD1:
             PC += 2;
+            set_(2, BC.lo());
             break;
 
           case 0xD2:
             PC += 2;
+            set_(2, DE.hi());
             break;
 
           case 0xD3:
             PC += 2;
+            set_(2, DE.lo());
             break;
 
           case 0xD4:
             PC += 2;
+            set_(2, HL.hi());
             break;
 
           case 0xD5:
             PC += 2;
+            set_(2, HL.lo());
             break;
 
           case 0xD6:
             PC += 2;
+            set_(2, HL.value());
             break;
 
           case 0xD7:
             PC += 2;
+            set_(2, A);
             break;
 
           case 0xD8:
             PC += 2;
+            set_(3, BC.hi());
             break;
 
           case 0xD9:
             PC += 2;
+            set_(3, BC.lo());
             break;
 
           case 0xDA:
             PC += 2;
+            set_(3, DE.hi());
             break;
 
           case 0xDB:
             PC += 2;
+            set_(3, DE.lo());
             break;
 
           case 0xDC:
             PC += 2;
+            set_(3, HL.hi());
             break;
 
           case 0xDD:
             PC += 2;
+            set_(3, HL.lo());
             break;
 
           case 0xDE:
             PC += 2;
+            set_(3, HL.value());
             break;
 
           case 0xDF:
             PC += 2;
+            set_(3, A);
             break;
 
           case 0xE0:
             PC += 2;
+            set_(4, BC.hi());
             break;
 
           case 0xE1:
             PC += 2;
+            set_(4, BC.lo());
             break;
 
           case 0xE2:
             PC += 2;
+            set_(4, DE.hi());
             break;
 
           case 0xE3:
             PC += 2;
+            set_(4, DE.lo());
             break;
 
           case 0xE4:
             PC += 2;
+            set_(4, HL.hi());
             break;
 
           case 0xE5:
             PC += 2;
+            set_(4, HL.lo());
             break;
 
           case 0xE6:
             PC += 2;
+            set_(4, HL.value());
             break;
 
           case 0xE7:
             PC += 2;
+            set_(4, A);
             break;
 
           case 0xE8:
             PC += 2;
+            set_(5, BC.hi());
             break;
 
           case 0xE9:
             PC += 2;
+            set_(5, BC.lo());
             break;
 
           case 0xEA:
             PC += 2;
+            set_(5, DE.hi());
             break;
 
           case 0xEB:
             PC += 2;
+            set_(5, DE.lo());
             break;
 
           case 0xEC:
             PC += 2;
+            set_(5, HL.hi());
             break;
 
           case 0xED:
             PC += 2;
+            set_(5, HL.lo());
             break;
 
           case 0xEE:
             PC += 2;
+            set_(5, HL.value());
             break;
 
           case 0xEF:
             PC += 2;
+            set_(5, A);
             break;
 
           case 0xF0:
             PC += 2;
+            set_(6, BC.hi());
             break;
 
           case 0xF1:
             PC += 2;
+            set_(6, BC.lo());
             break;
 
           case 0xF2:
             PC += 2;
+            set_(6, DE.hi());
             break;
 
           case 0xF3:
             PC += 2;
+            set_(6, DE.lo());
             break;
 
           case 0xF4:
             PC += 2;
+            set_(6, HL.hi());
             break;
 
           case 0xF5:
             PC += 2;
+            set_(6, HL.lo());
             break;
 
           case 0xF6:
             PC += 2;
+            set_(6, HL.value());
             break;
 
           case 0xF7:
             PC += 2;
+            set_(6, A);
             break;
 
           case 0xF8:
             PC += 2;
+            set_(7, BC.hi());
             break;
 
           case 0xF9:
             PC += 2;
+            set_(7, BC.lo());
             break;
 
           case 0xFA:
             PC += 2;
+            set_(7, DE.hi());
             break;
 
           case 0xFB:
             PC += 2;
+            set_(7, DE.lo());
             break;
 
           case 0xFC:
             PC += 2;
+            set_(7, HL.hi());
             break;
 
           case 0xFD:
             PC += 2;
+            set_(7, HL.lo());
             break;
 
           case 0xFE:
             PC += 2;
+            set_(7, HL.value());
+            break;
+
+          case 0xFF:
+            PC += 2;
+            set_(7, A);
             break;
         }
         break;
@@ -2186,7 +2254,7 @@ void cpu::run() {
       case 0xE6:
         PC += 2;
         and_(n8(m_pBus->readBus(PC++)));
-        break;            
+        break;
 
       case 0xE7:
         PC += 1;
@@ -2271,7 +2339,7 @@ void cpu::run() {
 }
 
 void cpu::adc(const r8 r) {
-  uint8 c = F.c() == set ? 1 : 0;
+  uint8 c = (F.c() == set) ? 1 : 0;
   (A.loNibble() + r.loNibble() + 1 > 0b0000'1111) ? F.h(set) : F.h(reset);
 
   A = A + r + c;
@@ -2621,9 +2689,9 @@ void cpu::xor_(const n8 n) {
 }
 
 void cpu::bit(const uint8 pos, const r8 r) {
-  uint8 test_bit = 0b1 << pos;
+  uint8 test_bit_mask = 0b1 << pos;
 
-  test_bit &r.value() ? F.z(set) : F.z(reset);
+  test_bit_mask &r.value() ? F.z(set) : F.z(reset);
   F.n(reset);
   F.h(set);
 
@@ -2631,9 +2699,9 @@ void cpu::bit(const uint8 pos, const r8 r) {
 }
 
 void cpu::bit(const uint8 pos, const byte b) {
-  uint8 test_bit = 0b1 << pos;
+  uint8 test_bit_mask = 0b1 << pos;
 
-  test_bit & b ? F.z(set) : F.z(reset);
+  test_bit_mask &b ? F.z(set) : F.z(reset);
   F.n(reset);
   F.h(set);
 
@@ -2641,17 +2709,35 @@ void cpu::bit(const uint8 pos, const byte b) {
 }
 
 void cpu::res(const uint8 pos, r8 &r) {
-  uint8 reset_bit = ~(0b1 << pos);
-  r = r.value() & reset_bit;
+  uint8 reset_bit_mask = ~(0b1 << pos);
+  r = r.value() & reset_bit_mask;
 
   m_clock.cycle(2);
 }
 
 void cpu::res(const uint8 pos, const uint16 uu) {
-  uint8 reset_bit = ~(0b1 << pos);
+  uint8 reset_bit_mask = ~(0b1 << pos);
 
   byte val = m_pBus->readBus(uu);
-  val = val & reset_bit;
+  val = val & reset_bit_mask;
+
+  m_pBus->writeBus(uu, val);
+
+  m_clock.cycle(4);
+}
+
+void cpu::set_(const uint8 pos, r8 &r) {
+  uint8 set_bit_mask = (0b1 << pos);
+  r = r.value() & set_bit_mask;
+
+  m_clock.cycle(2);
+}
+
+void cpu::set_(const uint8 pos, const uint16 uu) {
+  uint8 set_bit_mask = (0b1 << pos);
+
+  byte val = m_pBus->readBus(uu);
+  val = val & set_bit_mask;
 
   m_pBus->writeBus(uu, val);
 

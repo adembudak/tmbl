@@ -73,6 +73,9 @@ private:
   void res(const uint8 pos, r8 &r);
   void res(const uint8 pos, const uint16 uu);
 
+  void set_(const uint8 pos, r8 &r);
+  void set_(const uint8 pos, const uint16 uu);
+
 private:
   std::shared_ptr<bus> m_pBus;
   std::shared_ptr<clock> m_pClock;
