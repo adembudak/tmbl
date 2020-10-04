@@ -1196,258 +1196,322 @@ void cpu::run() {
 
           case 0x40:
             PC += 2;
+            bit(0, BC.hi());
             break;
 
           case 0x41:
             PC += 2;
+            bit(0, BC.lo());
             break;
 
           case 0x42:
             PC += 2;
+            bit(0, DE.hi());
             break;
 
           case 0x43:
             PC += 2;
+            bit(0, DE.lo());
             break;
 
           case 0x44:
             PC += 2;
+            bit(0, HL.hi());
             break;
 
           case 0x45:
             PC += 2;
+            bit(0, HL.lo());
             break;
 
           case 0x46:
             PC += 2;
+            bit(0, m_pBus->readBus(HL.value()));
             break;
 
           case 0x47:
             PC += 2;
+            bit(0, A);
             break;
 
           case 0x48:
             PC += 2;
+            bit(1, BC.hi());
             break;
 
           case 0x49:
             PC += 2;
+            bit(1, BC.lo());
             break;
 
           case 0x4A:
             PC += 2;
+            bit(1, DE.hi());
             break;
 
           case 0x4B:
             PC += 2;
+            bit(1, DE.lo());
             break;
 
           case 0x4C:
             PC += 2;
+            bit(1, HL.hi());
             break;
 
           case 0x4D:
             PC += 2;
+            bit(1, HL.lo());
             break;
 
           case 0x4E:
             PC += 2;
+            bit(1, m_pBus->readBus(HL.value()));
             break;
 
           case 0x4F:
             PC += 2;
+            bit(1, A);
             break;
 
           case 0x50:
             PC += 2;
+            bit(2, BC.hi());
             break;
 
           case 0x51:
             PC += 2;
+            bit(2, BC.lo());
             break;
 
           case 0x52:
             PC += 2;
+            bit(2, DE.hi());
             break;
 
           case 0x53:
             PC += 2;
+            bit(2, DE.lo());
             break;
 
           case 0x54:
             PC += 2;
+            bit(2, HL.hi());
             break;
 
           case 0x55:
             PC += 2;
+            bit(2, HL.lo());
             break;
 
           case 0x56:
             PC += 2;
+            bit(2, m_pBus->readBus(HL.value()));
             break;
 
           case 0x57:
             PC += 2;
+            bit(2, A);
             break;
 
           case 0x58:
             PC += 2;
+            bit(3, BC.hi());
             break;
 
           case 0x59:
             PC += 2;
+            bit(3, BC.lo());
             break;
 
           case 0x5A:
             PC += 2;
+            bit(3, DE.hi());
             break;
 
           case 0x5B:
             PC += 2;
+            bit(3, DE.lo());
             break;
 
           case 0x5C:
             PC += 2;
+            bit(3, HL.hi());
             break;
 
           case 0x5D:
             PC += 2;
+            bit(3, HL.lo());
             break;
 
           case 0x5E:
             PC += 2;
+            bit(3, m_pBus->readBus(HL.value()));
             break;
 
           case 0x5F:
             PC += 2;
+            bit(3, A);
             break;
 
           case 0x60:
             PC += 2;
+            bit(4, BC.hi());
             break;
 
           case 0x61:
             PC += 2;
+            bit(4, BC.lo());
             break;
 
           case 0x62:
             PC += 2;
+            bit(4, DE.hi());
             break;
 
           case 0x63:
             PC += 2;
+            bit(4, DE.lo());
             break;
 
           case 0x64:
             PC += 2;
+            bit(4, HL.hi());
             break;
 
           case 0x65:
             PC += 2;
+            bit(4, HL.lo());
             break;
 
           case 0x66:
             PC += 2;
+            bit(4, m_pBus->readBus(HL.value()));
             break;
 
           case 0x67:
             PC += 2;
+            bit(4, A);
             break;
 
           case 0x68:
             PC += 2;
+            bit(5, BC.hi());
             break;
 
           case 0x69:
             PC += 2;
+            bit(5, BC.lo());
             break;
 
           case 0x6A:
             PC += 2;
+            bit(5, DE.hi());
             break;
 
           case 0x6B:
             PC += 2;
+            bit(5, DE.lo());
             break;
 
           case 0x6C:
             PC += 2;
+            bit(5, HL.hi());
             break;
 
           case 0x6D:
             PC += 2;
+            bit(5, HL.lo());
             break;
 
           case 0x6E:
             PC += 2;
+            bit(5, m_pBus->readBus(HL.value()));
             break;
 
           case 0x6F:
             PC += 2;
+            bit(5, A);
             break;
 
           case 0x70:
             PC += 2;
+            bit(6, BC.hi());
             break;
 
           case 0x71:
             PC += 2;
+            bit(6, BC.lo());
             break;
 
           case 0x72:
             PC += 2;
+            bit(6, DE.hi());
             break;
 
           case 0x73:
             PC += 2;
+            bit(6, DE.lo());
             break;
 
           case 0x74:
             PC += 2;
+            bit(6, HL.hi());
             break;
 
           case 0x75:
             PC += 2;
+            bit(6, HL.lo());
             break;
 
           case 0x76:
             PC += 2;
+            bit(6, m_pBus->readBus(HL.value()));
             break;
 
           case 0x77:
             PC += 2;
+            bit(6, A);
             break;
 
           case 0x78:
             PC += 2;
+            bit(7, BC.hi());
             break;
 
           case 0x79:
             PC += 2;
+            bit(7, BC.lo());
             break;
 
           case 0x7A:
             PC += 2;
+            bit(7, DE.hi());
             break;
 
           case 0x7B:
             PC += 2;
+            bit(7, DE.lo());
             break;
 
           case 0x7C:
             PC += 2;
+            bit(7, HL.hi());
             break;
 
           case 0x7D:
             PC += 2;
+            bit(7, HL.lo());
             break;
 
           case 0x7E:
             PC += 2;
+            bit(7, m_pBus->readBus(HL.value()));
             break;
 
           case 0x7F:
             PC += 2;
+            bit(7, A);
             break;
 
           case 0x80:
@@ -2466,6 +2530,8 @@ void cpu::xor_(const r8 r) {
   F.n(reset);
   F.h(reset);
   F.c(reset);
+
+  m_clock.cycle(1);
 }
 
 void cpu::xor_(const byte b) {
@@ -2475,6 +2541,8 @@ void cpu::xor_(const byte b) {
   F.n(reset);
   F.h(reset);
   F.c(reset);
+
+  m_clock.cycle(2);
 }
 
 void cpu::xor_(const n8 n) {
@@ -2484,7 +2552,25 @@ void cpu::xor_(const n8 n) {
   F.n(reset);
   F.h(reset);
   F.c(reset);
+
+  m_clock.cycle(2);
 }
+
+ void cpu::bit(const uint8 pos, const r8 r) { 
+     r == r8::zero ? F.z(set) : F.z(reset);
+     F.n(reset);
+     F.h(set);
+
+     m_clock.cycle(2);
+ }
+
+ void cpu::bit(const uint8 pos, const byte b) {
+   b == 0 ? F.z(set) : F.z(reset);
+   F.n(reset);
+   F.h(set);
+
+   m_clock.cycle(3); 
+ }
 
 }
 

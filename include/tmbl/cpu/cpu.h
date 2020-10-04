@@ -67,6 +67,9 @@ private:
   void xor_(const byte b);
   void xor_(const n8 n);
 
+  void bit(const uint8 pos, const r8 r);
+  void bit(const uint8 pos, const byte b);
+
 private:
   std::shared_ptr<bus> m_pBus;
   std::shared_ptr<clock> m_pClock;
