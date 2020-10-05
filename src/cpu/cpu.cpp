@@ -991,34 +991,42 @@ void cpu::run() {
 
           case 0x08:
             PC += 2;
+            rrc(BC.hi());
             break;
 
           case 0x09:
             PC += 2;
+            rrc(BC.lo());
             break;
 
           case 0x0A:
             PC += 2;
+            rrc(DE.hi());
             break;
 
           case 0x0B:
             PC += 2;
+            rrc(DE.lo());
             break;
 
           case 0x0C:
             PC += 2;
+            rrc(HL.hi());
             break;
 
           case 0x0D:
             PC += 2;
+            rrc(HL.lo());
             break;
 
           case 0x0E:
             PC += 2;
+            rrc(HL.value());
             break;
 
           case 0x0F:
             PC += 2;
+            rrc(A);
             break;
 
           case 0x10:
@@ -2926,5 +2934,33 @@ void cpu::rra() {
   old_first ? F.c(set) : F.c(reset);
 
   m_clock.cycle(1);
+}
+
+void cpu::rrc(r8 &r) {
+  uint8 old_first = r.value() & 0b0000'0001;
+
+  r = (r.value() >> 1) | (old_first << 7);
+
+  r == r8::zero ? F.z(set) : F.z(reset);
+  F.n(reset);
+  F.h(reset);
+  old_first ? F.c(set) : F.c(reset);
+
+  m_clock.cycle(2);
+}
+
+void cpu::rrc(const uint16 uu) {
+  byte val = m_pBus->readBus(uu);
+  uint8 old_first = val & 0b0000'0001;
+
+  val = (val >> 1) | (old_first << 7);
+  m_pBus->writeBus(uu, val);
+
+  val == 0 ? F.z(set) : F.z(reset);
+  F.n(reset);
+  F.h(reset);
+  old_first ? F.c(set) : F.c(reset);
+
+  m_clock.cycle(4);
 }
 }
