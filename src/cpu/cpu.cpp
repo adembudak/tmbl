@@ -1112,34 +1112,42 @@ void cpu::run() {
 
           case 0x20:
             PC += 2;
+            sla(BC.hi());
             break;
 
           case 0x21:
             PC += 2;
+            sla(BC.lo());
             break;
 
           case 0x22:
             PC += 2;
+            sla(DE.hi());
             break;
 
           case 0x23:
             PC += 2;
+            sla(DE.lo());
             break;
 
           case 0x24:
             PC += 2;
+            sla(HL.hi());
             break;
 
           case 0x25:
             PC += 2;
+            sla(HL.lo());
             break;
 
           case 0x26:
             PC += 2;
+            sla(HL.value());
             break;
 
           case 0x27:
             PC += 2;
+            sla(A);
             break;
 
           case 0x28:
@@ -2976,6 +2984,34 @@ void cpu::rrca() {
   old_first ? F.c(set) : F.c(reset);
 
   m_clock.cycle(1);
+}
+
+void cpu::sla(r8 &r) {
+  uint8 old_seventh_bit = r.value() >> 7;
+
+  r = r.value() << 1;
+
+  r == r8::zero ? F.z(set) : F.z(reset);
+  F.n(reset);
+  F.h(reset);
+  old_seventh_bit ? F.c(set) : F.c(reset);
+
+  m_clock.cycle(2);
+}
+
+void cpu::sla(const uint16 uu) {
+  byte val = m_pBus->readBus(uu);
+  uint8 old_seventh_bit = val >> 7;
+
+  val = val << 1;
+  m_pBus->writeBus(uu, val);
+
+  val == 0 ? F.z(set) : F.z(reset);
+  F.n(reset);
+  F.h(reset);
+  old_seventh_bit ? F.c(set) : F.c(reset);
+ 
+  m_clock.cycle(4);
 }
 
 }
