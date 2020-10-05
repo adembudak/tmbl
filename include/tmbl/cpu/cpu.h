@@ -109,7 +109,7 @@ private:
   void srl(const uint16 uu);
 
   void ld(r8 &l, const r8 r);
- // void ld(r8 &r, const n8 n);
+  void ld(r8 &r, const n8 n);
  // void ld(r16 &rr, n16 nn);
 
 private:

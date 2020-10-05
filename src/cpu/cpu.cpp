@@ -66,6 +66,7 @@ void cpu::run() {
 
       case 0x06:
         PC += 2;
+        ld(BC.hi(), n8(m_pBus->readBus(PC++)));
         break;
 
       case 0x07:
@@ -103,6 +104,7 @@ void cpu::run() {
 
       case 0x0E:
         PC += 2;
+        ld(BC.lo(), n8(m_pBus->readBus(PC++)));
         break;
 
       case 0x0F:
@@ -139,6 +141,7 @@ void cpu::run() {
 
       case 0x16:
         PC += 2;
+        ld(DE.hi(), n8(m_pBus->readBus(PC++)));
         break;
 
       case 0x17:
@@ -176,6 +179,7 @@ void cpu::run() {
 
       case 0x1E:
         PC += 2;
+        ld(DE.lo(), n8(m_pBus->readBus(PC++)));
         break;
 
       case 0x1F:
@@ -212,6 +216,7 @@ void cpu::run() {
 
       case 0x26:
         PC += 2;
+        ld(HL.hi(), n8(m_pBus->readBus(PC++)));
         break;
 
       case 0x27:
@@ -248,6 +253,7 @@ void cpu::run() {
 
       case 0x2E:
         PC += 2;
+        ld(HL.lo(), n8(m_pBus->readBus(PC++)));
         break;
 
       case 0x2F:
@@ -319,6 +325,7 @@ void cpu::run() {
 
       case 0x3E:
         PC += 2;
+        ld(A, n8(m_pBus->readBus(PC++)));
         break;
 
       case 0x3F:
@@ -3144,5 +3151,11 @@ void cpu::ld(r8 &l, const r8 r) {
   m_clock.cycle(1);
 
 }
+
+void cpu::ld(r8& r, const n8 n) {
+  r = n;
+
+  m_clock.cycle(2);
+  }
 
 }
