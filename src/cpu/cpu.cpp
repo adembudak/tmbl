@@ -1152,34 +1152,42 @@ void cpu::run() {
 
           case 0x28:
             PC += 2;
+            sra(BC.hi());
             break;
 
           case 0x29:
             PC += 2;
+            sra(BC.lo());
             break;
 
           case 0x2A:
             PC += 2;
+            sra(DE.hi());
             break;
 
           case 0x2B:
             PC += 2;
+            sra(DE.lo());
             break;
 
           case 0x2C:
             PC += 2;
+            sra(HL.hi());
             break;
 
           case 0x2D:
             PC += 2;
+            sra(HL.lo());
             break;
 
           case 0x2E:
             PC += 2;
+            sra(HL.value());
             break;
 
           case 0x2F:
             PC += 2;
+            sra(A);
             break;
 
           case 0x30:
@@ -3011,6 +3019,37 @@ void cpu::sla(const uint16 uu) {
   F.h(reset);
   old_seventh_bit ? F.c(set) : F.c(reset);
  
+  m_clock.cycle(4);
+}
+
+void cpu::sra(r8 &r) {
+  uint8 old_first_bit = A.value() & 0b0000'0001;
+  uint8 old_seventh_bit = r.value() >> 7;
+
+  r = (r.value() >> 1) | (old_seventh_bit << 7);
+
+  r == r8::zero ? F.z(set) : F.z(reset);
+  F.n(reset);
+  F.h(reset);
+  old_first_bit ? F.c(set) : F.c(reset);
+
+  m_clock.cycle(2);
+}
+
+void cpu::sra(const uint16 uu) {
+  byte val = m_pBus->readBus(uu);
+
+  uint8 old_first_bit = val & 0b0000'0001;
+  uint8 old_seventh_bit = val >> 7;
+
+  val = (val >> 1) | (old_seventh_bit << 7);
+  m_pBus->writeBus(uu, val);
+
+  val == 0 ? F.z(set) : F.z(reset);
+  F.n(reset);
+  F.h(reset);
+  old_first_bit ? F.c(set) : F.c(reset);
+
   m_clock.cycle(4);
 }
 

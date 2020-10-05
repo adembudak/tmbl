@@ -102,6 +102,9 @@ private:
   void sla(r8 &r);
   void sla(const uint16 uu);
 
+  void sra(r8 &r);
+  void sra(const uint16 uu);
+
 private:
   std::shared_ptr<bus> m_pBus;
   std::shared_ptr<clock> m_pClock;
