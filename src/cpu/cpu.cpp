@@ -107,6 +107,7 @@ void cpu::run() {
 
       case 0x0F:
         PC += 1;
+        rrca();
         break;
 
       case 0x10:
@@ -2963,4 +2964,18 @@ void cpu::rrc(const uint16 uu) {
 
   m_clock.cycle(4);
 }
+
+void cpu::rrca() {
+  uint8 old_first = A.value() & 0b0000'0001;
+
+  A = (A.value() >> 1) | (old_first << 7);
+
+  F.z(reset);
+  F.n(reset);
+  F.h(reset);
+  old_first ? F.c(set) : F.c(reset);
+
+  m_clock.cycle(1);
+}
+
 }
