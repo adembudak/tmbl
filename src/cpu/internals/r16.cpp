@@ -10,6 +10,13 @@ r8 &r16::lo() noexcept { return m_lo; }
 const r8 &r16::hi() const noexcept { return m_hi; }
 const r8 &r16::lo() const noexcept { return m_lo; }
 
+r16 &r16::operator=(const n16 &nn) {
+  m_lo = nn.lo();
+  m_hi = nn.hi();
+
+  return *this;
+}
+
 const r16 r16::operator++(int dummy) noexcept {
   if (m_hi == 0) {
     m_lo++;

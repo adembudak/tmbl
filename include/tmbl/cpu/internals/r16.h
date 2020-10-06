@@ -3,6 +3,7 @@
 
 #include "../../config.h"
 #include "r8.h"
+#include "n16.h"
 
 namespace tmbl {
 
@@ -15,6 +16,8 @@ public:
 
   const r8 &hi() const noexcept;
   const r8 &lo() const noexcept;
+
+  r16 &operator=(const n16 &nn);
 
   const r16 operator++(int dummy) noexcept;
   const r16 operator--(int dummy) noexcept;

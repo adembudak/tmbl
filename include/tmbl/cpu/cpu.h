@@ -119,6 +119,8 @@ private:
   void ldd(r16 &rr, const r8 r);
   void ldd(r8 &r, r16 &rr);
 
+  void ld(r16 &rr, const n16 nn);
+
 private:
   std::shared_ptr<bus> m_pBus;
   std::shared_ptr<clock> m_pClock;

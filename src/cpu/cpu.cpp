@@ -43,6 +43,7 @@ void cpu::run() {
 
       case 0x01:
         PC += 3;
+        ld(BC, n16(fetch()));
         break;
 
       case 0x02:
@@ -121,6 +122,7 @@ void cpu::run() {
 
       case 0x11:
         PC += 3;
+        ld(DE, n16(fetch()));
         break;
 
       case 0x12:
@@ -198,6 +200,7 @@ void cpu::run() {
 
       case 0x21:
         PC += 3;
+        ld(HL, n16(fetch()));
         break;
 
       case 0x22:
@@ -273,6 +276,8 @@ void cpu::run() {
 
       case 0x31:
         PC += 3;
+        SP = n16(fetch()).value();
+        m_clock.cycle(3);
         break;
 
       case 0x32:
@@ -3218,4 +3223,9 @@ void cpu::ldd(r8 &r, r16 &rr) {
   m_clock.cycle(2);
 }
 
+void cpu::ld(r16& rr, const n16 nn) { 
+   rr = nn;
+
+   m_clock.cycle(3);
+  }
 }
