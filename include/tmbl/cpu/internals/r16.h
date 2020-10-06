@@ -16,6 +16,9 @@ public:
   const r8 &hi() const noexcept;
   const r8 &lo() const noexcept;
 
+  const r16 operator++(int dummy) noexcept;
+  const r16 operator--(int dummy) noexcept;
+
   uint16 value() const noexcept;
 
   static constexpr const uint16 zero = 0;
@@ -35,4 +38,3 @@ bool operator==(const r16 rr, const uint16 uu);
 }
 
 #endif
-

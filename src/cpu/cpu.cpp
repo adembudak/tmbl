@@ -202,6 +202,7 @@ void cpu::run() {
 
       case 0x22:
         PC += 1;
+        ldi(HL, A);
         break;
 
       case 0x23:
@@ -238,6 +239,7 @@ void cpu::run() {
 
       case 0x2A:
         PC += 1;
+        ldi(A, HL);
         break;
 
       case 0x2B:
@@ -275,6 +277,7 @@ void cpu::run() {
 
       case 0x32:
         PC += 1;
+        ldd(HL, A);
         break;
 
       case 0x33:
@@ -310,6 +313,7 @@ void cpu::run() {
 
       case 0x3A:
         PC += 1;
+        ldd(A, HL);
         break;
 
       case 0x3B:
@@ -3182,6 +3186,34 @@ void cpu::ld(const uint16 uu, const r8 &r) {
 
 void cpu::ld(r8 &r, const uint16 uu) {
   r = m_pBus->readBus(uu);
+
+  m_clock.cycle(2);
+}
+
+void cpu::ldi(r16 &rr, const r8 r) {
+  m_pBus->writeBus(rr.value(), r.value());
+  rr++;
+
+  m_clock.cycle(2);
+}
+
+void cpu::ldi(r8 &r, r16 &rr) {
+  r = m_pBus->readBus(rr.value());
+  rr++;
+
+  m_clock.cycle(2);
+}
+
+void cpu::ldd(r16 &rr, const r8 r) {
+  m_pBus->writeBus(rr.value(), r.value());
+  rr--;
+
+  m_clock.cycle(2);
+}
+
+void cpu::ldd(r8 &r, r16 &rr) {
+  r = m_pBus->readBus(rr.value());
+  rr--;
 
   m_clock.cycle(2);
 }

@@ -10,6 +10,24 @@ r8 &r16::lo() noexcept { return m_lo; }
 const r8 &r16::hi() const noexcept { return m_hi; }
 const r8 &r16::lo() const noexcept { return m_lo; }
 
+const r16 r16::operator++(int dummy) noexcept {
+  if (m_hi == 0) {
+    m_lo++;
+  } else {
+    m_hi++;
+  }
+  return *this;
+}
+
+const r16 r16::operator--(int dummy) noexcept {
+  if (m_hi == 0) {
+    m_lo--;
+  } else {
+    m_hi--;
+  }
+  return *this;
+}
+
 uint16 r16::value() const noexcept { return m_hi.value() << 8U | m_lo.value(); }
 
 r16 operator+(r16 l, const r16 r) {
@@ -23,4 +41,3 @@ r16 operator+(r16 l, const r16 r) {
 
 bool operator==(const r16 rr, const uint16 uu) { return rr.value() == uu; }
 }
-
