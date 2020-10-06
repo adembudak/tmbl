@@ -47,6 +47,7 @@ void cpu::run() {
 
       case 0x02:
         PC += 1;
+        ld(BC.value(), A);
         break;
 
       case 0x03:
@@ -85,6 +86,7 @@ void cpu::run() {
 
       case 0x0A:
         PC += 1;
+        ld(A, BC.value());
         break;
 
       case 0x0B:
@@ -123,6 +125,7 @@ void cpu::run() {
 
       case 0x12:
         PC += 1;
+        ld(DE.value(), A);
         break;
 
       case 0x13:
@@ -160,6 +163,7 @@ void cpu::run() {
 
       case 0x1A:
         PC += 1;
+        ld(A, DE.value());
         break;
 
       case 0x1B:
@@ -364,11 +368,12 @@ void cpu::run() {
 
       case 0x46:
         PC += 1;
+        ld(BC.hi(), HL.value());
         break;
 
       case 0x47:
         PC += 1;
-        ld(BC.hi(),A);
+        ld(BC.hi(), A);
         break;
 
       case 0x48:
@@ -403,6 +408,7 @@ void cpu::run() {
 
       case 0x4E:
         PC += 1;
+        ld(BC.lo(), HL.value());
         break;
 
       case 0x4F:
@@ -442,6 +448,7 @@ void cpu::run() {
 
       case 0x56:
         PC += 1;
+        ld(DE.hi(), HL.value());
         break;
 
       case 0x57:
@@ -481,6 +488,7 @@ void cpu::run() {
 
       case 0x5E:
         PC += 1;
+        ld(DE.lo(), HL.value());
         break;
 
       case 0x5F:
@@ -520,6 +528,7 @@ void cpu::run() {
 
       case 0x66:
         PC += 1;
+        ld(HL.hi(), HL.value());
         break;
 
       case 0x67:
@@ -559,6 +568,7 @@ void cpu::run() {
 
       case 0x6E:
         PC += 1;
+        ld(HL.lo(), HL.value());
         break;
 
       case 0x6F:
@@ -568,26 +578,32 @@ void cpu::run() {
 
       case 0x70:
         PC += 1;
+        ld(HL.value(), BC.hi());
         break;
 
       case 0x71:
         PC += 1;
+        ld(HL.value(), BC.lo());
         break;
 
       case 0x72:
         PC += 1;
+        ld(HL.value(), DE.hi());
         break;
 
       case 0x73:
         PC += 1;
+        ld(HL.value(), DE.lo());
         break;
 
       case 0x74:
         PC += 1;
+        ld(HL.value(), HL.hi());
         break;
 
       case 0x75:
         PC += 1;
+        ld(HL.value(), HL.lo());
         break;
 
       case 0x76:
@@ -596,6 +612,7 @@ void cpu::run() {
 
       case 0x77:
         PC += 1;
+        ld(HL.value(), A);
         break;
 
       case 0x78:
@@ -630,6 +647,7 @@ void cpu::run() {
 
       case 0x7E:
         PC += 1;
+        ld(A, HL.value());
         break;
 
       case 0x7F:
@@ -3082,7 +3100,7 @@ void cpu::sla(const uint16 uu) {
   F.n(reset);
   F.h(reset);
   old_seventh_bit ? F.c(set) : F.c(reset);
- 
+
   m_clock.cycle(4);
 }
 
@@ -3126,7 +3144,7 @@ void cpu::srl(r8 &r) {
   F.n(reset);
   F.h(reset);
   old_first_bit ? F.c(set) : F.c(reset);
-  
+
   m_clock.cycle(2);
 }
 
@@ -3146,16 +3164,26 @@ void cpu::srl(const uint16 uu) {
   m_clock.cycle(4);
 }
 
-void cpu::ld(r8 &l, const r8 r) {
+void cpu::ld(r8 &l, const r8 &r) {
   l = r;
   m_clock.cycle(1);
-
 }
 
-void cpu::ld(r8& r, const n8 n) {
+void cpu::ld(r8 &r, const n8 &n) {
   r = n;
 
   m_clock.cycle(2);
-  }
+}
+void cpu::ld(const uint16 uu, const r8 &r) {
+  m_pBus->writeBus(uu, r.value());
+
+  m_clock.cycle(2);
+}
+
+void cpu::ld(r8 &r, const uint16 uu) {
+  r = m_pBus->readBus(uu);
+
+  m_clock.cycle(2);
+}
 
 }

@@ -13,6 +13,6 @@ cflag flags::n() const noexcept { return m_n; }
 cflag flags::h() const noexcept { return m_h; }
 cflag flags::c() const noexcept { return m_c; }
 
-uint8 flags::value() const noexcept { return (z << 7) | (n << 6) | (h << 5) | (c << 4); }
+uint8 flags::value() const noexcept { return (m_z << 7) | (m_n << 6) | (m_h << 5) | (m_c << 4); }
 
 }

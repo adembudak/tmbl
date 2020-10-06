@@ -108,9 +108,10 @@ private:
   void srl(r8 &r);
   void srl(const uint16 uu);
 
-  void ld(r8 &l, const r8 r);
-  void ld(r8 &r, const n8 n);
- // void ld(r16 &rr, n16 nn);
+  void ld(r8 &l, const r8 &r);
+  void ld(r8 &r, const n8 &n);
+  void ld(const uint16 uu, const r8 &r);
+  void ld(r8 &r, const uint16 uu);
 
 private:
   std::shared_ptr<bus> m_pBus;
