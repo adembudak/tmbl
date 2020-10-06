@@ -17,6 +17,8 @@ public:
   cflag h() const noexcept;
   cflag c() const noexcept;
 
+  uint8 value() const noexcept;
+
 private:
   flag m_z = false;
   flag m_n = false;
@@ -27,4 +29,3 @@ private:
 }
 
 #endif
-
