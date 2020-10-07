@@ -155,6 +155,8 @@ private:
   void di();
   void ei();
 
+  void scf();
+
 private:
   std::shared_ptr<bus> m_pBus;
   std::shared_ptr<clock> m_pClock;

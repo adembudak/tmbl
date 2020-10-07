@@ -319,6 +319,7 @@ void cpu::run() {
 
       case 0x37:
         PC += 1;
+        scf();
         break;
 
       case 0x38:
@@ -1003,6 +1004,7 @@ void cpu::run() {
 
       case 0xC0:
         PC += 1;
+        ret(cc::NZ);
         break;
 
       case 0xC1:
@@ -1042,10 +1044,12 @@ void cpu::run() {
 
       case 0xC8:
         PC += 1;
+        ret(cc::Z);
         break;
 
       case 0xC9:
         PC += 1;
+        ret();
         break;
 
       case 0xCA:
@@ -2360,6 +2364,7 @@ void cpu::run() {
 
       case 0xD0:
         PC += 1;
+        ret(cc::NC);
         break;
 
       case 0xD1:
@@ -2394,10 +2399,12 @@ void cpu::run() {
 
       case 0xD8:
         PC += 1;
+        ret(cc::C);
         break;
 
       case 0xD9:
         PC += 1;
+        reti();
         break;
 
       case 0xDA:
@@ -3470,6 +3477,14 @@ void cpu::di() {
 
 void cpu::ei() {
   IME = set;
+
+  m_clock.cycle(1);
+}
+
+void cpu::scf() {
+  F.n(reset);
+  F.h(reset);
+  F.c(set);
 
   m_clock.cycle(1);
 }
