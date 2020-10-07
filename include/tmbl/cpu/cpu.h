@@ -146,6 +146,9 @@ private:
   void pop();
   void pop(r16 &rr);
 
+  void push();
+  void push(r16 &rr);
+
 private:
   std::shared_ptr<bus> m_pBus;
   std::shared_ptr<clock> m_pClock;

@@ -1025,6 +1025,7 @@ void cpu::run() {
 
       case 0xC5:
         PC += 1;
+        push(BC);
         break;
 
       case 0xC6:
@@ -2376,6 +2377,7 @@ void cpu::run() {
 
       case 0xD5:
         PC += 1;
+        push(DE);
         break;
 
       case 0xD6:
@@ -2433,6 +2435,7 @@ void cpu::run() {
 
       case 0xE5:
         PC += 1;
+        push(HL);
         break;
 
       case 0xE6:
@@ -2490,6 +2493,7 @@ void cpu::run() {
 
       case 0xF5:
         PC += 1;
+        push();
         break;
 
       case 0xF6:
@@ -3415,12 +3419,27 @@ void cpu::pop() {
   m_clock.cycle(3);
 }
 
-void cpu::pop(r16 &rr) { 
-    rr.lo() = m_pBus->readBus(SP); 
-    rr.hi() = m_pBus->readBus(SP+1);
-    SP += 2;
+void cpu::pop(r16 &rr) {
+  rr.lo() = m_pBus->readBus(SP);
+  rr.hi() = m_pBus->readBus(SP + 1);
+  SP += 2;
 
-    m_clock.cycle(3);
+  m_clock.cycle(3);
 }
 
+void cpu::push() {
+  m_pBus->writeBus(SP - 1, A.value());
+  m_pBus->writeBus(SP - 2, F.value());
+  SP -= 2;
+
+  m_clock.cycle(4);
+}
+
+void cpu::push(r16 &rr) {
+  m_pBus->writeBus(SP - 1, rr.hi().value());
+  m_pBus->writeBus(SP - 2, rr.lo().value());
+  SP -= 2;
+
+  m_clock.cycle(4);
+}
 }
