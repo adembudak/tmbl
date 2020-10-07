@@ -150,6 +150,7 @@ private:
   void push(r16 &rr);
 
   void ccf();
+  void cpl();
 
 private:
   std::shared_ptr<bus> m_pBus;

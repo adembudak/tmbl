@@ -279,6 +279,7 @@ void cpu::run() {
 
       case 0x2F:
         PC += 1;
+        cpl();
         break;
 
       case 0x30:
@@ -3448,6 +3449,14 @@ void cpu::ccf() {
   F.n(reset);
   F.h(reset);
   F.c(!F.c());
+
+  m_clock.cycle(1);
+}
+
+void cpu::cpl() {
+  A = ~A.value();
+  F.n(set);
+  F.h(set);
 
   m_clock.cycle(1);
 }
