@@ -1004,10 +1004,12 @@ void cpu::run() {
 
       case 0xC2:
         PC += 3;
+        jp(cc::NZ, n16(m_pBus->readBus(PC++)));
         break;
 
       case 0xC3:
         PC += 3;
+        jp(n16(m_pBus->readBus(PC++)));
         break;
 
       case 0xC4:
@@ -1038,6 +1040,7 @@ void cpu::run() {
 
       case 0xCA:
         PC += 3;
+        jp(cc::Z, n16(m_pBus->readBus(PC++)));
         break;
 
       case 0xCB: // 0xCB Prefixed:
@@ -2354,6 +2357,7 @@ void cpu::run() {
 
       case 0xD2:
         PC += 3;
+        jp(cc::NC, n16(m_pBus->readBus(PC++)));
         break;
 
       case 0xD4:
@@ -2384,6 +2388,7 @@ void cpu::run() {
 
       case 0xDA:
         PC += 3;
+        jp(cc::C, n16(m_pBus->readBus(PC++)));
         break;
 
       case 0xDC:
@@ -2434,6 +2439,7 @@ void cpu::run() {
 
       case 0xE9:
         PC += 1;
+        jp();
         break;
 
       case 0xEA:
@@ -2506,7 +2512,6 @@ void cpu::run() {
     }
   }
 }
-
 
 void cpu::adc(const r8 r) {
   uint8 c = (F.c() == set) ? 1 : 0;
@@ -3280,15 +3285,43 @@ void cpu::call(n16 n) {
 
   m_clock.cycle(6);
 }
-// clang-format off 
+// clang-format off
 void cpu::call(cc c, n16 n) {
   if (c == cc::Z && F.z() == set    || 
       c == cc::NZ && F.z() == reset || 
       c == cc::C && F.c() == set    ||
       c == cc::NC && F.c() == reset) {
-     call(n);
-     
-     m_clock.cycle(6);
+    // clang-format on
+
+    call(n);
+
+    m_clock.cycle(6);
+  } else {
+    m_clock.cycle(3);
+  }
+}
+
+void cpu::jp() {
+  PC = HL.value();
+
+  m_clock.cycle(1);
+}
+
+void cpu::jp(const n16 nn) {
+  PC = nn.value();
+
+  m_clock.cycle(4);
+}
+// clang-format off
+void cpu::jp(const cc c, const n16 nn) {
+  if (c == cc::Z && F.z() == set    || 
+      c == cc::NZ && F.z() == reset || 
+      c == cc::C && F.c() == set    ||
+      c == cc::NC && F.c() == reset) {
+    // clang-format on
+    jp(nn);
+
+    m_clock.cycle(4);
   } else {
     m_clock.cycle(3);
   }
