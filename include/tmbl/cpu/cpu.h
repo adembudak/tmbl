@@ -13,6 +13,7 @@
 #include "internals/r16.h"
 
 #include <memory>
+#include <array>
 
 namespace tmbl {
 
@@ -140,6 +141,8 @@ private:
   void ret(cc c);
   void reti();
 
+  void rst(uint8 u);
+
 private:
   std::shared_ptr<bus> m_pBus;
   std::shared_ptr<clock> m_pClock;
@@ -156,6 +159,8 @@ private:
 
   uint16 PC{};
   uint16 SP{};
+
+  const std::array<int, 8> vec{0x00, 0x08, 0x10, 0x18, 0x20, 0x28, 0x30, 0x38};
 
   clock m_clock;
   flag IME = reset; // interrupt master enable

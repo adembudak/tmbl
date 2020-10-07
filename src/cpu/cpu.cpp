@@ -1033,6 +1033,7 @@ void cpu::run() {
 
       case 0xC7:
         PC += 1;
+        rst(0);
         break;
 
       case 0xC8:
@@ -2350,6 +2351,7 @@ void cpu::run() {
 
       case 0xCF:
         PC += 1;
+        rst(1);
         break;
 
       case 0xD0:
@@ -2381,6 +2383,7 @@ void cpu::run() {
 
       case 0xD7:
         PC += 1;
+        rst(2);
         break;
 
       case 0xD8:
@@ -2408,6 +2411,7 @@ void cpu::run() {
 
       case 0xDF:
         PC += 1;
+        rst(3);
         break;
 
       case 0xE0:
@@ -2435,6 +2439,7 @@ void cpu::run() {
 
       case 0xE7:
         PC += 1;
+        rst(4);
         break;
 
       case 0xE8:
@@ -2458,6 +2463,7 @@ void cpu::run() {
 
       case 0xEF:
         PC += 1;
+        rst(5);
         break;
 
       case 0xF0:
@@ -2489,6 +2495,7 @@ void cpu::run() {
 
       case 0xF7:
         PC += 1;
+        rst(6);
         break;
 
       case 0xF8:
@@ -2514,6 +2521,8 @@ void cpu::run() {
 
       case 0xFF:
         PC += 1;
+        rst(7);
+        break;
     }
   }
 }
@@ -3369,7 +3378,7 @@ void cpu::ret(cc c) {
       c == cc::C && F.c() == set    ||
       c == cc::NC && F.c() == reset) {
     // clang-format on
-    ret(e);
+    ret();
     m_clock.cycle(5);
   } else {
     m_clock.cycle(2);
@@ -3379,6 +3388,17 @@ void cpu::ret(cc c) {
 void cpu::reti() {
   IME = set;
   ret();
+
+  m_clock.cycle(4);
+}
+
+void cpu::rst(uint8 u) {
+  m_pBus->writeBus(SP - 1, PC & r16::reset_lower >> 8);
+  m_pBus->writeBus(SP - 2, PC & r16::reset_upper);
+  SP -= 2;
+
+  PC = PC & r16::reset_upper;
+  PC = vec.at(u);
 
   m_clock.cycle(4);
 }
