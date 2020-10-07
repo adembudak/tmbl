@@ -357,6 +357,7 @@ void cpu::run() {
 
       case 0x3F:
         PC += 1;
+        ccf();
         break;
 
       case 0x40:
@@ -3442,4 +3443,13 @@ void cpu::push(r16 &rr) {
 
   m_clock.cycle(4);
 }
+
+void cpu::ccf() {
+  F.n(reset);
+  F.h(reset);
+  F.c(!F.c());
+
+  m_clock.cycle(1);
+}
+
 }

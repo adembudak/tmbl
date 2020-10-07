@@ -7,17 +7,17 @@ namespace tmbl {
 
 class flags final {
 public:
-  void z(flag f);
-  void n(flag f);
-  void h(flag f);
-  void c(flag f);
+  [[noreturn]] void z(flag f);
+  [[noreturn]] void n(flag f);
+  [[noreturn]] void h(flag f);
+  [[noreturn]] void c(flag f);
 
-  cflag z() const noexcept;
-  cflag n() const noexcept;
-  cflag h() const noexcept;
-  cflag c() const noexcept;
+  [[nodiscard]] cflag z() const noexcept;
+  [[nodiscard]] cflag n() const noexcept;
+  [[nodiscard]] cflag h() const noexcept;
+  [[nodiscard]] cflag c() const noexcept;
 
-  flags& operator=(const byte b);
+  flags &operator=(const byte b);
 
   uint8 value() const noexcept;
 

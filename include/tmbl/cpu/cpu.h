@@ -149,6 +149,8 @@ private:
   void push();
   void push(r16 &rr);
 
+  void ccf();
+
 private:
   std::shared_ptr<bus> m_pBus;
   std::shared_ptr<clock> m_pClock;
