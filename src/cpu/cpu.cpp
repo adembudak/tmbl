@@ -204,7 +204,7 @@ void cpu::run() {
 
       case 0x20:
         PC += 2;
-        dec(HL.hi());
+        jr(cc::NZ, e8(m_pBus->readBus(PC++)));
         break;
 
       case 0x21:
@@ -229,6 +229,7 @@ void cpu::run() {
 
       case 0x25:
         PC += 1;
+        dec(HL.hi());
         break;
 
       case 0x26:
@@ -242,6 +243,7 @@ void cpu::run() {
 
       case 0x28:
         PC += 2;
+        jr(cc::Z, e8(m_pBus->readBus(PC++)));
         break;
 
       case 0x29:
@@ -280,7 +282,7 @@ void cpu::run() {
 
       case 0x30:
         PC += 2;
-        dec(HL.value());
+        jr(cc::NC, e8(m_pBus->readBus(PC++)));
         break;
 
       case 0x31:
@@ -306,6 +308,7 @@ void cpu::run() {
 
       case 0x35:
         PC += 1;
+        dec(HL.value());
         break;
 
       case 0x36:
@@ -318,6 +321,7 @@ void cpu::run() {
 
       case 0x38:
         PC += 2;
+        jr(cc::C, e8(m_pBus->readBus(PC++)));
         break;
 
       case 0x39:
@@ -3326,5 +3330,24 @@ void cpu::jp(const cc c, const n16 nn) {
     m_clock.cycle(3);
   }
 }
+void cpu::jr(const e8 e) {
+  PC = e.value();
 
+  m_clock.cycle(3);
+}
+
+void cpu::jr(const cc c, const e8 e) {
+  // clang-format off
+  if (c == cc::Z && F.z() == set    || 
+      c == cc::NZ && F.z() == reset || 
+      c == cc::C && F.c() == set    ||
+      c == cc::NC && F.c() == reset) {
+    // clang-format on]
+   jr(e);
+
+    m_clock.cycle(3);
+  } else {
+    m_clock.cycle(2);
+  }
+}
 }

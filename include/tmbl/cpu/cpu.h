@@ -133,6 +133,9 @@ private:
   void jp(const n16 nn);
   void jp(const cc c, const n16 nn);
 
+  void jr(const e8 e);
+  void jr(const cc c, const e8 e);
+
 private:
   std::shared_ptr<bus> m_pBus;
   std::shared_ptr<clock> m_pClock;
