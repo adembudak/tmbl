@@ -121,6 +121,9 @@ private:
 
   void ld(r16 &rr, const n16 nn);
 
+  void ldio(const uint16 nn, const r8 r);
+  void ldio(r8 &r, const uint16 nn);
+
 private:
   std::shared_ptr<bus> m_pBus;
   std::shared_ptr<clock> m_pClock;

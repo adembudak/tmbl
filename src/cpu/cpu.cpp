@@ -2388,10 +2388,12 @@ void cpu::run() {
 
       case 0xE0:
         PC += 2;
+        ldio(0xFF00 + n8(m_pBus->readBus(PC++)).value(), A);
         break;
 
       case 0xE1:
         PC += 1;
+        ldio(0xFF00 + BC.lo().value(), A);
         break;
 
       case 0xE2:
@@ -2435,6 +2437,7 @@ void cpu::run() {
 
       case 0xF0:
         PC += 2;
+        ldio(A, 0xFF00 + n8(m_pBus->readBus(PC++)).value());
         break;
 
       case 0xF1:
@@ -2443,6 +2446,7 @@ void cpu::run() {
 
       case 0xF2:
         PC += 1;
+        ldio(A, 0xFF00 + BC.lo().value());
         break;
 
       case 0xF3:
@@ -3223,9 +3227,24 @@ void cpu::ldd(r8 &r, r16 &rr) {
   m_clock.cycle(2);
 }
 
-void cpu::ld(r16& rr, const n16 nn) { 
-   rr = nn;
+void cpu::ld(r16 &rr, const n16 nn) {
+  rr = nn;
 
-   m_clock.cycle(3);
-  }
+  m_clock.cycle(3);
+}
+
+void cpu::ldio(const uint16 nn, const r8 r) {
+  m_pBus->writeBus(nn, r.value());
+
+  // Fix: if nn is 0xFF00 + C, then cycle 2 times
+  m_clock.cycle(3);
+}
+
+void cpu::ldio(r8 &r, const uint16 nn) {
+  r = m_pBus->readBus(nn);
+
+  // Fix: if nn is 0xFF00 + C, then cycle 2 times
+  m_clock.cycle(3);
+}
+
 }
