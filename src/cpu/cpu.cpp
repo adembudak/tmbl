@@ -165,6 +165,7 @@ void cpu::run() {
 
       case 0x18:
         PC += 2;
+        jr(e8(m_pBus->readBus(PC++)));
         break;
 
       case 0x19:
@@ -3350,4 +3351,36 @@ void cpu::jr(const cc c, const e8 e) {
     m_clock.cycle(2);
   }
 }
+
+void cpu::ret() {
+    byte lo = m_pBus->readBus(SP);
+    byte hi = m_pBus->readBus(SP+1);
+    PC = hi << 8 | lo;
+
+    SP += 2;
+
+    m_clock.cycle(4);
+  }
+
+void cpu::ret(cc c) {
+      // clang-format off
+  if (c == cc::Z && F.z() == set    || 
+      c == cc::NZ && F.z() == reset || 
+      c == cc::C && F.c() == set    ||
+      c == cc::NC && F.c() == reset) {
+    // clang-format on
+    ret(e);
+    m_clock.cycle(5);
+  } else {
+    m_clock.cycle(2);
+  }
+}
+
+void cpu::reti() {
+  IME = set;
+  ret();
+
+  m_clock.cycle(4);
+}
+
 }

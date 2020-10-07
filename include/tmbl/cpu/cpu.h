@@ -136,6 +136,10 @@ private:
   void jr(const e8 e);
   void jr(const cc c, const e8 e);
 
+  void ret();
+  void ret(cc c);
+  void reti();
+
 private:
   std::shared_ptr<bus> m_pBus;
   std::shared_ptr<clock> m_pClock;
