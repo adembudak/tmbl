@@ -30,11 +30,20 @@ void cpu::enableDoubleSpeedMode() {
   }
 }
 
+enum class cpu::cc {
+  Z,  // Execute if Z is set
+  NZ, // Execute if Z is not set
+  C,  // Execute if C is set
+  NC  // Execute if C is not set
+};
+
+// register names adapted from: https://rgbds.gbdev.io/docs/master/gbz80.7
+// opcode table adapted from: https://izik1.github.io/gbops/
 void cpu::run() {
 
   // clang-format off
   for (;;) {
-    switch (auto fetch = [&]{ return (m_pBus->readBus(PC++) << 8 | m_pBus->readBus(PC++)); }; fetch()) {
+    switch (auto fetch = [&]{ return (m_pBus->readBus(PC++) | (m_pBus->readBus(PC++) << 8)); }; fetch()) {
         // clang-format on
 
       case 0x00:
@@ -1003,6 +1012,7 @@ void cpu::run() {
 
       case 0xC4:
         PC += 3;
+        call(cc::NZ, n16(m_pBus->readBus(PC++)));
         break;
 
       case 0xC5:
@@ -2317,10 +2327,12 @@ void cpu::run() {
 
       case 0xCC:
         PC += 3;
+        call(cc::Z, n16(m_pBus->readBus(PC++)));
         break;
 
       case 0xCD:
         PC += 3;
+        call(n16(m_pBus->readBus(PC++)));
         break;
 
       case 0xCE:
@@ -2346,6 +2358,7 @@ void cpu::run() {
 
       case 0xD4:
         PC += 3;
+        call(cc::NC, n16(m_pBus->readBus(PC++)));
         break;
 
       case 0xD5:
@@ -2375,6 +2388,7 @@ void cpu::run() {
 
       case 0xDC:
         PC += 3;
+        call(cc::C, n16(m_pBus->readBus(PC++)));
         break;
 
       case 0xDE:
@@ -2492,6 +2506,7 @@ void cpu::run() {
     }
   }
 }
+
 
 void cpu::adc(const r8 r) {
   uint8 c = (F.c() == set) ? 1 : 0;
@@ -3245,6 +3260,38 @@ void cpu::ldio(r8 &r, const uint16 nn) {
 
   // Fix: if nn is 0xFF00 + C, then cycle 2 times
   m_clock.cycle(3);
+}
+
+void cpu::call(n16 n) {
+  // (SP - 1) <- PCH
+  // (SP - 2) <- PCL
+  // PC <- nn
+  // SP <- SP-2
+
+  m_pBus->writeBus(SP - 1, PC & r16::reset_lower >> 8);
+  m_pBus->writeBus(SP - 2, PC & r16::reset_upper);
+
+  byte lo = m_pBus->readBus(PC++);
+  byte hi = m_pBus->readBus(PC++);
+  uint16 nn = hi << 8 | lo;
+
+  PC = nn;
+  SP = SP - 2;
+
+  m_clock.cycle(6);
+}
+// clang-format off 
+void cpu::call(cc c, n16 n) {
+  if (c == cc::Z && F.z() == set    || 
+      c == cc::NZ && F.z() == reset || 
+      c == cc::C && F.c() == set    ||
+      c == cc::NC && F.c() == reset) {
+     call(n);
+     
+     m_clock.cycle(6);
+  } else {
+    m_clock.cycle(3);
+  }
 }
 
 }

@@ -22,7 +22,10 @@ public:
       std::shared_ptr<clock> pClock);
 
   void enableDoubleSpeedMode();
+  
+  enum class cc;
   void run();
+
 
 private:
   void adc(const r8 r);
@@ -123,6 +126,9 @@ private:
 
   void ldio(const uint16 nn, const r8 r);
   void ldio(r8 &r, const uint16 nn);
+
+  void call(n16 n);
+  void call(cc c, n16 n);
 
 private:
   std::shared_ptr<bus> m_pBus;
