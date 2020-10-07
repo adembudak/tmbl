@@ -155,6 +155,7 @@ private:
   void di();
   void ei();
 
+  void nop();
   void scf();
 
 private:

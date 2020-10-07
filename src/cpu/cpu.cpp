@@ -48,6 +48,7 @@ void cpu::run() {
 
       case 0x00:
         PC += 1;
+        nop();
         break;
 
       case 0x01:
@@ -3478,6 +3479,11 @@ void cpu::di() {
 void cpu::ei() {
   IME = set;
 
+  m_clock.cycle(1);
+}
+
+void cpu::nop() {
+  //
   m_clock.cycle(1);
 }
 
