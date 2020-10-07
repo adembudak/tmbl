@@ -2491,6 +2491,7 @@ void cpu::run() {
 
       case 0xF3:
         PC += 1;
+        di();
         break;
 
       case 0xF5:
@@ -2522,6 +2523,7 @@ void cpu::run() {
 
       case 0xFB:
         PC += 1;
+        ei();
         break;
 
       case 0xFE:
@@ -3460,5 +3462,15 @@ void cpu::cpl() {
 
   m_clock.cycle(1);
 }
+void cpu::di() {
+  IME = reset;
 
+  m_clock.cycle(1);
+}
+
+void cpu::ei() {
+  IME = set;
+
+  m_clock.cycle(1);
+}
 }
