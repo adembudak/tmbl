@@ -1005,6 +1005,7 @@ void cpu::run() {
 
       case 0xC1:
         PC += 1;
+        pop(BC);
         break;
 
       case 0xC2:
@@ -2360,6 +2361,7 @@ void cpu::run() {
 
       case 0xD1:
         PC += 1;
+        pop(DE);
         break;
 
       case 0xD2:
@@ -2421,11 +2423,12 @@ void cpu::run() {
 
       case 0xE1:
         PC += 1;
-        ldio(0xFF00 + BC.lo().value(), A);
+        pop(HL);
         break;
 
       case 0xE2:
         PC += 1;
+        ldio(0xFF00 + BC.lo().value(), A);
         break;
 
       case 0xE5:
@@ -2473,6 +2476,7 @@ void cpu::run() {
 
       case 0xF1:
         PC += 1;
+        pop();
         break;
 
       case 0xF2:
@@ -3392,7 +3396,7 @@ void cpu::reti() {
   m_clock.cycle(4);
 }
 
-void cpu::rst(uint8 u) {
+void cpu::rst(const uint8 u) {
   m_pBus->writeBus(SP - 1, PC & r16::reset_lower >> 8);
   m_pBus->writeBus(SP - 2, PC & r16::reset_upper);
   SP -= 2;
@@ -3401,6 +3405,22 @@ void cpu::rst(uint8 u) {
   PC = vec.at(u);
 
   m_clock.cycle(4);
+}
+
+void cpu::pop() {
+  F = m_pBus->readBus(SP);
+  A = m_pBus->readBus(SP + 1);
+  SP += 2;
+
+  m_clock.cycle(3);
+}
+
+void cpu::pop(r16 &rr) { 
+    rr.lo() = m_pBus->readBus(SP); 
+    rr.hi() = m_pBus->readBus(SP+1);
+    SP += 2;
+
+    m_clock.cycle(3);
 }
 
 }

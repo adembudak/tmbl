@@ -141,7 +141,10 @@ private:
   void ret(cc c);
   void reti();
 
-  void rst(uint8 u);
+  void rst(const uint8 u);
+
+  void pop();
+  void pop(r16 &rr);
 
 private:
   std::shared_ptr<bus> m_pBus;

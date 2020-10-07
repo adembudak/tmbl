@@ -17,6 +17,8 @@ public:
   cflag h() const noexcept;
   cflag c() const noexcept;
 
+  flags& operator=(const byte b);
+
   uint8 value() const noexcept;
 
 private:
