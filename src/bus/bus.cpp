@@ -31,12 +31,12 @@ byte bus::readBus(const std::size_t index) {
     return m_pPPU->readOAM(index - memory::oam);
   } else if (index >= memory::io && index <= memory::io_end) {
     if (index == 0xFF0F)
-      return m_pIntr->IF;
+      return m_pIntr->read(index);
     return m_pRegs->read(index - memory::io);
   } else if (index >= memory::hram && index <= memory::hram_end) {
     return m_pBuiltin->readHRAM(index - memory::hram);
   } else {
-    return m_pIntr->IE;
+    return m_pIntr->read(index);
   }
 }
 
@@ -57,11 +57,13 @@ void bus::writeBus(const std::size_t index, const byte val) {
   } else if (index >= memory::oam && index <= memory::oam_end) {
     m_pPPU->writeOAM(index - memory::oam, val);
   } else if (index >= memory::io && index <= memory::io_end) {
+    if (index == 0xFF0F)
+      m_pIntr->write(index, val);
     m_pRegs->write(index - memory::io, val);
   } else if (index >= memory::hram && index <= memory::hram_end) {
     m_pBuiltin->writeHRAM(index - memory::hram, val);
   } else {
-    m_pIntr->IE = val;
+    m_pIntr->write(index, val);
   }
 }
 
