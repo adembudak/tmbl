@@ -32,7 +32,7 @@ public:
 
 private:
   std::shared_ptr<registers> m_pRegs;
-  byte &STAT = m_pRegs->getAt(0xFF41);
+  byte &STAT;
 };
 
 }

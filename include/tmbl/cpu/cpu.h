@@ -180,7 +180,7 @@ private:
 
   clock m_clock;
   flag IME = reset; // interrupt master enable
-  byte &KEY1 = m_pReg->getAt(0xFF4D);
+  byte &KEY1;
 };
 }
 

@@ -15,10 +15,10 @@ private:
   std::shared_ptr<registers> m_pReg;
 
 private:
-  byte &DIV = m_pReg->getAt(0xFF04);
-  byte &TIMA = m_pReg->getAt(0xFF05);
-  byte &TMA = m_pReg->getAt(0xFF06);
-  byte &TAC = m_pReg->getAt(0xFF07);
+  byte &DIV;
+  byte &TIMA;
+  byte &TMA;
+  byte &TAC;
 };
 }
 

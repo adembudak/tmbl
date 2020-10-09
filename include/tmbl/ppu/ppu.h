@@ -51,34 +51,34 @@ private:
   lcdc LCDC;
   stat STAT;
 
-  byte &SCY = m_pRegs->getAt(0xFF42);
-  byte &SCX = m_pRegs->getAt(0xFF43);
+  byte &SCY;
+  byte &SCX;
 
-  byte &LY = m_pRegs->getAt(0xFF44);
-  byte &LYC = m_pRegs->getAt(0xFF45);
+  byte &LY;
+  byte &LYC;
 
-  byte &DMA = m_pRegs->getAt(0xFF46);
-  byte &BGP = m_pRegs->getAt(0xFF47);
+  byte &DMA;
+  byte &BGP;
 
-  byte &OBP0 = m_pRegs->getAt(0xFF48);
-  byte &OBP1 = m_pRegs->getAt(0xFF49);
+  byte &OBP0;
+  byte &OBP1;
 
-  byte &WY = m_pRegs->getAt(0xFF4A);
-  byte &WX = m_pRegs->getAt(0xFF4B);
+  byte &WY;
+  byte &WX;
 
-  byte &VBK = m_pRegs->getAt(0xFF4F);
+  byte &VBK;
 
-  byte &HDMA1 = m_pRegs->getAt(0xFF51);
-  byte &HDMA2 = m_pRegs->getAt(0xFF52);
-  byte &HDMA3 = m_pRegs->getAt(0xFF53);
-  byte &HDMA4 = m_pRegs->getAt(0xFF54);
-  byte &HDMA5 = m_pRegs->getAt(0xFF55);
+  byte &HDMA1;
+  byte &HDMA2;
+  byte &HDMA3;
+  byte &HDMA4;
+  byte &HDMA5;
 
-  byte &BCPS = m_pRegs->getAt(0xFF68);
-  byte &BCPD = m_pRegs->getAt(0xFF69);
+  byte &BCPS;
+  byte &BCPD;
 
-  byte &OCPS = m_pRegs->getAt(0xFF6A);
-  byte &OCPD = m_pRegs->getAt(0xFF6B);
+  byte &OCPS;
+  byte &OCPD;
 
   std::array<byte, 16_KB> m_vram{}; // it's 8KB on DMG
   std::array<byte, 160_B> m_oam{};

@@ -7,7 +7,7 @@ namespace tmbl {
 
 class registers;
 
-stat::stat(std::shared_ptr<registers> pRegs) : m_pRegs(pRegs) {}
+stat::stat(std::shared_ptr<registers> pRegs) : m_pRegs(pRegs), STAT(m_pRegs->getAt(0xFF41)) {}
 
 stat::mode stat::mode_flag() const noexcept {
   switch (STAT | 0b0000'0011) {
