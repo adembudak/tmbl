@@ -1,44 +1,60 @@
 #include "tmbl/config.h"
 #include "tmbl/io/interrupts/interrupts.h"
+// clang-format off
 
 namespace tmbl {
-    // clang-format off
-byte interrupts::read(std::size_t index) noexcept {
-  switch (index) {
-    case 0xFF0F:
-      IF = button_pressed_intr_requested << 4 | 
-               lcd_status_intr_requested << 3 |
-         timer_overflowed_intr_requested << 2 | 
-        serial_completion_intr_requested << 1 |
-                 button_pressed_intr_requested;
-      return IF;
 
-    case 0xFFFF:;
-      IE = button_pressed_intr_requested << 4 | 
-               lcd_status_intr_requested << 3 |
-         timer_overflowed_intr_requested << 2 | 
-        serial_completion_intr_requested << 1 |
-                 button_pressed_intr_requested;
-      return IE;
+byte interrupts::read(const std::size_t index) noexcept {
+  switch (index) {
+    case 0xFF0F: // interrupt request address
+      return vblank_pending << 4 | 
+               stat_pending << 3 |
+              timer_pending << 2 | 
+             serial_pending << 1 |
+                  joypad_pending;
+
+    case 0xFFFF: // interupte enable address
+      return vblank_enabled << 4 | 
+               stat_enabled << 3 |
+              timer_enabled << 2 | 
+             serial_enabled << 1 |
+                  joypad_enabled;
   }
 }
 
 void interrupts::write(const std::size_t index, const byte val) noexcept {
   switch (index) {
     case 0xFF0F:
-      vertical_blanking_intr_requested = val & 0b000'0000;
-      lcd_status_intr_requested =        val & 0b000'0001;
-      timer_overflowed_intr_requested =  val & 0b000'0010;
-      serial_completion_intr_requested = val & 0b000'0011;
-      button_pressed_intr_requested =    val & 0b000'0100;
+      vblank_pending = val & 0b000'0000;
+      stat_pending =   val & 0b000'0001;
+      timer_pending =  val & 0b000'0010;
+      serial_pending = val & 0b000'0011;
+      joypad_pending = val & 0b000'0100;
 
     case 0xFFFF:
-      vertical_blanking_intr_enabled =  val & 0b000'0000;
-      lcd_status_intr_enabled =         val & 0b000'0001;
-      timer_overflowed_intr_enabled =   val & 0b000'0010;
-      serial_completion_intr_enabled =  val & 0b000'0011;
-      button_pressed_intr_enabled =     val & 0b000'0100;
+      vblank_enabled = val & 0b000'0000;
+      stat_enabled =   val & 0b000'0001;
+      timer_enabled =  val & 0b000'0010;
+      serial_enabled = val & 0b000'0011;
+      joypad_enabled = val & 0b000'0100;
   }
 }
 
+uint8 interrupts::IF() const noexcept {
+      return vblank_pending << 4 | 
+               stat_pending << 3 |
+              timer_pending << 2 | 
+             serial_pending << 1 |
+                  joypad_pending;
 }
+
+uint8 interrupts::IE() const noexcept {
+      return vblank_enabled << 4 | 
+               stat_enabled << 3 |
+              timer_enabled << 2 | 
+             serial_enabled << 1 |
+                  joypad_enabled;
+}
+
+}
+

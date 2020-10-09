@@ -6,25 +6,28 @@
 
 namespace tmbl {
 
+// https://eldred.fr/gb-asm-tutorial/interrupts.html
+
 class interrupts {
+
 public:
-  byte read(std::size_t index) noexcept;
+  byte read(const std::size_t index) noexcept;
   void write(const std::size_t index, const byte val) noexcept;
 
-  byte IF{}; // interrupt request register
-  byte IE{}; // interrupt enable register
+  uint8 IF() const noexcept; // interrupt flag
+  uint8 IE() const noexcept; // interrupt enabled
 
-  flag vertical_blanking_intr_requested;
-  flag lcd_status_intr_requested;
-  flag timer_overflowed_intr_requested;
-  flag serial_completion_intr_requested;
-  flag button_pressed_intr_requested;
+  bool vblank_pending = false; //  vertical blanking intr requested
+  bool stat_pending = false;   //  lcd status intr requested
+  bool timer_pending = false;  //  timer overflowed intr requested
+  bool serial_pending = false; //  serial completion intr requested
+  bool joypad_pending = false; //  button pressed intr requested
 
-  flag vertical_blanking_intr_enabled;
-  flag lcd_status_intr_enabled;
-  flag timer_overflowed_intr_enabled;
-  flag serial_completion_intr_enabled;
-  flag button_pressed_intr_enabled;
+  bool vblank_enabled = false; //  vertical blanking intr enabled
+  bool stat_enabled = false;   //  lcd status intr enabled
+  bool timer_enabled = false;  //  timer overflowed intr enabled
+  bool serial_enabled = false; //  serial completion intr enabled
+  bool joypad_enabled = false; //  button pressed intr enabled
 };
 
 }
