@@ -23,8 +23,8 @@ cpu::cpu(std::shared_ptr<bus> pBus, std::shared_ptr<registers> pReg,
 void cpu::enableDoubleSpeedMode() {
   if ((KEY1 & 0b0100'0000) && (KEY1 & 0b0000'0001)) {
     m_pClock->enableDoubleSpeedMode(true);
-    m_pReg->getAt(0xFF0F) = 0; // reset IF
-    m_pIntr->IE = 0;
+    //    m_pReg->getAt(0xFF0F) = 0; // reset IF
+    //   m_pIntr->IE = 0;
     m_pReg->getAt(0xFF00) |= 0x0011'0000;
     // STOP();
   }
@@ -44,7 +44,33 @@ void cpu::run() {
   // clang-format off
   for (;;) {
     switch (auto fetch = [&]{ return (m_pBus->readBus(PC++) | (m_pBus->readBus(PC++) << 8)); }; fetch()) {
-        // clang-format on
+      // clang-format on
+
+      if (IME) {
+        if (m_pIntr->IE() && m_pIntr->IF() && 0b0001'1111) {
+          if (m_pIntr->vblank_pending && m_pIntr->vblank_enabled) {
+            m_pIntr->vblank_pending = false;
+            di();
+            call(intr_vec[0]);
+          } else if (m_pIntr->stat_pending && m_pIntr->stat_enabled) {
+            m_pIntr->stat_pending = false;
+            di();
+            call(intr_vec[1]);
+          } else if (m_pIntr->timer_pending && m_pIntr->timer_enabled) {
+            m_pIntr->timer_pending = false;
+            di();
+            call(intr_vec[2]);
+          } else if (m_pIntr->serial_pending && m_pIntr->serial_enabled) {
+            m_pIntr->serial_pending = false;
+            di();
+            call(intr_vec[3]);
+          } else if (m_pIntr->joypad_pending && m_pIntr->joypad_pending) {
+            m_pIntr->joypad_pending = false;
+            di();
+            call(intr_vec[4]);
+          }
+        }
+      }
 
       case 0x00:
         PC += 1;
@@ -3407,7 +3433,11 @@ void cpu::ret(cc c) {
 
 void cpu::reti() {
   IME = set;
-  ret();
+  byte lo = m_pBus->readBus(SP);
+  byte hi = m_pBus->readBus(SP + 1);
+  PC = hi << 8 | lo;
+
+  SP += 2;
 
   m_clock.cycle(4);
 }
@@ -3418,7 +3448,7 @@ void cpu::rst(const uint8 u) {
   SP -= 2;
 
   PC = PC & r16::reset_upper;
-  PC = vec.at(u);
+  PC = rst_vec.at(u);
 
   m_clock.cycle(4);
 }
