@@ -14,8 +14,8 @@
 namespace tmbl {
 
 inline std::vector<byte> dumpROM(const std::filesystem::path &p) {
-  std::fstream f(p, std::ios::binary);
-  return std::vector<byte>(std::istreambuf_iterator(f), {});
+  std::fstream f(p, std::ios::in | std::ios::binary);
+  return {std::istreambuf_iterator(f), {}};
 }
 
 cartridge::cartridge(const std::filesystem::path &p) : dumpedGamePak{dumpROM(p)} {
