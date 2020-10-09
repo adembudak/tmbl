@@ -41,36 +41,37 @@ enum class cpu::cc {
 // opcode table adapted from: https://izik1.github.io/gbops/
 void cpu::run() {
 
-  // clang-format off
   for (;;) {
-    switch (auto fetch = [&]{ return (m_pBus->readBus(PC++) | (m_pBus->readBus(PC++) << 8)); }; fetch()) {
-      // clang-format on
 
-      if (IME) {
-        if (m_pIntr->IE() && m_pIntr->IF() && 0b0001'1111) {
-          if (m_pIntr->vblank_pending && m_pIntr->vblank_enabled) {
-            m_pIntr->vblank_pending = false;
-            di();
-            call(intr_vec[0]);
-          } else if (m_pIntr->stat_pending && m_pIntr->stat_enabled) {
-            m_pIntr->stat_pending = false;
-            di();
-            call(intr_vec[1]);
-          } else if (m_pIntr->timer_pending && m_pIntr->timer_enabled) {
-            m_pIntr->timer_pending = false;
-            di();
-            call(intr_vec[2]);
-          } else if (m_pIntr->serial_pending && m_pIntr->serial_enabled) {
-            m_pIntr->serial_pending = false;
-            di();
-            call(intr_vec[3]);
-          } else if (m_pIntr->joypad_pending && m_pIntr->joypad_pending) {
-            m_pIntr->joypad_pending = false;
-            di();
-            call(intr_vec[4]);
-          }
+    if (IME) {
+      if (m_pIntr->IE() && m_pIntr->IF() && 0b0001'1111) {
+        if (m_pIntr->vblank_pending && m_pIntr->vblank_enabled) {
+          m_pIntr->vblank_pending = false;
+          di();
+          call(intr_vec[0]);
+        } else if (m_pIntr->stat_pending && m_pIntr->stat_enabled) {
+          m_pIntr->stat_pending = false;
+          di();
+          call(intr_vec[1]);
+        } else if (m_pIntr->timer_pending && m_pIntr->timer_enabled) {
+          m_pIntr->timer_pending = false;
+          di();
+          call(intr_vec[2]);
+        } else if (m_pIntr->serial_pending && m_pIntr->serial_enabled) {
+          m_pIntr->serial_pending = false;
+          di();
+          call(intr_vec[3]);
+        } else if (m_pIntr->joypad_pending && m_pIntr->joypad_pending) {
+          m_pIntr->joypad_pending = false;
+          di();
+          call(intr_vec[4]);
         }
       }
+    }
+
+    // clang-format off
+    switch (auto fetch = [&]{ return (m_pBus->readBus(PC++) | (m_pBus->readBus(PC++) << 8)); }; fetch()) {
+        // clang-format on
 
       case 0x00:
         PC += 1;
