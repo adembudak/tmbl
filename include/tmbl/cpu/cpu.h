@@ -28,6 +28,7 @@ public:
   void run();
 
 private:
+  struct tag {};
   void adc(const r8 r);
   void adc(const byte b);
   void adc(const n8 n);
@@ -124,6 +125,9 @@ private:
 
   void ld(r16 &rr, const n16 nn);
 
+  void ld(const n16 nn, tag dummy);
+  void ld(tag dummy, const n16 nn);
+
   void ldio(const uint16 nn, const r8 r);
   void ldio(r8 &r, const uint16 nn);
 
@@ -152,11 +156,15 @@ private:
   void ccf();
   void cpl();
 
+  void daa();
+
   void di();
   void ei();
 
+  void halt();
   void nop();
   void scf();
+  void stop();
 
 private:
   std::shared_ptr<bus> m_pBus;

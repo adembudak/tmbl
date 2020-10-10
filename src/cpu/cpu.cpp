@@ -61,7 +61,7 @@ void cpu::run() {
           m_pIntr->serial_pending = false;
           di();
           call(intr_vec[3]);
-        } else if (m_pIntr->joypad_pending && m_pIntr->joypad_pending) {
+        } else if (m_pIntr->joypad_pending && m_pIntr->joypad_enabled) {
           m_pIntr->joypad_pending = false;
           di();
           call(intr_vec[4]);
@@ -115,6 +115,8 @@ void cpu::run() {
 
       case 0x08:
         PC += 3;
+        m_pBus->writeBus(n16(fetch()).value(), SP);
+        m_clock.cycle(4);
         break;
 
       case 0x09:
@@ -154,7 +156,7 @@ void cpu::run() {
 
       case 0x10:
         PC += 1;
-        dec(DE.hi());
+        stop();
         break;
 
       case 0x11:
@@ -218,7 +220,7 @@ void cpu::run() {
 
       case 0x1D:
         PC += 1;
-        add(DE.lo());
+        dec(DE.hi());
         break;
 
       case 0x1E:
@@ -343,6 +345,8 @@ void cpu::run() {
 
       case 0x36:
         PC += 2;
+        m_pBus->writeBus(HL.value(), n8(m_pBus->readBus(PC++)).value());
+        m_clock.cycle(3);
         break;
 
       case 0x37:
@@ -662,6 +666,7 @@ void cpu::run() {
 
       case 0x76:
         PC += 1;
+        halt();
         break;
 
       case 0x77:
@@ -2497,6 +2502,7 @@ void cpu::run() {
 
       case 0xEA:
         PC += 3;
+        ld(n16(fetch()), tag{});
         break;
 
       case 0xEE:
@@ -2546,14 +2552,19 @@ void cpu::run() {
 
       case 0xF8:
         PC += 2;
+        HL = SP + e8(m_pBus->readBus(PC++)).value();
+        m_clock.cycle(3);
         break;
 
       case 0xF9:
         PC += 1;
+        SP = HL.value();
+        m_clock.cycle(2);
         break;
 
       case 0xFA:
         PC += 3;
+        ld(tag{}, n16(fetch()));
         break;
 
       case 0xFB:
@@ -3314,6 +3325,18 @@ void cpu::ld(r16 &rr, const n16 nn) {
   m_clock.cycle(3);
 }
 
+void cpu::ld(const n16 nn, tag dummy) {
+  m_pBus->writeBus(nn.value(), A.value());
+
+  m_clock.cycle(4);
+}
+
+void cpu::ld(tag dummy, const n16 nn) {
+  A = m_pBus->readBus(nn.value());
+
+  m_clock.cycle(4);
+}
+
 void cpu::ldio(const uint16 nn, const r8 r) {
   m_pBus->writeBus(nn, r.value());
 
@@ -3329,10 +3352,6 @@ void cpu::ldio(r8 &r, const uint16 nn) {
 }
 
 void cpu::call(n16 n) {
-  // (SP - 1) <- PCH
-  // (SP - 2) <- PCL
-  // PC <- nn
-  // SP <- SP-2
 
   m_pBus->writeBus(SP - 1, PC & r16::reset_lower >> 8);
   m_pBus->writeBus(SP - 2, PC & r16::reset_upper);
@@ -3501,6 +3520,12 @@ void cpu::cpl() {
 
   m_clock.cycle(1);
 }
+
+void cpu::daa() {
+    // implement this
+  m_clock.cycle(1);
+}
+
 void cpu::di() {
   IME = reset;
 
@@ -3511,6 +3536,10 @@ void cpu::ei() {
   IME = set;
 
   m_clock.cycle(1);
+}
+
+void cpu::halt() {
+  // implement this
 }
 
 void cpu::nop() {
@@ -3525,4 +3554,9 @@ void cpu::scf() {
 
   m_clock.cycle(1);
 }
+
+void cpu::stop() {
+  // implement this.
+}
+
 }
