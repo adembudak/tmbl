@@ -26,7 +26,7 @@ byte bus::readBus(const std::size_t index) {
   } else if (index >= memory::wram && index <= memory::wram_end) {
     return m_pBuiltin->readWRAM(index - memory::wram);
   } else if (index >= memory::echo && index <= memory::echo_end) {
-    //    return buildin->read(index) ;
+    return m_pBuiltin->readEcho(index - memory::echo);
   } else if (index >= memory::oam && index <= memory::oam_end) {
     return m_pPPU->readOAM(index - memory::oam);
   } else if (index >= memory::io && index <= memory::io_end) {
@@ -50,8 +50,7 @@ void bus::writeBus(const std::size_t index, const byte val) {
   } else if (index >= memory::wram && index <= memory::wram_end) {
     m_pBuiltin->writeWRAM(index - memory::wram, val);
   } else if (index >= memory::echo && index <= memory::echo_end) {
-    //    return buildin->read(index) ;
-    std::cerr << "Want to write to echo";
+    m_pBuiltin->writeEcho(index, val);
   } else if (index >= memory::vram && index <= memory::vram_end) {
     m_pPPU->writeVRAM(index - memory::vram, val);
   } else if (index >= memory::oam && index <= memory::oam_end) {

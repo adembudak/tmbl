@@ -16,9 +16,12 @@ public:
   byte readHRAM(const std::size_t index);
   void writeHRAM(const std::size_t index, const byte val);
 
+  byte readEcho(const std::size_t index);
+  void writeEcho(const std::size_t index, const byte val);
+
 private:
   std::array<byte, 8_KB> m_wram{};
-  std::array<byte, 160_B> m_hram{};
+  std::array<byte, 127_B> m_hram{};
   std::array<byte, 7_KB + 512_B> m_echo{};
 };
 
