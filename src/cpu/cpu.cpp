@@ -23,10 +23,10 @@ cpu::cpu(std::shared_ptr<bus> pBus, std::shared_ptr<registers> pReg,
 void cpu::enableDoubleSpeedMode() {
   if ((KEY1 & 0b0100'0000) && (KEY1 & 0b0000'0001)) {
     m_pClock->enableDoubleSpeedMode(true);
-    //    m_pReg->getAt(0xFF0F) = 0; // reset IF
-    //   m_pIntr->IE = 0;
-    m_pReg->getAt(0xFF00) |= 0x0011'0000;
-    // STOP();
+    m_pBus->writeBus(0xFF0F /*IF*/, 0);
+    m_pBus->writeBus(0xFFFF /*IE*/, 0);
+    m_pReg->getAt(0xFF00 /*P1*/) |= 0b0011'0000;
+    stop();
   }
 }
 
@@ -3522,7 +3522,7 @@ void cpu::cpl() {
 }
 
 void cpu::daa() {
-    // implement this
+  // implement this
   m_clock.cycle(1);
 }
 
