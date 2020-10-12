@@ -4,7 +4,7 @@ namespace tmbl {
 
 class registers;
 
-bgp::bgp(std::shared_ptr<registers> pRegs) : m_pRegs(pRegs){};
+bgp::bgp(std::shared_ptr<registers> pRegs) : m_pRegs(pRegs), BGP(m_pRegs->getAt(0xFF47)){};
 
 int bgp::bgPalette(const uint8 val) {
   switch (val) {
@@ -22,9 +22,9 @@ int bgp::bgPalette(const uint8 val) {
 std::array<int, 4> bgp::bgPalette() {
   // clang-format off
     return {(BGP & 0b1100'0000) >> 6,
-	    (BGP & 0b0011'0000) >> 4, 
-	    (BGP & 0b0000'1100) >> 2, 
-	    (BGP & 0b0000'0011)};
+	        (BGP & 0b0011'0000) >> 4, 
+	        (BGP & 0b0000'1100) >> 2, 
+	        (BGP & 0b0000'0011)};
   }
 
 }

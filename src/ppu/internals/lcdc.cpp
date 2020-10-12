@@ -4,7 +4,7 @@ namespace tmbl {
 
 class registers;
 
-lcdc::lcdc(std::shared_ptr<registers> pRegs) : m_pRegs(pRegs) {}
+lcdc::lcdc(std::shared_ptr<registers> pRegs) : m_pRegs(pRegs), LCDC(m_pRegs->getAt(0xFF40)) {}
 
 cflag lcdc::bgDisplayStatus() const noexcept {
   return /*m_pCart->CGB() ? on :*/ LCDC | 0b0000'0001;

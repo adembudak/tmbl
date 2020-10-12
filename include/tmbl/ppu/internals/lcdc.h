@@ -26,7 +26,7 @@ public:
 
 private:
   std::shared_ptr<registers> m_pRegs;
-  byte &LCDC = m_pRegs->getAt(0xFF40);
+  byte &LCDC;
 };
 
 }

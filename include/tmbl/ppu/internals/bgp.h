@@ -17,7 +17,7 @@ public:
 
 private:
   std::shared_ptr<registers> m_pRegs;
-  byte &BGP = m_pRegs->getAt(0xFF47);
+  byte &BGP;
 };
 
 }
