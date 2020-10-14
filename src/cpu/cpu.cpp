@@ -270,6 +270,7 @@ void cpu::run() {
 
       case 0x27:
         PC += 1;
+        daa();
         break;
 
       case 0x28:
@@ -3522,7 +3523,28 @@ void cpu::cpl() {
 }
 
 void cpu::daa() {
-  // implement this
+
+  // daa instruction, taken from: http://forums.nesdev.com/viewtopic.php?f=20&t=15944
+  if (!F.n()) {
+    if (F.c() || A.value() > 0x99) {
+      A = A.value() + 0x60;
+      F.c(set);
+    }
+    if (F.h() || (A.value() & 0x0F) > 0x09) {
+      A = A.value() + 0x6;
+    }
+  } else {
+    if (F.c()) {
+      A = A.value() - 0x60;
+    }
+    if (F.h()) {
+      A = A.value() - 0x6;
+    }
+  }
+
+  A == 0 ? F.z(set) : F.z(reset);
+  F.h(reset);
+
   m_clock.cycle(1);
 }
 
@@ -3558,5 +3580,4 @@ void cpu::scf() {
 void cpu::stop() {
   // implement this.
 }
-
 }
