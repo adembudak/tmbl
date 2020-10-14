@@ -30,3 +30,4 @@ if(ENABLE_INCLUDE_WHAT_YOU_USE)
 endif()
 
 add_subdirectory(src)
+add_subdirectory(frontends)
