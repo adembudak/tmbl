@@ -181,6 +181,7 @@ void cpu::run() {
 
       case 0x15:
         PC += 1;
+        dec(DE.hi());
         break;
 
       case 0x16:
@@ -332,6 +333,7 @@ void cpu::run() {
       case 0x33:
         PC += 1;
         ++SP;
+        m_clock.cycle(2);
         break;
 
       case 0x34:
@@ -362,7 +364,17 @@ void cpu::run() {
 
       case 0x39:
         PC += 1;
-        //  add(SP); Fix this, failed overload resolution, calls add(byte b);
+        uint8 old_lo_reg_val = HL.lo().value();
+        uint16 old_reg_val = HL.value();
+
+        HL.lo() = SP & 0x00FF;
+        HL.lo() = (SP & 0xFF00) >> 8;
+
+        F.n(reset);
+        old_reg_val > HL.value() ? F.c(set) : F.c(reset);
+        old_lo_reg_val > HL.lo().value() ? F.h(set) : F.h(reset);
+
+        m_clock.cycle(2);
         break;
 
       case 0x3A:
@@ -2671,7 +2683,7 @@ void cpu::add(const e8 e) {
 
 void cpu::add(const r16 rr) {
   HL.lo().value() + rr.lo().value() > r8::max ? F.h(set) : F.h(reset);
-  HL.value() + rr.value() > r16::max ? F.h(set) : F.h(reset);
+  HL.value() + rr.value() > r16::max ? F.c(set) : F.c(reset);
   F.n(reset);
 
   HL = HL + rr;
