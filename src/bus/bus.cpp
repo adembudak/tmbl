@@ -18,11 +18,11 @@ bus::bus(std::shared_ptr<cartridge> pCart, std::shared_ptr<registers> pRegs,
 
 byte bus::readBus(const std::size_t index) {
   if (index >= memory::rom && index <= memory::rom_end) {
-    m_pCart->read(index - memory::rom);
+    return m_pCart->read(index);
   } else if (index >= memory::vram && index <= memory::vram_end) {
     return m_pPPU->readVRAM(index - memory::vram);
   } else if (index >= memory::xram && index <= memory::xram_end) {
-    return m_pCart->read(index - memory::xram);
+    return m_pCart->read(index);
   } else if (index >= memory::wram && index <= memory::wram_end) {
     return m_pBuiltin->readWRAM(index - memory::wram);
   } else if (index >= memory::echo && index <= memory::echo_end) {
@@ -46,7 +46,7 @@ void bus::writeBus(const std::size_t index, const byte val) {
   } else if (index >= memory::vram && index <= memory::vram_end) {
     m_pPPU->writeVRAM(index - memory::vram, val);
   } else if (index >= memory::xram && index <= memory::xram_end) {
-    m_pCart->write(index - memory::xram, val);
+    m_pCart->write(index, val);
   } else if (index >= memory::wram && index <= memory::wram_end) {
     m_pBuiltin->writeWRAM(index - memory::wram, val);
   } else if (index >= memory::echo && index <= memory::echo_end) {
