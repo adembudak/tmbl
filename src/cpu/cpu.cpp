@@ -362,20 +362,20 @@ void cpu::run() {
         jr(cc::C, e8(m_pBus->readBus(PC++)));
         break;
 
-      case 0x39:
+      case 0x39: {
         PC += 1;
-        uint8 old_lo_reg_val = HL.lo().value();
-        uint16 old_reg_val = HL.value();
+        uint8 t_old_lo_reg_val = HL.lo().value();
+        uint16 t_old_reg_val = HL.value();
 
         HL.lo() = SP & 0x00FF;
-        HL.lo() = (SP & 0xFF00) >> 8;
+        HL.hi() = (SP & 0xFF00) >> 8;
 
         F.n(reset);
-        old_reg_val > HL.value() ? F.c(set) : F.c(reset);
-        old_lo_reg_val > HL.lo().value() ? F.h(set) : F.h(reset);
+        t_old_reg_val > HL.value() ? F.c(set) : F.c(reset);
+        t_old_lo_reg_val > HL.lo().value() ? F.h(set) : F.h(reset);
 
         m_clock.cycle(2);
-        break;
+      } break;
 
       case 0x3A:
         PC += 1;
