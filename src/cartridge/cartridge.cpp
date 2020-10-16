@@ -10,8 +10,10 @@
 #include <string>
 #include <variant>
 #include <vector>
+#include <numeric> // for std::accumulate
 
 #include <iostream>
+#include <cassert>
 
 namespace tmbl {
 
@@ -23,6 +25,12 @@ inline std::vector<byte> dumpROM(const std::filesystem::path &p) {
 }
 
 cartridge::cartridge(const std::filesystem::path &p) : dumpedGamePak{dumpROM(p)} {
+
+  // header checksum:  https://gbdev.io/pandocs/#_014d-header-checksum
+  int checksum = std::accumulate(&dumpedGamePak[0x134], &dumpedGamePak[0x014C + 1], 0,
+                                 [this](const byte x, const byte y) { return x - y - 1; });
+
+  assert(dumpedGamePak[0x014D] == checksum);
 
   // decide game title
   const std::size_t title = 0x0134;
