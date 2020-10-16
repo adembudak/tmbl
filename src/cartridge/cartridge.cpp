@@ -97,37 +97,33 @@ std::size_t cartridge::banks() const noexcept {
   }
 }
 
-byte cartridge::read(const std::size_t index) {
+byte cartridge::readROM(const std::size_t index) {
   if (auto pRom = std::get_if<rom>(&pak)) {
-    if (index >= memory::xram && index <= memory::xram_end)
-      return pRom->read_xram(index);
-    else
-      return pRom->read_rom(index);
+    return pRom->read_rom(index);
   } else if (auto pMbc1 = std::get_if<mbc1>(&pak)) {
-
-    if (index >= memory::xram && index <= memory::xram_end)
-      return pMbc1->read_rom(index);
-    else
-      return pRom->read_rom(index);
-  } else {
-    // todo other MBCs...
+    return pMbc1->read_rom(index);
+  } else /*if*/ {
+    // other mbc types
   }
 }
 
-byte cartridge::write(const std::size_t index, const byte val) {
+byte cartridge::readXRAM(const std::size_t index) {
   if (auto pRom = std::get_if<rom>(&pak)) {
-    if (index >= memory::xram && index <= memory::xram_end)
-      return pRom->write_xram(index, val);
-    else
-      return pRom->read_rom(index);
+    return pRom->read_xram(index);
   } else if (auto pMbc1 = std::get_if<mbc1>(&pak)) {
+    return pMbc1->read_xram(index);
+  } else /*if*/ {
+    // other mbc types
+  }
+}
 
-    if (index >= memory::xram && index <= memory::xram_end)
-      return pMbc1->read_rom(index);
-    else
-      return pRom->read_rom(index);
-  } else {
-    // todo other MBCs...
+void cartridge::writeXRAM(const std::size_t index, const byte val) {
+  if (auto pRom = std::get_if<rom>(&pak)) {
+    pRom->write_xram(index, val);
+  } else if (auto pMbc1 = std::get_if<mbc1>(&pak)) {
+    pMbc1->write_xram(index, val);
+  } else /*if*/ {
+    // other mbc types
   }
 }
 

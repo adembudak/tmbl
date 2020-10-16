@@ -35,8 +35,11 @@ public:
   std::string title() const noexcept;
   std::size_t banks() const noexcept;
 
-  byte read(const std::size_t index);
-  byte write(const std::size_t index, const byte val);
+  byte readROM(const std::size_t index);
+  byte readXRAM(const std::size_t index);
+
+  void writeROM(const std::size_t index, const byte val);
+  void writeXRAM(const std::size_t index, const byte val);
 
 private:
   bool m_cgb_support = false; // supports cgb functions?
@@ -45,7 +48,6 @@ private:
   std::variant<rom, mbc1 /*,mbc2, mbc3, mbc5, mbc6, mbc7*/> pak;
   std::vector<byte> dumpedGamePak;
 };
-
 }
 
 #endif

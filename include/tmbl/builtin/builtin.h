@@ -22,7 +22,6 @@ public:
 private:
   std::array<byte, 8_KB> m_wram{};
   std::array<byte, 127_B> m_hram{};
-  std::array<byte, 7_KB + 512_B> m_echo{};
 };
 
 }
