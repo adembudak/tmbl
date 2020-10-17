@@ -40,6 +40,8 @@ enum class cpu::cc {
 // register names adapted from: https://rgbds.gbdev.io/docs/master/gbz80.7
 // opcode table adapted from: https://izik1.github.io/gbops/
 void cpu::run() {
+  auto fetch = [&] { return (m_pBus->readBus(PC) | (m_pBus->readBus(PC + 1) << 8)); };
+  auto fetch_byte = [&] { return m_pBus->readBus(PC); };
 
   for (;;) {
 
@@ -69,10 +71,7 @@ void cpu::run() {
       }
     }
 
-    // clang-format off
-    switch (auto fetch = [&]{ return (m_pBus->readBus(PC++) | (m_pBus->readBus(PC++) << 8)); }; fetch()) {
-        // clang-format on
-
+    switch (fetch_byte()) {
       case 0x00:
         PC += 1;
         nop();
@@ -1060,17 +1059,17 @@ void cpu::run() {
 
       case 0xC2:
         PC += 3;
-        jp(cc::NZ, n16(m_pBus->readBus(PC++)));
+        jp(cc::NZ, n16(fetch()));
         break;
 
       case 0xC3:
         PC += 3;
-        jp(n16(m_pBus->readBus(PC++)));
+        jp(n16(fetch()));
         break;
 
       case 0xC4:
         PC += 3;
-        call(cc::NZ, n16(m_pBus->readBus(PC++)));
+        call(cc::NZ, n16(fetch()));
         break;
 
       case 0xC5:
@@ -1100,12 +1099,12 @@ void cpu::run() {
 
       case 0xCA:
         PC += 3;
-        jp(cc::Z, n16(m_pBus->readBus(PC++)));
+        jp(cc::Z, n16(fetch()));
         break;
 
       case 0xCB: // 0xCB Prefixed:
         PC += 1;
-        switch (fetch()) {
+        switch (fetch_byte()) {
           case 0x00:
             PC += 2;
             rlc(BC.hi());
@@ -2390,12 +2389,12 @@ void cpu::run() {
 
       case 0xCC:
         PC += 3;
-        call(cc::Z, n16(m_pBus->readBus(PC++)));
+        call(cc::Z, n16(fetch()));
         break;
 
       case 0xCD:
         PC += 3;
-        call(n16(m_pBus->readBus(PC++)));
+        call(n16(fetch()));
         break;
 
       case 0xCE:
@@ -2420,12 +2419,12 @@ void cpu::run() {
 
       case 0xD2:
         PC += 3;
-        jp(cc::NC, n16(m_pBus->readBus(PC++)));
+        jp(cc::NC, n16(fetch()));
         break;
 
       case 0xD4:
         PC += 3;
-        call(cc::NC, n16(m_pBus->readBus(PC++)));
+        call(cc::NC, n16(fetch()));
         break;
 
       case 0xD5:
@@ -2455,12 +2454,12 @@ void cpu::run() {
 
       case 0xDA:
         PC += 3;
-        jp(cc::C, n16(m_pBus->readBus(PC++)));
+        jp(cc::C, n16(fetch()));
         break;
 
       case 0xDC:
         PC += 3;
-        call(cc::C, n16(m_pBus->readBus(PC++)));
+        call(cc::C, n16(fetch()));
         break;
 
       case 0xDE:
