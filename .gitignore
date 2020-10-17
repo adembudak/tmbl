@@ -573,5 +573,7 @@ MigrationBackup/
 ### build directories  ###
 *[Bb]uild
 
+# Externals 
+[Ee]xternal/
 
 # End of https://www.gitignore.io/api/vim,c++,code,cmake,clion,emacs,visualstudio
