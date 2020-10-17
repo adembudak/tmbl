@@ -40,8 +40,9 @@ enum class cpu::cc {
 // register names adapted from: https://rgbds.gbdev.io/docs/master/gbz80.7
 // opcode table adapted from: https://izik1.github.io/gbops/
 void cpu::run() {
-  auto fetch = [&] { return (m_pBus->readBus(PC) | (m_pBus->readBus(PC + 1) << 8)); };
-  auto fetch_byte = [&] { return m_pBus->readBus(PC); };
+
+  auto fetch_byte = [&] { return m_pBus->readBus(PC++); };
+  auto fetch = [&] { return fetch_byte() | (fetch_byte() << 8); };
 
   for (;;) {
 
@@ -78,8 +79,8 @@ void cpu::run() {
         break;
 
       case 0x01:
-        PC += 3;
         ld(BC, n16(fetch()));
+        PC += 3;
         break;
 
       case 0x02:
@@ -103,8 +104,8 @@ void cpu::run() {
         break;
 
       case 0x06:
-        PC += 2;
         ld(BC.hi(), n8(fetch_byte()));
+        PC += 2;
         break;
 
       case 0x07:
@@ -113,8 +114,8 @@ void cpu::run() {
         break;
 
       case 0x08:
-        PC += 3;
         m_pBus->writeBus(n16(fetch()).value(), SP);
+        PC += 3;
         m_clock.cycle(4);
         break;
 
@@ -144,8 +145,8 @@ void cpu::run() {
         break;
 
       case 0x0E:
-        PC += 2;
         ld(BC.lo(), n8(fetch_byte()));
+        PC += 2;
         break;
 
       case 0x0F:
@@ -159,8 +160,8 @@ void cpu::run() {
         break;
 
       case 0x11:
-        PC += 3;
         ld(DE, n16(fetch()));
+        PC += 3;
         break;
 
       case 0x12:
@@ -184,8 +185,8 @@ void cpu::run() {
         break;
 
       case 0x16:
-        PC += 2;
         ld(DE.hi(), n8(fetch_byte()));
+        PC += 2;
         break;
 
       case 0x17:
@@ -224,8 +225,8 @@ void cpu::run() {
         break;
 
       case 0x1E:
-        PC += 2;
         ld(DE.lo(), n8(fetch_byte()));
+        PC += 2;
         break;
 
       case 0x1F:
@@ -239,8 +240,8 @@ void cpu::run() {
         break;
 
       case 0x21:
-        PC += 3;
         ld(HL, n16(fetch()));
+        PC += 3;
         break;
 
       case 0x22:
@@ -264,8 +265,8 @@ void cpu::run() {
         break;
 
       case 0x26:
-        PC += 2;
         ld(HL.hi(), n8(fetch_byte()));
+        PC += 2;
         break;
 
       case 0x27:
@@ -304,8 +305,8 @@ void cpu::run() {
         break;
 
       case 0x2E:
-        PC += 2;
         ld(HL.lo(), n8(fetch_byte()));
+        PC += 2;
         break;
 
       case 0x2F:
@@ -319,8 +320,8 @@ void cpu::run() {
         break;
 
       case 0x31:
-        PC += 3;
         SP = n16(fetch()).value();
+        PC += 3;
         m_clock.cycle(3);
         break;
 
@@ -346,8 +347,8 @@ void cpu::run() {
         break;
 
       case 0x36:
-        PC += 2;
         m_pBus->writeBus(HL.value(), n8(fetch_byte()).value());
+        PC += 2;
         m_clock.cycle(3);
         break;
 
@@ -397,8 +398,8 @@ void cpu::run() {
         break;
 
       case 0x3E:
-        PC += 2;
         ld(A, n8(fetch_byte()));
+        PC += 2;
         break;
 
       case 0x3F:
@@ -1058,18 +1059,18 @@ void cpu::run() {
         break;
 
       case 0xC2:
-        PC += 3;
         jp(cc::NZ, n16(fetch()));
+        PC += 3;
         break;
 
       case 0xC3:
-        PC += 3;
         jp(n16(fetch()));
+        PC += 3;
         break;
 
       case 0xC4:
-        PC += 3;
         call(cc::NZ, n16(fetch()));
+        PC += 3;
         break;
 
       case 0xC5:
@@ -1098,8 +1099,8 @@ void cpu::run() {
         break;
 
       case 0xCA:
-        PC += 3;
         jp(cc::Z, n16(fetch()));
+        PC += 3;
         break;
 
       case 0xCB: // 0xCB Prefixed:
@@ -2388,18 +2389,18 @@ void cpu::run() {
         break;
 
       case 0xCC:
-        PC += 3;
         call(cc::Z, n16(fetch()));
+        PC += 3;
         break;
 
       case 0xCD:
-        PC += 3;
         call(n16(fetch()));
+        PC += 3;
         break;
 
       case 0xCE:
-        PC += 2;
         adc(n8(fetch_byte()));
+        PC += 2;
         break;
 
       case 0xCF:
@@ -2418,13 +2419,13 @@ void cpu::run() {
         break;
 
       case 0xD2:
-        PC += 3;
         jp(cc::NC, n16(fetch()));
+        PC += 3;
         break;
 
       case 0xD4:
-        PC += 3;
         call(cc::NC, n16(fetch()));
+        PC += 3;
         break;
 
       case 0xD5:
@@ -2433,8 +2434,8 @@ void cpu::run() {
         break;
 
       case 0xD6:
-        PC += 2;
         sub(n8(fetch_byte()));
+        PC += 2;
         break;
 
       case 0xD7:
@@ -2453,18 +2454,18 @@ void cpu::run() {
         break;
 
       case 0xDA:
-        PC += 3;
         jp(cc::C, n16(fetch()));
+        PC += 3;
         break;
 
       case 0xDC:
-        PC += 3;
         call(cc::C, n16(fetch()));
+        PC += 3;
         break;
 
       case 0xDE:
-        PC += 2;
         sbc(n8(fetch_byte()));
+        PC += 2;
         break;
 
       case 0xDF:
@@ -2473,8 +2474,8 @@ void cpu::run() {
         break;
 
       case 0xE0:
-        PC += 2;
         ldio(0xFF00 + n8(fetch_byte()).value(), A);
+        PC += 2;
         break;
 
       case 0xE1:
@@ -2493,8 +2494,8 @@ void cpu::run() {
         break;
 
       case 0xE6:
-        PC += 2;
         and_(n8(fetch_byte()));
+        PC += 2;
         break;
 
       case 0xE7:
@@ -2513,13 +2514,13 @@ void cpu::run() {
         break;
 
       case 0xEA:
-        PC += 3;
         ld(n16(fetch()), tag{});
+        PC += 3;
         break;
 
       case 0xEE:
-        PC += 2;
         xor_(n8(fetch_byte()));
+        PC += 2;
         break;
 
       case 0xEF:
@@ -2528,8 +2529,8 @@ void cpu::run() {
         break;
 
       case 0xF0:
-        PC += 2;
         ldio(A, 0xFF00 + n8(fetch_byte()).value());
+        PC += 2;
         break;
 
       case 0xF1:
@@ -2553,8 +2554,8 @@ void cpu::run() {
         break;
 
       case 0xF6:
-        PC += 2;
         or_(n8(fetch_byte()));
+        PC += 2;
         break;
 
       case 0xF7:
@@ -2575,8 +2576,8 @@ void cpu::run() {
         break;
 
       case 0xFA:
-        PC += 3;
         ld(tag{}, n16(fetch()));
+        PC += 3;
         break;
 
       case 0xFB:
@@ -2585,8 +2586,8 @@ void cpu::run() {
         break;
 
       case 0xFE:
-        PC += 2;
         cp(n8(fetch_byte()));
+        PC += 2;
         break;
 
       case 0xFF:
