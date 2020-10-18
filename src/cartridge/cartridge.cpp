@@ -30,7 +30,7 @@ cartridge::cartridge(const std::filesystem::path &p) : dumpedGamePak{dumpROM(p)}
   int checksum = std::accumulate(&dumpedGamePak[0x134], &dumpedGamePak[0x014C + 1], 0,
                                  [this](const byte x, const byte y) { return x - y - 1; });
 
-  assert(dumpedGamePak[0x014D] == checksum);
+  assert((dumpedGamePak[0x014D] == checksum) && "ROM Checksum failed\n");
 
   // decide game title
   const std::size_t title = 0x0134;
