@@ -26,18 +26,12 @@ inline std::vector<byte> dumpROM(const std::filesystem::path &p) {
 
 cartridge::cartridge(const std::filesystem::path &p) : dumpedGamePak{dumpROM(p)} {
 
-  // header checksum:  https://gbdev.io/pandocs/#_014d-header-checksum
-  int checksum = std::accumulate(&dumpedGamePak[0x134], &dumpedGamePak[0x014C + 1], 0,
-                                 [this](const byte x, const byte y) { return x - y - 1; });
-
-  assert((dumpedGamePak[0x014D] == checksum) && "ROM Checksum failed\n");
-
   // decide game title
   const std::size_t title = 0x0134;
-  const std::size_t title_end = 0x013E + 1; // +1 for the use of iterator overload of std::string.
+  const std::size_t title_end = 0x013E + 1; // +1 to use iterator overload of std::string ctor
   m_title = std::string(&dumpedGamePak[title], &dumpedGamePak[title_end]);
 
-  // whether cart suuport for color gameboy
+  // whether the cart support for color gameboy
   const std::size_t CGB_support_code = 0x0143;
   if (dumpedGamePak[CGB_support_code] == 0x0080 || dumpedGamePak[CGB_support_code] == 0x00C0) {
     m_cgb_support = true;
@@ -47,7 +41,7 @@ cartridge::cartridge(const std::filesystem::path &p) : dumpedGamePak{dumpROM(p)}
 
   // decide to mbc type
   const std::size_t pak_type = 0x0147;
-  const std::size_t pak_rom_size = 0x0148;
+  const std::size_t pak_rom_size = 0x0148; // equals to dumpedGamePak size, so no need to check
   const std::size_t pak_xram_size = 0x0149;
 
   switch (dumpedGamePak[pak_type]) {
@@ -62,9 +56,9 @@ cartridge::cartridge(const std::filesystem::path &p) : dumpedGamePak{dumpROM(p)}
     case 0x02:
       [[fallthrough]];
     case 0x03:
-      switch (dumpedGamePak[pak_xram_size]) {
+      switch (dumpedGamePak[pak_xram_size]) { // decide external ram size
         case 0x00:
-          pak = mbc1{dumpedGamePak};
+          pak = mbc1{dumpedGamePak /*, xram_size=0_KB*/};
           break;
 
         case 0x01:
@@ -79,37 +73,31 @@ cartridge::cartridge(const std::filesystem::path &p) : dumpedGamePak{dumpROM(p)}
           pak = mbc1{dumpedGamePak, /*xram_size=*/32_KB};
           break;
 
-        case 0x04:
-          pak = mbc1{dumpedGamePak, /*xram_size=*/128_KB};
-          break;
-
-        case 0x05:
-          pak = mbc1{dumpedGamePak, /*xram_size=*/64_KB};
-          break;
-
         default:
           break;
       }
   }
+
+  // header checksum:  https://gbdev.io/pandocs/#_014d-header-checksum
+  const std::size_t checksum_begin = 0x0134;
+  const std::size_t checksum_end = 0x014C + 1; // +1 for to use the address as an end iterator
+  const std::size_t checksum_result = 0x014D;
+
+  int checksum = std::accumulate(&dumpedGamePak[checksum_begin], &dumpedGamePak[checksum_end], 0,
+                                 [this](const byte x, const byte y) { return x - y - 1; });
+
+  assert((dumpedGamePak[checksum_result] == checksum) && "ROM Checksum failed\n");
 }
 
 bool cartridge::CGB() const noexcept { return m_cgb_support; }
 
 std::string cartridge::title() const noexcept { return m_title; }
 
-std::size_t cartridge::banks() const noexcept {
-  if (CGB()) {
-    if (auto pakType = std::get_if<mbc1>(&pak)) {
-      return pakType->bankNumber();
-    }
-  }
-}
-
 byte cartridge::readROM(const std::size_t index) {
   if (auto pRom = std::get_if<rom>(&pak)) {
     return pRom->read_rom(index);
   } else if (auto pMbc1 = std::get_if<mbc1>(&pak)) {
-    return pMbc1->read_rom(index);
+   // return pMbc1->read_rom(index);
   } else /*if*/ {
     // other mbc types
   }
@@ -119,7 +107,7 @@ byte cartridge::readXRAM(const std::size_t index) {
   if (auto pRom = std::get_if<rom>(&pak)) {
     return pRom->read_xram(index);
   } else if (auto pMbc1 = std::get_if<mbc1>(&pak)) {
-    return pMbc1->read_xram(index);
+    //return pMbc1->read_xram(index);
   } else /*if*/ {
     // other mbc types
   }
@@ -129,7 +117,7 @@ void cartridge::writeXRAM(const std::size_t index, const byte val) {
   if (auto pRom = std::get_if<rom>(&pak)) {
     pRom->write_xram(index, val);
   } else if (auto pMbc1 = std::get_if<mbc1>(&pak)) {
-    pMbc1->write_xram(index, val);
+    //pMbc1->write_xram(index, val);
   } else /*if*/ {
     // other mbc types
   }

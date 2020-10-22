@@ -33,7 +33,6 @@ public:
 
   bool CGB() const noexcept;
   std::string title() const noexcept;
-  std::size_t banks() const noexcept;
 
   byte readROM(const std::size_t index);
   byte readXRAM(const std::size_t index);
