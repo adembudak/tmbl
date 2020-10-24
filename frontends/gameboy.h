@@ -17,7 +17,7 @@ public:
   void run();
 
 private:
-  tmbl::cartridge m_cart{""};
+  tmbl::cartridge m_cart;
   tmbl::registers m_regs;
   tmbl::interrupts m_intr;
   tmbl::builtin m_builtin;
