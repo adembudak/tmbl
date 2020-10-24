@@ -17,14 +17,14 @@
 
 namespace tmbl {
 
-inline std::vector<byte> dumpROM(const std::filesystem::path &p) {
-  std::fstream f(p, std::ios::in | std::ios::binary);
-  if (!f.good())
-    std::cerr << "Something wrong with the rom.\n";
-  return {std::istreambuf_iterator(f), {}};
-}
+void cartridge::init(const std::filesystem::path p) {
 
-cartridge::cartridge(const std::filesystem::path &p) : dumpedGamePak{dumpROM(p)} {
+  std::fstream f(p, std::ios::in | std::ios::binary);
+  if (!f.good()) {
+    std::cerr << "Something wrong with the rom.\n";
+  }
+
+  dumpedGamePak = std::vector(std::istreambuf_iterator<char>(f), {});
 
   // decide game title
   const std::size_t title = 0x0134;
@@ -46,11 +46,11 @@ cartridge::cartridge(const std::filesystem::path &p) : dumpedGamePak{dumpROM(p)}
 
   switch (dumpedGamePak[pak_type]) {
     case 0x00:
-      pak = rom{dumpedGamePak};
+      pak = rom(dumpedGamePak);
       break;
 
     case 0x01:
-      pak = mbc1{dumpedGamePak};
+      pak = mbc1(dumpedGamePak);
       break;
 
     case 0x02:
@@ -58,19 +58,19 @@ cartridge::cartridge(const std::filesystem::path &p) : dumpedGamePak{dumpROM(p)}
     case 0x03:
       switch (dumpedGamePak[pak_xram_size]) { // decide external ram size
         case 0x00:
-          pak = mbc1{dumpedGamePak /*, xram_size=0_KB*/};
+          pak = mbc1(dumpedGamePak /*, xram_size=0_KB*/);
           break;
 
         case 0x01:
-          pak = mbc1{dumpedGamePak, /*xram_size=*/2_KB};
+          pak = mbc1(dumpedGamePak, /*xram_size=*/2_KB);
           break;
 
         case 0x02:
-          pak = mbc1{dumpedGamePak, /*xram_size=*/8_KB};
+          pak = mbc1(dumpedGamePak, /*xram_size=*/8_KB);
           break;
 
         case 0x03:
-          pak = mbc1{dumpedGamePak, /*xram_size=*/32_KB};
+          pak = mbc1(dumpedGamePak, /*xram_size=*/32_KB);
           break;
 
         default:
@@ -97,7 +97,7 @@ byte cartridge::readROM(const std::size_t index) {
   if (auto pRom = std::get_if<rom>(&pak)) {
     return pRom->read_rom(index);
   } else if (auto pMbc1 = std::get_if<mbc1>(&pak)) {
-   // return pMbc1->read_rom(index);
+    return pMbc1->read(index);
   } else /*if*/ {
     // other mbc types
   }
@@ -107,7 +107,16 @@ byte cartridge::readXRAM(const std::size_t index) {
   if (auto pRom = std::get_if<rom>(&pak)) {
     return pRom->read_xram(index);
   } else if (auto pMbc1 = std::get_if<mbc1>(&pak)) {
-    //return pMbc1->read_xram(index);
+    return pMbc1->read(index);
+  } else /*if*/ {
+    // other mbc types
+  }
+}
+void cartridge::writeROM(const std::size_t index, const byte val) {
+  if (auto pRom = std::get_if<rom>(&pak)) {
+    std::cerr << "Only mbc type carts can take ROM area address to write (to set bank registers.\n";
+  } else if (auto pMbc1 = std::get_if<mbc1>(&pak)) {
+    pMbc1->write(index, val);
   } else /*if*/ {
     // other mbc types
   }
@@ -117,7 +126,7 @@ void cartridge::writeXRAM(const std::size_t index, const byte val) {
   if (auto pRom = std::get_if<rom>(&pak)) {
     pRom->write_xram(index, val);
   } else if (auto pMbc1 = std::get_if<mbc1>(&pak)) {
-    //pMbc1->write_xram(index, val);
+    pMbc1->write(index, val);
   } else /*if*/ {
     // other mbc types
   }

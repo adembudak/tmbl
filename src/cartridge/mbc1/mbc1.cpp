@@ -5,9 +5,11 @@
 #include <vector>
 #include <algorithm>
 
+#include <iostream>
+
 namespace tmbl {
 
-mbc1::mbc1(std::vector<byte> &rom, std::size_t xram_size) : m_rom(rom) {
+mbc1::mbc1(std::vector<char> &rom, std::size_t xram_size) : m_rom(rom) {
   if (xram_size != 0) {
     m_xram.resize(xram_size);
   }
@@ -49,6 +51,11 @@ void mbc1::write(const std::size_t index, const byte val) {
     }
   }
 }
+
+  byte mbc1::read(const std::size_t index) {
+     std::cout << "byte mbc1::read(const std::size_t index)\n";
+     return 0xFF;
+  }
 
 }
 

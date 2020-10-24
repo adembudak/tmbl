@@ -29,7 +29,7 @@ public:
   // see: https://archive.org/details/GameBoyProgManVer1.1/page/n126/mode/1up
   // see: https://archive.org/details/GameBoyProgManVer1.1/page/n294/mode/1up
 
-  explicit cartridge(const std::filesystem::path &p);
+  void init(const std::filesystem::path p);
 
   bool CGB() const noexcept;
   std::string title() const noexcept;
@@ -45,9 +45,8 @@ private:
   std::string m_title;        // game title
 
   std::variant<rom, mbc1 /*,mbc2, mbc3, mbc5, mbc6, mbc7*/> pak;
-  std::vector<byte> dumpedGamePak;
+  std::vector<char> dumpedGamePak;
 };
 }
 
 #endif
-
