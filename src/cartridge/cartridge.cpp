@@ -44,9 +44,23 @@ void cartridge::init(const std::filesystem::path p) {
   const std::size_t pak_rom_size = 0x0148; // equals to dumpedGamePak size, so no need to check
   const std::size_t pak_xram_size = 0x0149;
 
+  auto recognize_xram_size = [](const std::size_t i) {
+    // clang-format off
+        switch (i) {
+          case 0: return 0_KB;
+          case 1: return 2_KB;
+          case 2: return 8_KB;
+          case 3: return 32_KB;
+          case 4: return 128_KB;
+          case 5: return 64_KB;
+          default: break;
+        // clang-format on
+    }
+  };
+
   switch (dumpedGamePak[pak_type]) {
     case 0x00:
-      pak = rom(dumpedGamePak);
+      pak = rom(std::move(dumpedGamePak), 0);
       break;
 
     case 0x01:
@@ -56,26 +70,17 @@ void cartridge::init(const std::filesystem::path p) {
     case 0x02:
       [[fallthrough]];
     case 0x03:
-      switch (dumpedGamePak[pak_xram_size]) { // decide external ram size
-        case 0x00:
-          pak = mbc1(dumpedGamePak /*, xram_size=0_KB*/);
-          break;
+      pak = mbc1(dumpedGamePak, recognize_xram_size(dumpedGamePak[pak_xram_size]));
+      break;
 
-        case 0x01:
-          pak = mbc1(dumpedGamePak, /*xram_size=*/2_KB);
-          break;
+    case 0x08:
+      [[fallthrough]];
+    case 0x09:
+      pak = rom(std::move(dumpedGamePak), recognize_xram_size(dumpedGamePak[pak_xram_size]));
+      break;
 
-        case 0x02:
-          pak = mbc1(dumpedGamePak, /*xram_size=*/8_KB);
-          break;
-
-        case 0x03:
-          pak = mbc1(dumpedGamePak, /*xram_size=*/32_KB);
-          break;
-
-        default:
-          break;
-      }
+    default:
+      break;
   }
 
   // header checksum:  https://gbdev.io/pandocs/#_014d-header-checksum
