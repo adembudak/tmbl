@@ -7,6 +7,10 @@
 
 #include <iostream>
 
+#if defined(_MSC_VER)
+#include <ciso646>
+#endif
+
 namespace tmbl {
 
 mbc1::mbc1(std::vector<char> &rom, std::size_t xram_size) : m_rom(rom) {
@@ -69,9 +73,9 @@ byte mbc1::read(const std::size_t index) {
     if (ram_access_enabled and m_xram.size() != 0) {
       return m_xram.at((ram_bank * ram_bank_width) + index);
     }
+    return 0xFF;
   } else {
     // Bilemiyorum, bilemiyorum Altan...
-    return 0xFF;
   }
 }
 
