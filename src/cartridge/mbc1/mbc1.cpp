@@ -17,11 +17,11 @@ mbc1::mbc1(std::vector<char> &rom, std::size_t xram_size) : m_rom(rom) {
 
 void mbc1::write(const std::size_t index, const byte val) {
 
-  if (index >= 0x0000 && index <= 0x1FFF) { // ram chip select
+  if (index >= 0x0000 && index <= 0x1FFF) { // register 1, ram chip select
     ram_access_enabled = ((val & 0b0000'1111) == 0x0A);
   }
 
-  else if (index >= 0x2000 && index <= 0x3FFF) { // lower rom bank select
+  else if (index >= 0x2000 && index <= 0x3FFF) { // register 2, lower rom bank select
     if ((val & 0x1F) == 0) {
       lower_rom_bank = val + 1;
       return;
@@ -30,32 +30,50 @@ void mbc1::write(const std::size_t index, const byte val) {
     lower_rom_bank = val & lower_rom_mask;
   }
 
-  else if (index >= 0x4000 && index <= 0x5FFF) { // decide upper rom bank or ram bank number
+  else if (index >= 0x4000 && index <= 0x5FFF) { // register 3, decide upper rom/ram bank number
     if (banking_mode == mode::rom_banking) {     // rom banking mode
-      if (m_rom.size() >= 512_KB) {
-        upper_rom_bank = val & upper_rom_mask;
-        effective_rom_bank = (upper_rom_bank << 5) | lower_rom_bank;
-      } else {
-        effective_rom_bank = lower_rom_bank;
-      }
+      upper_rom_mask = (m_rom.size() >= 512_KB) ? val & upper_rom_mask : 0;
+      ram_bank = 0;
     } else { // ram banking mode
-      if (m_xram.size() == 32_KB) {
-        ram_bank = val & ram_mask;
-      }
+      ram_bank = (m_xram.size() == 32_KB) ? val & ram_mask : 0;
     }
   }
 
-  else if (index >= 0x6000 && index <= 0x7FFF) {
-    if (m_rom.size() > 512_KB || m_xram.size() > 8_KB) {
+  else if (index >= 0x6000 && index <= 0x7FFF) {         // register 4, decide banking mode
+    if (m_rom.size() > 512_KB || m_xram.size() > 8_KB) { // mode 0: rom banking, mode 1: ram banking
       banking_mode = (val & 0b0000'0001) ? mode::ram_banking : mode::rom_banking;
     }
   }
+
+  else if (index >= 0xA000 && index <= 0xBFFF) {
+    if (ram_access_enabled and m_xram.size() != 0) {
+      m_xram.at((ram_bank * ram_bank_width) + index) = val;
+    }
+  } else {
+    // Bilemiyorum Altan...
+  }
 }
 
-  byte mbc1::read(const std::size_t index) {
-     std::cout << "byte mbc1::read(const std::size_t index)\n";
-     return 0xFF;
+byte mbc1::read(const std::size_t index) {
+  if (index >= 0x0000 && index <= 0x3FFF) {
+    effective_rom_bank = (banking_mode == mode::rom_banking) ? 0 : (upper_rom_bank << 5);
+    return m_rom.at((effective_rom_bank * rom_bank_width) + index);
   }
+
+  else if (index >= 0x4000 && index <= 0x7FFF) {
+    effective_rom_bank = (upper_rom_bank << 5) | lower_rom_bank;
+    return m_rom.at((effective_rom_bank * rom_bank_width) + index);
+  }
+
+  else if (index >= 0xA000 && index <= 0xBFFF) {
+    if (ram_access_enabled and m_xram.size() != 0) {
+      return m_xram.at((ram_bank * ram_bank_width) + index);
+    }
+  } else {
+    // Bilemiyorum, bilemiyorum Altan...
+    return 0xFF;
+  }
+}
 
 }
 
