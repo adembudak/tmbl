@@ -18,22 +18,14 @@ public:
   void run();
 
 private:
-  tmbl::cartridge m_cart;
-  tmbl::registers m_regs;
-  tmbl::interrupts m_intr;
-  tmbl::builtin m_builtin;
+  std::shared_ptr<tmbl::cartridge> p_cart = std::make_shared<tmbl::cartridge>();
+  std::shared_ptr<tmbl::registers> p_regs = std::make_shared<tmbl::registers>();
+  std::shared_ptr<tmbl::interrupts> p_intr = std::make_shared<tmbl::interrupts>();
+  std::shared_ptr<tmbl::builtin> p_builtin = std::make_shared<tmbl::builtin>();
 
-  tmbl::ppu m_ppu{std::make_shared<tmbl::registers>(m_regs),
-                  std::make_shared<tmbl::cartridge>(m_cart),
-                  std::make_shared<tmbl::interrupts>(m_intr)};
-
-  tmbl::bus m_bus{std::make_shared<tmbl::cartridge>(m_cart),
-                  std::make_shared<tmbl::registers>(m_regs),
-                  std::make_shared<tmbl::interrupts>(m_intr),
-                  std::make_shared<tmbl::builtin>(m_builtin), std::make_shared<tmbl::ppu>(m_ppu)};
-
-  tmbl::cpu m_cpu{std::make_shared<tmbl::bus>(m_bus), std::make_shared<tmbl::registers>(m_regs),
-                  std::make_shared<tmbl::interrupts>(m_intr)};
+  tmbl::ppu m_ppu{p_regs, p_cart, p_intr};
+  tmbl::bus m_bus{p_cart, p_regs, p_intr, p_builtin, std::make_shared<tmbl::ppu>(m_ppu)};
+  tmbl::cpu m_cpu{std::make_shared<tmbl::bus>(m_bus), p_regs, p_intr};
 };
 
 #endif
