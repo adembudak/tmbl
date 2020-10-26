@@ -15,7 +15,25 @@
 namespace tmbl {
 cpu::cpu(std::shared_ptr<bus> pBus, std::shared_ptr<registers> pReg,
          std::shared_ptr<interrupts> pIntr)
-    : m_pBus(pBus), m_pReg(pReg), m_pIntr(pIntr), KEY1(m_pReg->getAt(0xFF4D)) {}
+    : m_pBus(pBus), m_pReg(pReg), m_pIntr(pIntr), KEY1(m_pReg->getAt(0xFF4D)) {
+    
+    // Put initial values of the registers
+    // see: https://gbdev.io/pandocs/#power-up-sequence
+
+    A = 0x01;
+    F = 0xB0;
+
+    BC.hi() = 0x00;
+    BC.lo() = 0x13;
+
+    DE.hi() = 0x00;
+    DE.lo() = 0xD8;
+
+    HL.hi() = 0x01;
+    HL.lo() = 0x4D;
+
+    SP = 0xFFFE;
+}
 
 // see: double speed mode switch procedure
 // https://archive.org/details/GameBoyProgManVer1.1/page/n35/mode/1up
