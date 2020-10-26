@@ -8,11 +8,14 @@ namespace tmbl {
 
 class mbc1 final {
 public:
-  mbc1(std::vector<char> &rom, std::size_t xram_size = 0);
+  mbc1() = default;
+  mbc1(std::vector<char> &&rom, std::size_t xram_size = 0);
+
   void write(const std::size_t index, const byte b);
   byte read(const std::size_t index);
 
   enum class mode { rom_banking, ram_banking };
+
 private:
   std::vector<char> m_xram;
   std::vector<char> m_rom;

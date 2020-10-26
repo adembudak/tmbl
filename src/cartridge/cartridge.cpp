@@ -24,7 +24,7 @@ void cartridge::init(const std::filesystem::path p) {
     std::cerr << "Something wrong with the rom.\n";
   }
 
-  dumpedGamePak = std::vector(std::istreambuf_iterator<char>(f), {});
+  dumpedGamePak = std::vector<char>(std::istreambuf_iterator<char>(f), {});
 
   // decide game title
   const std::size_t title = 0x0134;
@@ -44,6 +44,16 @@ void cartridge::init(const std::filesystem::path p) {
   const std::size_t pak_rom_size = 0x0148; // equals to dumpedGamePak size, so no need to check
   const std::size_t pak_xram_size = 0x0149;
 
+  // header checksum:  https://gbdev.io/pandocs/#_014d-header-checksum
+  const std::size_t checksum_begin = 0x0134;
+  const std::size_t checksum_end = 0x014C + 1; // +1 for to use the address as an end iterator
+  const std::size_t checksum_result = 0x014D;
+
+  int checksum = std::accumulate(&dumpedGamePak[checksum_begin], &dumpedGamePak[checksum_end], 0,
+                                 [this](const byte x, const byte y) { return x - y - 1; });
+
+  assert((dumpedGamePak[checksum_result] == checksum) && "ROM Checksum failed\n");
+
   auto recognize_xram_size = [](const std::size_t i) {
     // clang-format off
         switch (i) {
@@ -58,19 +68,19 @@ void cartridge::init(const std::filesystem::path p) {
     }
   };
 
-  switch (dumpedGamePak[pak_type]) {
+  switch (dumpedGamePak[pak_type]) { // decide pak type
     case 0x00:
       pak = rom(std::move(dumpedGamePak), 0);
       break;
 
     case 0x01:
-      pak = mbc1(dumpedGamePak);
+      pak = mbc1(std::move(dumpedGamePak));
       break;
 
     case 0x02:
       [[fallthrough]];
     case 0x03:
-      pak = mbc1(dumpedGamePak, recognize_xram_size(dumpedGamePak[pak_xram_size]));
+      pak = mbc1(std::move(dumpedGamePak), recognize_xram_size(dumpedGamePak[pak_xram_size]));
       break;
 
     case 0x08:
@@ -82,16 +92,6 @@ void cartridge::init(const std::filesystem::path p) {
     default:
       break;
   }
-
-  // header checksum:  https://gbdev.io/pandocs/#_014d-header-checksum
-  const std::size_t checksum_begin = 0x0134;
-  const std::size_t checksum_end = 0x014C + 1; // +1 for to use the address as an end iterator
-  const std::size_t checksum_result = 0x014D;
-
-  int checksum = std::accumulate(&dumpedGamePak[checksum_begin], &dumpedGamePak[checksum_end], 0,
-                                 [this](const byte x, const byte y) { return x - y - 1; });
-
-  assert((dumpedGamePak[checksum_result] == checksum) && "ROM Checksum failed\n");
 }
 
 bool cartridge::CGB() const noexcept { return m_cgb_support; }
