@@ -10,8 +10,8 @@ void builtin::writeWRAM(const std::size_t index, const byte val) { m_wram.at(ind
 byte builtin::readHRAM(const std::size_t index) { return m_hram.at(index); }
 void builtin::writeHRAM(const std::size_t index, const byte val) { m_hram.at(index) = val; }
 
-byte builtin::readEcho(const std::size_t index) { return readWRAM(index - 8_KB); }
-void builtin::writeEcho(const std::size_t index, const byte val) { writeWRAM(index - 8_KB, val); }
+byte builtin::readEcho(const std::size_t index) { return readWRAM(index + 512_B); }
+void builtin::writeEcho(const std::size_t index, const byte val) { writeWRAM(index + 512_B, val); }
 
 }
 

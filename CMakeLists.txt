@@ -34,7 +34,6 @@ if(ENABLE_INCLUDE_WHAT_YOU_USE)
 endif()
 
 add_subdirectory(src)
-add_subdirectory(frontends)
 
 if(ENABLE_ROM_TESTS AND BUILD_TESTING)
   enable_testing()

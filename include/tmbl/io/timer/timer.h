@@ -9,10 +9,10 @@ namespace tmbl {
 
 class timer {
 public:
-  timer(std::shared_ptr<registers> pReg);
+  explicit timer(registers &reg_);
 
 private:
-  std::shared_ptr<registers> m_pReg;
+  registers &m_reg;
 
 private:
   byte &DIV;

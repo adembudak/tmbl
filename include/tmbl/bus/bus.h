@@ -15,19 +15,17 @@ class registers;
 
 class bus {
 public:
-  bus(std::shared_ptr<cartridge> pCart, std::shared_ptr<registers> pRegs,
-      std::shared_ptr<interrupts> pIntr, std::shared_ptr<builtin> pBuiltin,
-      std::shared_ptr<ppu> pPPU);
+  bus(cartridge &pCart, registers &pRegs, interrupts &pIntr, builtin &pBuiltin, ppu &pPPU);
 
   byte readBus(const std::size_t index);
   void writeBus(const std::size_t index, const byte val);
 
 private:
-  std::shared_ptr<cartridge> m_pCart;
-  std::shared_ptr<registers> m_pRegs;
-  std::shared_ptr<ppu> m_pPPU;
-  std::shared_ptr<builtin> m_pBuiltin;
-  std::shared_ptr<interrupts> m_pIntr;
+  cartridge &m_cart;
+  registers &m_regs;
+  ppu &m_PPU;
+  builtin &m_builtin;
+  interrupts &m_pintr;
 };
 
 }

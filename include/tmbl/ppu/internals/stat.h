@@ -9,7 +9,7 @@ namespace tmbl {
 
 class stat {
 public:
-  stat(std::shared_ptr<registers> pRegs);
+  explicit stat(byte &val_);
 
   // https://archive.org/details/GameBoyProgManVer1.1/page/n57/mode/1up
   enum class mode : uint8 {
@@ -25,14 +25,14 @@ public:
   cflag match_flag() const noexcept;
   void match_flag(cflag val) noexcept;
 
-  cflag matchHblank() { return STAT & 0b0000'1000; }
-  cflag matchVblank() { return STAT & 0b0001'0000; }
-  cflag matchSearchOAM() { return STAT & 0b0010'0000; }
-  cflag matchCoincidence() { return STAT & 0b0100'0000; }
+  cflag matchHblank() { return m_value & 0b0000'1000; }
+  cflag matchVblank() { return m_value & 0b0001'0000; }
+  cflag matchSearchOAM() { return m_value & 0b0010'0000; }
+  cflag matchCoincidence() { return m_value & 0b0100'0000; }
 
 private:
   std::shared_ptr<registers> m_pRegs;
-  byte &STAT;
+  byte &m_value;
 };
 
 }

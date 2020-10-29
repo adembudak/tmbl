@@ -7,10 +7,10 @@ namespace tmbl {
 
 class flags final {
 public:
-  [[noreturn]] void z(flag f);
-  [[noreturn]] void n(flag f);
-  [[noreturn]] void h(flag f);
-  [[noreturn]] void c(flag f);
+  void z(flag f);
+  void n(flag f);
+  void h(flag f);
+  void c(flag f);
 
   [[nodiscard]] cflag z() const noexcept;
   [[nodiscard]] cflag n() const noexcept;

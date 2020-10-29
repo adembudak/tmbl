@@ -11,7 +11,7 @@ namespace tmbl {
 
 class lcdc {
 public:
-  lcdc(std::shared_ptr<registers> pRegs);
+  explicit lcdc(byte &val_);
 
   // https://archive.org/details/GameBoyProgManVer1.1/page/n56/mode/1up
 
@@ -26,7 +26,7 @@ public:
 
 private:
   std::shared_ptr<registers> m_pRegs;
-  byte &LCDC;
+  byte &m_value;
 };
 
 }

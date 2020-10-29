@@ -5,6 +5,7 @@
 #include "../io/registers.h"
 #include "internals/stat.h"
 #include "internals/lcdc.h"
+#include "internals/bgp.h"
 
 #include <cstddef>
 #include <memory>
@@ -17,8 +18,7 @@ class interrupts;
 
 class ppu {
 public:
-  ppu(std::shared_ptr<registers> pRegs, std::shared_ptr<cartridge> pCart,
-      std::shared_ptr<interrupts> pIntr);
+  ppu(registers &regs_, cartridge &cart_, interrupts &intr_);
 
   static constexpr uint8 screenWidth = 160;
   static constexpr uint8 screenHeight = 144;
@@ -42,9 +42,9 @@ private:
   uint8 vbk() const noexcept { return VBK & 0b0000'0001 ? 1 : 0; }
 
 private:
-  std::shared_ptr<registers> m_pRegs;
-  std::shared_ptr<cartridge> m_pCart;
-  std::shared_ptr<interrupts> m_pIntr;
+  registers &m_regs;
+  cartridge &m_cart;
+  interrupts &m_intr;
 
 private:
   // see: https://archive.org/details/GameBoyProgManVer1.1/page/n16/mode/1up
@@ -58,7 +58,7 @@ private:
   byte &LYC;
 
   byte &DMA;
-  byte &BGP;
+  bgp BGP;
 
   byte &OBP0;
   byte &OBP1;

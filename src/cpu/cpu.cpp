@@ -13,26 +13,25 @@
 #include <memory>
 
 namespace tmbl {
-cpu::cpu(std::shared_ptr<bus> pBus, std::shared_ptr<registers> pReg,
-         std::shared_ptr<interrupts> pIntr)
-    : m_pBus(pBus), m_pReg(pReg), m_pIntr(pIntr), KEY1(m_pReg->getAt(0xFF4D)) {
-    
-    // Put initial values of the registers
-    // see: https://gbdev.io/pandocs/#power-up-sequence
+cpu::cpu(bus &bus_, registers &reg_, interrupts &intr_)
+    : m_bus(bus_), m_reg(reg_), m_intr(intr_), KEY1(m_reg.getAt(0xFF4D)) {
 
-    A = 0x01;
-    F = 0xB0;
+  // Put initial values of the registers
+  // see: https://gbdev.io/pandocs/#power-up-sequence
 
-    BC.hi() = 0x00;
-    BC.lo() = 0x13;
+  A = 0x01;
+  F = 0xB0;
 
-    DE.hi() = 0x00;
-    DE.lo() = 0xD8;
+  BC.hi() = 0x00;
+  BC.lo() = 0x13;
 
-    HL.hi() = 0x01;
-    HL.lo() = 0x4D;
+  DE.hi() = 0x00;
+  DE.lo() = 0xD8;
 
-    SP = 0xFFFE;
+  HL.hi() = 0x01;
+  HL.lo() = 0x4D;
+
+  SP = 0xFFFE;
 }
 
 // see: double speed mode switch procedure
@@ -40,10 +39,10 @@ cpu::cpu(std::shared_ptr<bus> pBus, std::shared_ptr<registers> pReg,
 
 void cpu::enableDoubleSpeedMode() {
   if ((KEY1 & 0b0100'0000) && (KEY1 & 0b0000'0001)) {
-    m_pClock->enableDoubleSpeedMode(true);
-    m_pBus->writeBus(0xFF0F /*IF*/, 0);
-    m_pBus->writeBus(0xFFFF /*IE*/, 0);
-    m_pReg->getAt(0xFF00 /*P1*/) |= 0b0011'0000;
+    m_clock.enableDoubleSpeedMode(true);
+    m_bus.writeBus(0xFF0F /*IF*/, 0);
+    m_bus.writeBus(0xFFFF /*IE*/, 0);
+    m_reg.getAt(0xFF00 /*P1*/) |= 0b0011'0000;
     stop();
   }
 }
@@ -59,31 +58,30 @@ enum class cpu::cc {
 // opcode table adapted from: https://izik1.github.io/gbops/
 void cpu::run() {
 
-  auto fetch_byte = [&] { return m_pBus->readBus(PC++); };
+  auto fetch_byte = [&] { return m_bus.readBus(PC++); };
   auto fetch_word = [&] { return fetch_byte() | (fetch_byte() << 8); };
 
   for (;;) {
-
     if (IME) {
-      if (m_pIntr->IE() && m_pIntr->IF() && 0b0001'1111) {
-        if (m_pIntr->vblank_pending && m_pIntr->vblank_enabled) {
-          m_pIntr->vblank_pending = false;
+      if (m_intr.IE() && m_intr.IF() && 0b0001'1111) {
+        if (m_intr.vblank_pending && m_intr.vblank_enabled) {
+          m_intr.vblank_pending = false;
           di();
           call(intr_vec[0]);
-        } else if (m_pIntr->stat_pending && m_pIntr->stat_enabled) {
-          m_pIntr->stat_pending = false;
+        } else if (m_intr.stat_pending && m_intr.stat_enabled) {
+          m_intr.stat_pending = false;
           di();
           call(intr_vec[1]);
-        } else if (m_pIntr->timer_pending && m_pIntr->timer_enabled) {
-          m_pIntr->timer_pending = false;
+        } else if (m_intr.timer_pending && m_intr.timer_enabled) {
+          m_intr.timer_pending = false;
           di();
           call(intr_vec[2]);
-        } else if (m_pIntr->serial_pending && m_pIntr->serial_enabled) {
-          m_pIntr->serial_pending = false;
+        } else if (m_intr.serial_pending && m_intr.serial_enabled) {
+          m_intr.serial_pending = false;
           di();
           call(intr_vec[3]);
-        } else if (m_pIntr->joypad_pending && m_pIntr->joypad_enabled) {
-          m_pIntr->joypad_pending = false;
+        } else if (m_intr.joypad_pending && m_intr.joypad_enabled) {
+          m_intr.joypad_pending = false;
           di();
           call(intr_vec[4]);
         }
@@ -124,7 +122,7 @@ void cpu::run() {
         break;
 
       case 0x08:
-        m_pBus->writeBus(n16(fetch_word()).value(), SP);
+        m_bus.writeBus(n16(fetch_word()).value(), SP);
         m_clock.cycle(4);
         break;
 
@@ -190,7 +188,7 @@ void cpu::run() {
 
       case 0x18:
         PC += 1;
-        jr(e8(m_pBus->readBus(PC++)));
+        jr(e8(m_bus.readBus(PC++)));
         break;
 
       case 0x19:
@@ -223,7 +221,7 @@ void cpu::run() {
 
       case 0x20:
         PC += 1;
-        jr(cc::NZ, e8(m_pBus->readBus(PC++)));
+        jr(cc::NZ, e8(m_bus.readBus(PC++)));
         break;
 
       case 0x21:
@@ -256,7 +254,7 @@ void cpu::run() {
 
       case 0x28:
         PC += 1;
-        jr(cc::Z, e8(m_pBus->readBus(PC++)));
+        jr(cc::Z, e8(m_bus.readBus(PC++)));
         break;
 
       case 0x29:
@@ -289,7 +287,7 @@ void cpu::run() {
 
       case 0x30:
         PC += 1;
-        jr(cc::NC, e8(m_pBus->readBus(PC++)));
+        jr(cc::NC, e8(m_bus.readBus(PC++)));
         break;
 
       case 0x31:
@@ -316,7 +314,7 @@ void cpu::run() {
         break;
 
       case 0x36:
-        m_pBus->writeBus(HL.value(), n8(fetch_byte()).value());
+        m_bus.writeBus(HL.value(), n8(fetch_byte()).value());
         m_clock.cycle(3);
         break;
 
@@ -326,7 +324,7 @@ void cpu::run() {
 
       case 0x38:
         PC += 1;
-        jr(cc::C, e8(m_pBus->readBus(PC++)));
+        jr(cc::C, e8(m_bus.readBus(PC++)));
         break;
 
       case 0x39: {
@@ -649,7 +647,7 @@ void cpu::run() {
         break;
 
       case 0x86:
-        add(m_pBus->readBus(HL.value()));
+        add(m_bus.readBus(HL.value()));
         break;
 
       case 0x87:
@@ -681,7 +679,7 @@ void cpu::run() {
         break;
 
       case 0x8E:
-        adc(m_pBus->readBus(HL.value()));
+        adc(m_bus.readBus(HL.value()));
         break;
 
       case 0x8F:
@@ -713,9 +711,7 @@ void cpu::run() {
         break;
 
       case 0x96:
-
-        sub(m_pBus->readBus(HL.value()));
-        break;
+        sub(m_bus.readBus(HL.value()));
         break;
 
       case 0x97:
@@ -747,7 +743,7 @@ void cpu::run() {
         break;
 
       case 0x9E:
-        sbc(m_pBus->readBus(HL.value()));
+        sbc(m_bus.readBus(HL.value()));
         break;
 
       case 0x9F:
@@ -779,7 +775,7 @@ void cpu::run() {
         break;
 
       case 0xA6:
-        and_(m_pBus->readBus(HL.value()));
+        and_(m_bus.readBus(HL.value()));
         break;
 
       case 0xA7:
@@ -811,7 +807,7 @@ void cpu::run() {
         break;
 
       case 0xAE:
-        xor_(m_pBus->readBus(HL.value()));
+        xor_(m_bus.readBus(HL.value()));
         break;
 
       case 0xAF:
@@ -843,7 +839,7 @@ void cpu::run() {
         break;
 
       case 0xB6:
-        or_(m_pBus->readBus(HL.value()));
+        or_(m_bus.readBus(HL.value()));
         break;
 
       case 0xB7:
@@ -875,7 +871,7 @@ void cpu::run() {
         break;
 
       case 0xBE:
-        cp(m_pBus->readBus(HL.value()));
+        cp(m_bus.readBus(HL.value()));
         break;
 
       case 0xBF:
@@ -908,7 +904,7 @@ void cpu::run() {
 
       case 0xC6:
         PC += 1;
-        add(m_pBus->readBus(PC++));
+        add(m_bus.readBus(PC++));
         break;
 
       case 0xC7:
@@ -1211,7 +1207,7 @@ void cpu::run() {
             break;
 
           case 0x46:
-            bit(0, m_pBus->readBus(HL.value()));
+            bit(0, m_bus.readBus(HL.value()));
             break;
 
           case 0x47:
@@ -1243,7 +1239,7 @@ void cpu::run() {
             break;
 
           case 0x4E:
-            bit(1, m_pBus->readBus(HL.value()));
+            bit(1, m_bus.readBus(HL.value()));
             break;
 
           case 0x4F:
@@ -1275,7 +1271,7 @@ void cpu::run() {
             break;
 
           case 0x56:
-            bit(2, m_pBus->readBus(HL.value()));
+            bit(2, m_bus.readBus(HL.value()));
             break;
 
           case 0x57:
@@ -1307,7 +1303,7 @@ void cpu::run() {
             break;
 
           case 0x5E:
-            bit(3, m_pBus->readBus(HL.value()));
+            bit(3, m_bus.readBus(HL.value()));
             break;
 
           case 0x5F:
@@ -1339,7 +1335,7 @@ void cpu::run() {
             break;
 
           case 0x66:
-            bit(4, m_pBus->readBus(HL.value()));
+            bit(4, m_bus.readBus(HL.value()));
             break;
 
           case 0x67:
@@ -1371,7 +1367,7 @@ void cpu::run() {
             break;
 
           case 0x6E:
-            bit(5, m_pBus->readBus(HL.value()));
+            bit(5, m_bus.readBus(HL.value()));
             break;
 
           case 0x6F:
@@ -1403,7 +1399,7 @@ void cpu::run() {
             break;
 
           case 0x76:
-            bit(6, m_pBus->readBus(HL.value()));
+            bit(6, m_bus.readBus(HL.value()));
             break;
 
           case 0x77:
@@ -1435,7 +1431,7 @@ void cpu::run() {
             break;
 
           case 0x7E:
-            bit(7, m_pBus->readBus(HL.value()));
+            bit(7, m_bus.readBus(HL.value()));
             break;
 
           case 0x7F:
@@ -1953,6 +1949,9 @@ void cpu::run() {
           case 0xFF:
             set_(7, A);
             break;
+
+          default:
+            break;
         }
         break;
 
@@ -2050,7 +2049,7 @@ void cpu::run() {
 
       case 0xE8:
         PC += 1;
-        add(e8(m_pBus->readBus(PC++)));
+        add(e8(m_bus.readBus(PC++)));
         break;
 
       case 0xE9:
@@ -2099,7 +2098,7 @@ void cpu::run() {
 
       case 0xF8:
         PC += 1;
-        HL = SP + e8(m_pBus->readBus(PC++)).value();
+        HL = SP + e8(m_bus.readBus(PC++)).value();
         m_clock.cycle(3);
         break;
 
@@ -2122,6 +2121,9 @@ void cpu::run() {
 
       case 0xFF:
         rst(7);
+        break;
+
+      default:
         break;
     }
   }
@@ -2295,9 +2297,9 @@ void cpu::dec(r8 &r) {
 }
 
 void cpu::dec(const uint16 uu) {
-  byte val = m_pBus->readBus(uu);
+  byte val = m_bus.readBus(uu);
   --val;
-  m_pBus->writeBus(uu, val);
+  m_bus.writeBus(uu, val);
 
   val == 0 ? F.z(set) : F.z(reset);
   F.n(set);
@@ -2325,10 +2327,10 @@ void cpu::inc(r8 &r) {
 
 void cpu::inc(const uint16 uu) {
 
-  byte val = m_pBus->readBus(uu);
+  byte val = m_bus.readBus(uu);
   val == 0b0000'1111 ? F.h(set) : F.h(reset);
   ++val;
-  m_pBus->writeBus(uu, val);
+  m_bus.writeBus(uu, val);
 
   val == 0 ? F.z(set) : F.z(reset);
   F.n(set);
@@ -2507,10 +2509,10 @@ void cpu::res(const uint8 pos, r8 &r) {
 void cpu::res(const uint8 pos, const uint16 uu) {
   uint8 reset_bit_mask = ~(0b1 << pos);
 
-  byte val = m_pBus->readBus(uu);
+  byte val = m_bus.readBus(uu);
   val = val & reset_bit_mask;
 
-  m_pBus->writeBus(uu, val);
+  m_bus.writeBus(uu, val);
 
   m_clock.cycle(4);
 }
@@ -2525,10 +2527,10 @@ void cpu::set_(const uint8 pos, r8 &r) {
 void cpu::set_(const uint8 pos, const uint16 uu) {
   uint8 set_bit_mask = (0b1 << pos);
 
-  byte val = m_pBus->readBus(uu);
+  byte val = m_bus.readBus(uu);
   val = val & set_bit_mask;
 
-  m_pBus->writeBus(uu, val);
+  m_bus.writeBus(uu, val);
 
   m_clock.cycle(4);
 }
@@ -2547,9 +2549,9 @@ void cpu::swap(r8 &r) {
 }
 
 void cpu::swap(const uint16 uu) {
-  byte val = m_pBus->readBus(uu);
+  byte val = m_bus.readBus(uu);
   val = (val & 0b0000'1111) << 4 | (val & 0b1111'0000) >> 4;
-  m_pBus->writeBus(uu, val);
+  m_bus.writeBus(uu, val);
 
   val == 0 ? F.z(set) : F.z(reset);
   F.n(reset);
@@ -2574,9 +2576,9 @@ void cpu::rl(r8 &r) {
 void cpu::rl(const uint16 uu) {
   uint8 old_carry = F.c() == set ? 1 : 0;
 
-  byte val = m_pBus->readBus(uu);
+  byte val = m_bus.readBus(uu);
   val = (val << 1) | old_carry;
-  m_pBus->writeBus(uu, val);
+  m_bus.writeBus(uu, val);
 
   val == 0 ? F.z(set) : F.z(reset);
   F.n(reset);
@@ -2612,11 +2614,11 @@ void cpu::rlc(r8 &r) {
 }
 
 void cpu::rlc(const uint16 uu) {
-  byte val = m_pBus->readBus(uu);
+  byte val = m_bus.readBus(uu);
 
   uint8 old_seventh_bit = val >> 7;
   val = (val << 1) | old_seventh_bit;
-  m_pBus->writeBus(uu, val);
+  m_bus.writeBus(uu, val);
 
   val == 0 ? F.z(set) : F.z(reset);
   F.n(reset);
@@ -2652,14 +2654,14 @@ void cpu::rr(r8 &r) {
   m_clock.cycle(2);
 }
 void cpu::rr(const uint16 uu) {
-  byte val = m_pBus->readBus(uu);
+  byte val = m_bus.readBus(uu);
 
   uint8 old_first = val & 0b0000'0001;
   uint8 carry = F.c() == set ? 1 : 0;
 
   val = (val >> 1) | (carry << 7);
 
-  m_pBus->writeBus(uu, val);
+  m_bus.writeBus(uu, val);
 
   val == 0 ? F.z(set) : F.z(reset);
   F.n(reset);
@@ -2696,11 +2698,11 @@ void cpu::rrc(r8 &r) {
 }
 
 void cpu::rrc(const uint16 uu) {
-  byte val = m_pBus->readBus(uu);
+  byte val = m_bus.readBus(uu);
   uint8 old_first = val & 0b0000'0001;
 
   val = (val >> 1) | (old_first << 7);
-  m_pBus->writeBus(uu, val);
+  m_bus.writeBus(uu, val);
 
   val == 0 ? F.z(set) : F.z(reset);
   F.n(reset);
@@ -2737,11 +2739,11 @@ void cpu::sla(r8 &r) {
 }
 
 void cpu::sla(const uint16 uu) {
-  byte val = m_pBus->readBus(uu);
+  byte val = m_bus.readBus(uu);
   uint8 old_seventh_bit = val >> 7;
 
   val = val << 1;
-  m_pBus->writeBus(uu, val);
+  m_bus.writeBus(uu, val);
 
   val == 0 ? F.z(set) : F.z(reset);
   F.n(reset);
@@ -2766,13 +2768,13 @@ void cpu::sra(r8 &r) {
 }
 
 void cpu::sra(const uint16 uu) {
-  byte val = m_pBus->readBus(uu);
+  byte val = m_bus.readBus(uu);
 
   uint8 old_first_bit = val & 0b0000'0001;
   uint8 old_seventh_bit = val >> 7;
 
   val = (val >> 1) | (old_seventh_bit << 7);
-  m_pBus->writeBus(uu, val);
+  m_bus.writeBus(uu, val);
 
   val == 0 ? F.z(set) : F.z(reset);
   F.n(reset);
@@ -2796,12 +2798,12 @@ void cpu::srl(r8 &r) {
 }
 
 void cpu::srl(const uint16 uu) {
-  byte val = m_pBus->readBus(uu);
+  byte val = m_bus.readBus(uu);
 
   uint8 old_first_bit = val & 0b0000'0001;
 
   val = val >> 1;
-  m_pBus->writeBus(uu, val);
+  m_bus.writeBus(uu, val);
 
   val == 0 ? F.z(set) : F.z(reset);
   F.n(reset);
@@ -2822,40 +2824,40 @@ void cpu::ld(r8 &r, const n8 &n) {
   m_clock.cycle(2);
 }
 void cpu::ld(const uint16 uu, const r8 &r) {
-  m_pBus->writeBus(uu, r.value());
+  m_bus.writeBus(uu, r.value());
 
   m_clock.cycle(2);
 }
 
 void cpu::ld(r8 &r, const uint16 uu) {
-  r = m_pBus->readBus(uu);
+  r = m_bus.readBus(uu);
 
   m_clock.cycle(2);
 }
 
 void cpu::ldi(r16 &rr, const r8 r) {
-  m_pBus->writeBus(rr.value(), r.value());
+  m_bus.writeBus(rr.value(), r.value());
   rr++;
 
   m_clock.cycle(2);
 }
 
 void cpu::ldi(r8 &r, r16 &rr) {
-  r = m_pBus->readBus(rr.value());
+  r = m_bus.readBus(rr.value());
   rr++;
 
   m_clock.cycle(2);
 }
 
 void cpu::ldd(r16 &rr, const r8 r) {
-  m_pBus->writeBus(rr.value(), r.value());
+  m_bus.writeBus(rr.value(), r.value());
   rr--;
 
   m_clock.cycle(2);
 }
 
 void cpu::ldd(r8 &r, r16 &rr) {
-  r = m_pBus->readBus(rr.value());
+  r = m_bus.readBus(rr.value());
   rr--;
 
   m_clock.cycle(2);
@@ -2868,41 +2870,39 @@ void cpu::ld(r16 &rr, const n16 nn) {
 }
 
 void cpu::ld(const n16 nn, tag dummy) {
-  m_pBus->writeBus(nn.value(), A.value());
+  m_bus.writeBus(nn.value(), A.value());
 
   m_clock.cycle(4);
 }
 
 void cpu::ld(tag dummy, const n16 nn) {
-  A = m_pBus->readBus(nn.value());
+  A = m_bus.readBus(nn.value());
 
   m_clock.cycle(4);
 }
 
 void cpu::ldio(const uint16 nn, const r8 r) {
-  m_pBus->writeBus(nn, r.value());
+  m_bus.writeBus(nn, r.value());
 
   // Fix: if nn is 0xFF00 + C, then cycle 2 times
   m_clock.cycle(3);
 }
 
 void cpu::ldio(r8 &r, const uint16 nn) {
-  r = m_pBus->readBus(nn);
+  r = m_bus.readBus(nn);
 
   // Fix: if nn is 0xFF00 + C, then cycle 2 times
   m_clock.cycle(3);
 }
 
-void cpu::call(n16 n) {
+// come back to here
+void cpu::call(n16 nn) {
 
-  m_pBus->writeBus(SP - 1, PC & r16::reset_lower >> 8);
-  m_pBus->writeBus(SP - 2, PC & r16::reset_upper);
+  m_bus.writeBus(SP - 1, PC & r16::reset_lower >> 8);
+  m_bus.writeBus(SP - 2, PC & r16::reset_upper);
 
-  byte lo = m_pBus->readBus(PC++);
-  byte hi = m_pBus->readBus(PC++);
-  uint16 nn = hi << 8 | lo;
+  PC = nn.value();
 
-  PC = nn;
   SP = SP - 2;
 
   m_clock.cycle(6);
@@ -2970,8 +2970,8 @@ void cpu::jr(const cc c, const e8 e) {
 }
 
 void cpu::ret() {
-    byte lo = m_pBus->readBus(SP);
-    byte hi = m_pBus->readBus(SP+1);
+    byte lo = m_bus.readBus(SP);
+    byte hi = m_bus.readBus(SP+1);
     PC = hi << 8 | lo;
 
     SP += 2;
@@ -2995,8 +2995,8 @@ void cpu::ret(cc c) {
 
 void cpu::reti() {
   IME = set;
-  byte lo = m_pBus->readBus(SP);
-  byte hi = m_pBus->readBus(SP + 1);
+  byte lo = m_bus.readBus(SP);
+  byte hi = m_bus.readBus(SP + 1);
   PC = hi << 8 | lo;
 
   SP += 2;
@@ -3005,8 +3005,8 @@ void cpu::reti() {
 }
 
 void cpu::rst(const uint8 u) {
-  m_pBus->writeBus(SP - 1, PC & r16::reset_lower >> 8);
-  m_pBus->writeBus(SP - 2, PC & r16::reset_upper);
+  m_bus.writeBus(SP - 1, PC & r16::reset_lower >> 8);
+  m_bus.writeBus(SP - 2, PC & r16::reset_upper);
   SP -= 2;
 
   PC = PC & r16::reset_upper;
@@ -3016,32 +3016,32 @@ void cpu::rst(const uint8 u) {
 }
 
 void cpu::pop() {
-  F = m_pBus->readBus(SP);
-  A = m_pBus->readBus(SP + 1);
+  F = m_bus.readBus(SP);
+  A = m_bus.readBus(SP + 1);
   SP += 2;
 
   m_clock.cycle(3);
 }
 
 void cpu::pop(r16 &rr) {
-  rr.lo() = m_pBus->readBus(SP);
-  rr.hi() = m_pBus->readBus(SP + 1);
+  rr.lo() = m_bus.readBus(SP);
+  rr.hi() = m_bus.readBus(SP + 1);
   SP += 2;
 
   m_clock.cycle(3);
 }
 
 void cpu::push() {
-  m_pBus->writeBus(SP - 1, A.value());
-  m_pBus->writeBus(SP - 2, F.value());
+  m_bus.writeBus(SP - 1, A.value());
+  m_bus.writeBus(SP - 2, F.value());
   SP -= 2;
 
   m_clock.cycle(4);
 }
 
 void cpu::push(r16 &rr) {
-  m_pBus->writeBus(SP - 1, rr.hi().value());
-  m_pBus->writeBus(SP - 2, rr.lo().value());
+  m_bus.writeBus(SP - 1, rr.hi().value());
+  m_bus.writeBus(SP - 2, rr.lo().value());
   SP -= 2;
 
   m_clock.cycle(4);

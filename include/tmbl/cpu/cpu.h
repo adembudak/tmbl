@@ -19,8 +19,7 @@ namespace tmbl {
 
 class cpu {
 public:
-  cpu(std::shared_ptr<bus> pBus, std::shared_ptr<registers> pReg,
-      std::shared_ptr<interrupts> pIntr);
+  cpu(bus &bus_, registers &reg_, interrupts &intr_);
 
   void enableDoubleSpeedMode();
 
@@ -167,10 +166,9 @@ private:
   void stop();
 
 private:
-  std::shared_ptr<bus> m_pBus;
-  std::shared_ptr<clock> m_pClock;
-  std::shared_ptr<registers> m_pReg;
-  std::shared_ptr<interrupts> m_pIntr;
+  bus &m_bus;
+  registers &m_reg;
+  interrupts &m_intr;
 
 private:
   r8 A;

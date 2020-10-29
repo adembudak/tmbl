@@ -18,14 +18,14 @@ public:
   void run();
 
 private:
-  std::shared_ptr<tmbl::cartridge> p_cart = std::make_shared<tmbl::cartridge>();
-  std::shared_ptr<tmbl::registers> p_regs = std::make_shared<tmbl::registers>();
-  std::shared_ptr<tmbl::interrupts> p_intr = std::make_shared<tmbl::interrupts>();
-  std::shared_ptr<tmbl::builtin> p_builtin = std::make_shared<tmbl::builtin>();
+  tmbl::cartridge m_cart;
+  tmbl::registers m_regs;
+  tmbl::interrupts m_intr;
+  tmbl::builtin m_builtin;
 
-  tmbl::ppu m_ppu{p_regs, p_cart, p_intr};
-  tmbl::bus m_bus{p_cart, p_regs, p_intr, p_builtin, std::make_shared<tmbl::ppu>(m_ppu)};
-  tmbl::cpu m_cpu{std::make_shared<tmbl::bus>(m_bus), p_regs, p_intr};
+  tmbl::ppu m_ppu{m_regs, m_cart, m_intr};
+  tmbl::bus m_bus{m_cart, m_regs, m_intr, m_builtin, m_ppu};
+  tmbl::cpu m_cpu{m_bus, m_regs, m_intr};
 };
 
 #endif
