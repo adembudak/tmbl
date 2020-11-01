@@ -17,24 +17,28 @@ public:
   enum class mode { rom_banking, ram_banking };
 
 private:
-  std::vector<char> m_xram;
-  std::vector<char> m_rom;
-
   mode banking_mode = mode::rom_banking;
 
   std::size_t ram_bank_width = 8_KB;
   std::size_t rom_bank_width = 16_KB;
 
-  uint8 lower_rom_bank = 1; // holds first 5 bits of rom bank number
-  uint8 upper_rom_bank = 0; // holds bits "upper" than first 5 bits
+  std::vector<char> m_rom;
+  uint8 lower_rom_bank = 1;
+  uint8 upper_rom_bank = 0;
+  bool rom_banking_available = false;
   uint8 effective_rom_bank = 0;
   uint8 lower_rom_mask = 0b0001'1111;
+  uint8 lower_rom_mask_countl_one = 5;
   uint8 upper_rom_mask = 0b0000'0011;
 
+  std::vector<char> m_xram;
   uint8 ram_bank;
   uint8 ram_mask = 0b0000'0011;
+  bool ram_available = false;
+  bool ram_banking_available = false;
   bool ram_access_enabled = false;
 };
 }
 
 #endif
+
