@@ -6,10 +6,11 @@
 #include "internals/stat.h"
 #include "internals/lcdc.h"
 #include "internals/bgp.h"
+#include "internals/obp.h"
 
 #include <cstddef>
-#include <memory>
 #include <array>
+#include <functional>
 
 namespace tmbl {
 
@@ -22,6 +23,14 @@ public:
 
   static constexpr uint8 screenWidth = 160;
   static constexpr uint8 screenHeight = 144;
+
+  struct color {
+    uint8 r, g, b, a;
+  };
+  using palette = std::array<color, 4>;
+
+  void render(std::function<void(const uint8 x, const uint8 y, const color c)> draw,
+              palette p = default_palette);
 
   byte readVRAM(const std::size_t index);
   void writeVRAM(const std::size_t index, const byte val);
@@ -60,8 +69,8 @@ private:
   byte &DMA;
   bgp BGP;
 
-  byte &OBP0;
-  byte &OBP1;
+  obp OBP0;
+  obp OBP1;
 
   byte &WY;
   byte &WX;
@@ -82,8 +91,10 @@ private:
 
   std::array<byte, 16_KB> m_vram{}; // it's 8KB on DMG
   std::array<byte, 160_B> m_oam{};
+
+  static inline palette default_palette{color{155, 188, 15, 0}, color{139, 172, 15, 0},
+                                 color{48, 98, 48, 0}, color{15, 56, 15, 0}};
 };
 }
 
 #endif
-

@@ -16,7 +16,7 @@ ppu::ppu(registers &regs_, cartridge &cart_, interrupts &intr_)
     : m_regs(regs_), m_cart(cart_), m_intr(intr_), 
 	STAT(m_regs.getAt(0xFF41)), LCDC(m_regs.getAt(0xFF40)),
 
-        SCY(m_regs.getAt(0xFF42)), SCX(m_regs.getAt(0xFF43)), 
+    SCY(m_regs.getAt(0xFF42)), SCX(m_regs.getAt(0xFF43)), 
 
 	LY(m_regs.getAt(0xFF44)), LYC(m_regs.getAt(0xFF45)), 
 
@@ -33,8 +33,39 @@ ppu::ppu(registers &regs_, cartridge &cart_, interrupts &intr_)
 
 	BCPS(m_regs.getAt(0xFF68)), BCPD(m_regs.getAt(0xFF69)), 
 	OCPS(m_regs.getAt(0xFF6A)), OCPD(m_regs.getAt(0xFF6B))
-
+// clang-format on
 {}
+
+void ppu::render(std::function<void(const uint8 x, const uint8 y, const color c)> draw, palette p) {
+  // todo implement this function.
+  // which colors
+  // interrupts
+  if (LCDC.lcdControllerStatus() == on) {
+
+    for (uint8 dy = WY; dy < screenHeight; ++dy) {
+      for (uint8 dx = WX; dx < screenWidth; ++dx) {
+
+        if (LCDC.bgDisplayStatus() == on) {
+          auto [bgBegin, _] = LCDC.bgChrArea();
+          // draw background
+        }
+
+        if (LCDC.windowStatus() == on) {
+          auto [windowBegin, _] = LCDC.windowCodeArea();
+          // window code area
+        }
+
+        if (LCDC.objDisplayStatus() == on) {
+          STAT.mode_flag(stat::mode::SEARCHING_OAM);
+          // bg character area, pair
+          // obj size
+        }
+      }
+      STAT.mode_flag(stat::mode::HORIZONTAL_BLANKING);
+    }
+    STAT.mode_flag(stat::mode::VERTICAL_BLANKING);
+  }
+}
 
 byte ppu::readVRAM(const std::size_t index) { return m_vram.at(index); }
 void ppu::writeVRAM(const std::size_t index, const byte val) { m_vram.at(index) = val; }
