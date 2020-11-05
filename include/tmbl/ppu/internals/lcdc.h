@@ -4,9 +4,6 @@
 #include "tmbl/config.h"
 #include "../../io/registers.h"
 
-#include <memory>
-#include <utility>
-
 namespace tmbl {
 
 class lcdc {
@@ -25,7 +22,6 @@ public:
   cflag lcdControllerStatus() const noexcept;
 
 private:
-  std::shared_ptr<registers> m_pRegs;
   byte &m_value;
 };
 

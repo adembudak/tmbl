@@ -4,7 +4,6 @@
 #include "tmbl/config.h"
 #include "../../io/registers.h"
 
-#include <memory>
 #include <array>
 
 namespace tmbl {
@@ -16,7 +15,6 @@ public:
   std::array<int, 4> bgPalette();
 
 private:
-  std::shared_ptr<registers> m_pRegs;
   byte &m_value;
 };
 
