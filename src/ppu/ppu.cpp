@@ -37,33 +37,54 @@ ppu::ppu(registers &regs_, cartridge &cart_, interrupts &intr_)
 {}
 
 void ppu::render(std::function<void(const uint8 x, const uint8 y, const color c)> draw, palette p) {
-  // todo implement this function.
-  // which colors
-  // interrupts
+  // which colors, interrupts, how to scroll with scx, scy
+
+  // encode one line of a tile.
+  // see: https://www.huderlem.com/demos/gameboy2bpp.html
+  enum class decodeMode { normal, xflipped };
+
+  auto decode2BPP = [](const uint8 lo, const uint8 hi,
+                       const decodeMode mode = decodeMode::normal) -> std::array<uint8, 8> {
+    std::array<uint8, 8> decodedTileLine{};
+
+    uint8 mask = (mode == decodeMode::normal) ? 0b1000'0000 : 0b0000'0001;
+
+    std::transform(decodedTileLine.begin(), decodedTileLine.end(), decodedTileLine.begin(),
+                   [&](const uint8 /*unused*/) {
+                     uint8 val = 0;
+                     if (mode == decodeMode::normal) {
+                       val = (hi & mask) | (lo & mask); // hi byte first, by 2bpp format
+                       mask >>= 1;
+                     } else {
+                       val = (hi & mask) | (lo & mask);
+                       mask <<= 1;
+                     }
+                     return val;
+                   });
+
+    return decodedTileLine;
+  };
+
   if (LCDC.lcdControllerStatus() == on) {
-
     for (uint8 dy = WY; dy < screenHeight; ++dy) {
-      for (uint8 dx = WX; dx < screenWidth; ++dx) {
+      for (uint8 dx = WX + 7; dx < screenWidth + 7; ++dx) {
 
-        if (LCDC.bgDisplayStatus() == on) {
-          auto [bgBegin, _] = LCDC.bgChrArea();
+        if (auto [bgBegin, _] = LCDC.bgChrArea(); LCDC.bgDisplayStatus() == on) {
           // draw background
-        }
 
-        if (LCDC.windowStatus() == on) {
-          auto [windowBegin, _] = LCDC.windowCodeArea();
-          // window code area
-        }
+          if (auto [windowBegin, _] = LCDC.windowCodeArea(); LCDC.windowStatus() == on) {
+            // draw life, score, grade etc.
+          }
 
-        if (LCDC.objDisplayStatus() == on) {
-          STAT.mode_flag(stat::mode::SEARCHING_OAM);
-          // bg character area, pair
-          // obj size
+          if (LCDC.objDisplayStatus() == on) {
+            // bg character area, pair
+            // obj size
+          }
         }
+        STAT.mode_flag(stat::mode::HORIZONTAL_BLANKING);
       }
-      STAT.mode_flag(stat::mode::HORIZONTAL_BLANKING);
+      STAT.mode_flag(stat::mode::VERTICAL_BLANKING);
     }
-    STAT.mode_flag(stat::mode::VERTICAL_BLANKING);
   }
 }
 
@@ -72,5 +93,5 @@ void ppu::writeVRAM(const std::size_t index, const byte val) { m_vram.at(index) 
 
 byte ppu::readOAM(const std::size_t index) { return m_oam.at(index); }
 void ppu::writeOAM(const std::size_t index, const byte val) { m_oam.at(index) = val; }
-
 }
+

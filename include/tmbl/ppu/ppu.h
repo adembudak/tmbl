@@ -39,9 +39,6 @@ public:
   void writeOAM(const std::size_t index, const byte val);
 
 private:
-  uint8 scx() const noexcept { return SCX; }
-  uint8 scy() const noexcept { return SCY; }
-
   uint8 ly() const noexcept { return LY; }
   void ly(const byte val) noexcept {
     LY = val;
@@ -92,9 +89,15 @@ private:
   std::array<byte, 16_KB> m_vram{}; // it's 8KB on DMG
   std::array<byte, 160_B> m_oam{};
 
-  static inline palette default_palette{color{155, 188, 15, 0}, color{139, 172, 15, 0},
-                                 color{48, 98, 48, 0}, color{15, 56, 15, 0}};
+  uint8 tileWidth = 8;
+
+  // clang-format off
+  static inline palette default_palette{color{155, 188, 15, 0}, // light green
+                                        color{139, 172, 15, 0},
+                                        color{48, 98, 48, 0},
+                                        color{15, 56, 15, 0}};  // dark green
 };
 }
 
 #endif
+
