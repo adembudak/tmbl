@@ -45,7 +45,6 @@ private:
   std::string m_title;        // game title
 
   std::variant<rom, mbc1 /*,mbc2, mbc3, mbc5, mbc6, mbc7*/> pak;
-  std::vector<char> dumpedGamePak;
 };
 }
 

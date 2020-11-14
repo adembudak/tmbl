@@ -25,7 +25,7 @@ void cartridge::init(const std::filesystem::path p) {
       std::cerr << "Something wrong with the rom.\n";
     }
 
-    dumpedGamePak = std::vector<char>(std::istreambuf_iterator<char>(f), {});
+    auto dumpedGamePak = std::vector<char>(std::istreambuf_iterator<char>(f), {});
 
     // decide game title
     const std::size_t title = 0x0134;
