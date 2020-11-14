@@ -91,6 +91,7 @@ private:
   std::array<byte, 160_B> m_oam{};
 
   uint8 tileWidth = 8;
+  bool cgb_support = false;
 
   // clang-format off
   inline static palette default_palette{color{155, 188, 15, 0},  // light green

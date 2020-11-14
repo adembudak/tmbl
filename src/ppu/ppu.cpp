@@ -1,5 +1,6 @@
 #include "tmbl/config.h"
 #include "tmbl/ppu/ppu.h"
+#include "tmbl/cartridge/cartridge.h"
 
 #include <array>
 #include <cstddef>
@@ -13,8 +14,8 @@ class registers;
 
 // clang-format off
 ppu::ppu(registers &regs_, cartridge &cart_, interrupts &intr_)
-    : m_regs(regs_), m_cart(cart_), m_intr(intr_), 
-	STAT(m_regs.getAt(0xFF41)), LCDC(m_regs.getAt(0xFF40)),
+    : m_regs(regs_), m_cart(cart_), m_intr(intr_), cgb_support(m_cart.CGB()),
+	STAT(m_regs.getAt(0xFF41)), LCDC(m_regs.getAt(0xFF40), m_cart.CGB()),
 
     SCY(m_regs.getAt(0xFF42)), SCX(m_regs.getAt(0xFF43)), 
 
@@ -65,28 +66,43 @@ void ppu::render(std::function<void(const uint8 x, const uint8 y, const color c)
     return decodedTileLine;
   };
 
-  if (LCDC.lcdControllerStatus() == on) {
+  if (LCDC.lcdControllerStatus() == on) { // lcdc.bit7 used
+
     for (uint8 dy = WY; dy < screenHeight; ++dy) {
       for (uint8 dx = WX + 7; dx < screenWidth + 7; ++dx) {
 
-        if (auto [bgBegin, _] = LCDC.bgChrArea(); LCDC.bgDisplayStatus() == on) {
+        uint8 scx = SCX / screenWidth;
+        uint8 scy = SCY / screenHeight;
+
+        if (auto [windowBegin, _] = LCDC.windowCodeArea();
+            LCDC.windowStatus() == on) { // lcdc.bit5, bit6 used
+          // draw life, score, grade etc.
+          byte tile_lo = m_vram.at(windowBegin + scx);
+          byte tile_hi = m_vram.at(windowBegin + scx + 1);
+
+          auto tile_line_colors = decode2BPP(tile_lo, tile_hi);
+
+          draw(scx, scy, p[tile_line_colors[0]]);
+        }
+
+        else if (auto [bgBegin, _] = LCDC.bgChrArea(); LCDC.bgDisplayStatus() == on) {
 
           // draw background
-
-          if (auto [windowBegin, _] = LCDC.windowCodeArea(); LCDC.windowStatus() == on) {
-            // draw life, score, grade etc.
-          }
-
-          if (LCDC.objDisplayStatus() == on) {
-            // bg character area, pair
-            // obj size
-          }
         }
-        STAT.mode_flag(stat::mode::HORIZONTAL_BLANKING);
+
+        else if (LCDC.objDisplayStatus() == on) {
+          // bg character area, pair
+          // obj size
+        }
       }
-      STAT.mode_flag(stat::mode::VERTICAL_BLANKING);
+
+      STAT.mode_flag(stat::mode::HORIZONTAL_BLANKING);
     }
-  } else {
+    STAT.mode_flag(stat::mode::VERTICAL_BLANKING);
+
+  }
+
+  else {
     // draw palette color 5
   }
 }
