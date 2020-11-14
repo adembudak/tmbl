@@ -27,7 +27,8 @@ public:
   struct color {
     uint8 r, g, b, a;
   };
-  using palette = std::array<color, 4>;
+
+  using palette = std::array<color, 5>; // 5th color for idle screen, i.e. when in LCDC.bit7 is 0
 
   void render(std::function<void(const uint8 x, const uint8 y, const color c)> draw,
               palette p = default_palette);
@@ -92,10 +93,11 @@ private:
   uint8 tileWidth = 8;
 
   // clang-format off
-  static inline palette default_palette{color{155, 188, 15, 0}, // light green
+  inline static palette default_palette{color{155, 188, 15, 0},  // light green
                                         color{139, 172, 15, 0},
                                         color{48, 98, 48, 0},
-                                        color{15, 56, 15, 0}};  // dark green
+                                        color{15, 56, 15, 0},    // dark green
+                                        color{161, 193, 19, 0}}; // idle screen color
 };
 }
 

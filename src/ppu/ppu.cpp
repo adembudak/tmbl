@@ -70,6 +70,7 @@ void ppu::render(std::function<void(const uint8 x, const uint8 y, const color c)
       for (uint8 dx = WX + 7; dx < screenWidth + 7; ++dx) {
 
         if (auto [bgBegin, _] = LCDC.bgChrArea(); LCDC.bgDisplayStatus() == on) {
+
           // draw background
 
           if (auto [windowBegin, _] = LCDC.windowCodeArea(); LCDC.windowStatus() == on) {
@@ -85,6 +86,8 @@ void ppu::render(std::function<void(const uint8 x, const uint8 y, const color c)
       }
       STAT.mode_flag(stat::mode::VERTICAL_BLANKING);
     }
+  } else {
+    // draw palette color 5
   }
 }
 
