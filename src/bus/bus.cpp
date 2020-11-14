@@ -75,9 +75,15 @@ byte bus::readBus(const std::size_t index) {
     return m_PPU.readOAM(index - memory::oam);
   }
 
+  else if (index >= memory::noUsable && index <= memory::noUsable_end) {
+    std::cerr << "read from the no usable area\n";
+    return {};
+  }
+
   else if (index >= memory::io && index <= memory::io_end) {
-    if (index == 0xFF0F)
+    if (index == 0xFF0F) {
       return m_pintr.read(index);
+    }
     return m_regs.read(index - memory::io);
   }
 
@@ -85,8 +91,12 @@ byte bus::readBus(const std::size_t index) {
     return m_builtin.readHRAM(index - memory::hram);
   }
 
-  else {
+  else if (index == 0xFFFF) {
     return m_pintr.read(index);
+  }
+
+  else {
+    std::cerr << "read from illegal address: " << index << '\n';
   }
 }
 
@@ -119,18 +129,28 @@ void bus::writeBus(const std::size_t index, const byte val) {
     m_PPU.writeOAM(index - memory::oam, val);
   }
 
+  else if (index >= memory::noUsable && index <= memory::noUsable_end) {
+    std::cerr << "write to no usable area\n";
+  }
+
   else if (index >= memory::io && index <= memory::io_end) {
-    if (index == 0xFF0F)
+    if (index == 0xFF0F) {
       m_pintr.write(index, val);
-    m_regs.write(index - memory::io, val);
+    } else {
+      m_regs.write(index - memory::io, val);
+    }
   }
 
   else if (index >= memory::hram && index <= memory::hram_end) {
     m_builtin.writeHRAM(index - memory::hram, val);
   }
 
-  else {
+  else if (index == 0xFFFF) {
     m_pintr.write(index, val);
+  }
+
+  else {
+    std::cerr << "write illegal to address: " << index << '\n';
   }
 }
 
