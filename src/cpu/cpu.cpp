@@ -10,8 +10,6 @@
 #include "tmbl/io/interrupts/interrupts.h"
 #include "tmbl/io/registers.h"
 
-#include <memory>
-
 namespace tmbl {
 cpu::cpu(bus &bus_, registers &reg_, interrupts &intr_)
     : m_bus(bus_), m_reg(reg_), m_intr(intr_), KEY1(m_reg.getAt(0xFF4D)) {

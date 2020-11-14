@@ -9,7 +9,6 @@
 #include "tmbl/builtin/builtin.h"
 #include "tmbl/io/interrupts/interrupts.h"
 
-#include <memory>
 #include <filesystem>
 
 class gameboy final {

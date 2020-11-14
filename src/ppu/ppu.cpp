@@ -3,7 +3,7 @@
 
 #include <array>
 #include <cstddef>
-#include <memory>
+#include <algorithm>
 
 namespace tmbl {
 

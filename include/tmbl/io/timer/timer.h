@@ -3,7 +3,6 @@
 
 #include "tmbl/config.h"
 #include "../registers.h"
-#include <memory>
 
 namespace tmbl {
 

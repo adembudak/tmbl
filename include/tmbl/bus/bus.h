@@ -3,7 +3,6 @@
 
 #include "../config.h"
 #include <cstddef>
-#include <memory>
 
 namespace tmbl {
 

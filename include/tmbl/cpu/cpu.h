@@ -12,7 +12,6 @@
 #include "internals/n16.h"
 #include "internals/r16.h"
 
-#include <memory>
 #include <array>
 
 namespace tmbl {

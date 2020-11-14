@@ -1,8 +1,6 @@
 #include "tmbl/config.h"
 #include "tmbl/ppu/internals/stat.h"
 
-#include <memory>
-
 namespace tmbl {
 
 class registers;

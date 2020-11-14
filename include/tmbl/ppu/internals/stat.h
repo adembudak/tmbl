@@ -3,7 +3,6 @@
 
 #include "../../io/registers.h"
 #include "../../config.h"
-#include <memory>
 
 namespace tmbl {
 
@@ -31,7 +30,6 @@ public:
   cflag matchCoincidence() { return m_value & 0b0100'0000; }
 
 private:
-  std::shared_ptr<registers> m_pRegs;
   byte &m_value;
 };
 
