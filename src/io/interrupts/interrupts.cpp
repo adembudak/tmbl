@@ -7,18 +7,20 @@ namespace tmbl {
 byte interrupts::read(const std::size_t index) noexcept {
   switch (index) {
     case 0xFF0F: // interrupt request address
-      return vblank_pending << 4 | 
-               stat_pending << 3 |
-              timer_pending << 2 | 
-             serial_pending << 1 |
+      return (vblank_pending << 4) |
+               (stat_pending << 3) |
+              (timer_pending << 2) |
+             (serial_pending << 1) |
                   joypad_pending;
 
-    case 0xFFFF: // interupte enable address
-      return vblank_enabled << 4 | 
-               stat_enabled << 3 |
-              timer_enabled << 2 | 
-             serial_enabled << 1 |
+    case 0xFFFF: // interrupt enable address
+      return (vblank_enabled << 4) |
+               (stat_enabled << 3) |
+              (timer_enabled << 2) |
+             (serial_enabled << 1) |
                   joypad_enabled;
+
+     default: break;
   }
 }
 
@@ -37,22 +39,24 @@ void interrupts::write(const std::size_t index, const byte val) noexcept {
       timer_enabled =  val & 0b000'0010;
       serial_enabled = val & 0b000'0011;
       joypad_enabled = val & 0b000'0100;
+
+     default: break;
   }
 }
 
 uint8 interrupts::IF() const noexcept {
-      return vblank_pending << 4 | 
-               stat_pending << 3 |
-              timer_pending << 2 | 
-             serial_pending << 1 |
+      return (vblank_pending << 4) |
+               (stat_pending << 3) |
+              (timer_pending << 2) |
+             (serial_pending << 1) |
                   joypad_pending;
 }
 
 uint8 interrupts::IE() const noexcept {
-      return vblank_enabled << 4 | 
-               stat_enabled << 3 |
-              timer_enabled << 2 | 
-             serial_enabled << 1 |
+      return (vblank_enabled << 4) |
+               (stat_enabled << 3) |
+              (timer_enabled << 2) |
+             (serial_enabled << 1) |
                   joypad_enabled;
 }
 
