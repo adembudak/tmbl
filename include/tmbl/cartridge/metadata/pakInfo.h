@@ -13,17 +13,6 @@ public:
   pakInfo(std::vector<byte> &&vec);
   friend std::ostream &operator<<(std::ostream &os, const pakInfo &pak);
 
-  enum class cgb_support_code : byte {
-    CGB_Incompatible = 0x00,
-    CGB_Compatible = 0x80,
-    CGB_Exclusive = 0xC0
-  };
-
-  enum class sgb_support_code : byte {
-    SGB_Incompatible = 0x00,
-    Uses_SGB_features = 0x03,
-  };
-
 private:
   bool nintendo_logo_check = false;
   std::string title;
