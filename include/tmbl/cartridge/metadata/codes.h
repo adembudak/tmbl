@@ -1,3 +1,6 @@
+#ifndef CODES_H
+#define CODES_H
+
 #include <string>
 #include <map>
 #include <vector>
@@ -279,3 +282,4 @@ std::map<byte, std::string> ram_sizes{
 {0x05, "64KB 8 banks"}};
 }
 
+#endif
