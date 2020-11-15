@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <iostream>
 
+namespace debug {
 int main(int argc, char *argv[]) {
 
   if (argc > 1) {
@@ -15,4 +16,13 @@ int main(int argc, char *argv[]) {
   } else {
     std::cerr << "Pass a ROM file.\n";
   }
+  return 0;
+}
+}
+
+int main() {
+  constexpr int argc = 2;
+  char *argv[argc] {"", "path_to_rom"};
+
+  debug::main(argc, argv);
 }
