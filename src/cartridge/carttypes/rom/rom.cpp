@@ -4,7 +4,7 @@
 
 namespace tmbl {
 
-rom::rom(std::vector<char> &&rom_, int xram_size) : m_rom(std::move(rom_)) {
+rom::rom(std::vector<byte> &&rom_, int xram_size) : m_rom(std::move(rom_)) {
   if (xram_size > 0) {
     m_xram.resize(xram_size);
   }

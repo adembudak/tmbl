@@ -10,15 +10,15 @@ namespace tmbl {
 class rom {
 public:
   rom() = default;
-  explicit rom(std::vector<char> &&rom_, int xram_size);
+  explicit rom(std::vector<byte> &&rom_, int xram_size);
 
   byte read_rom(const std::size_t index);
   byte read_xram(const std::size_t index);
   void write_xram(const std::size_t index, const byte val);
 
 private:
-  std::vector<char> m_rom;
-  std::vector<char> m_xram{};
+  std::vector<byte> m_rom;
+  std::vector<byte> m_xram{};
 };
 
 }

@@ -17,7 +17,7 @@
 
 #if defined PRINT_PACK_INFO
 #include <algorithm> // for std::copy_n
-#include "metadata/pakInfo.h"
+#include "tmbl/cartridge/metadata/pakInfo.h"
 #endif
 
 namespace tmbl {
@@ -31,12 +31,12 @@ bool cartridge::init(const std::filesystem::path p) {
       return false;
     }
 
-    auto dumpedGamePak = std::vector<char>(std::istreambuf_iterator<char>(f), {});
+    auto dumpedGamePak = std::vector<byte>(std::istream_iterator<byte>(f), {});
 
 #if defined PRINT_PACK_INFO
     std::vector<byte> cartridge_header;
     std::copy_n(begin(dumpedGamePak), 0x014F + 1, begin(cartridge_header));
-    std::cerr << pakInfo(std::move(cartridge_header));
+    std::cerr << metadata::pakInfo(std::move(cartridge_header));
 #endif
 
     // whether the cart support for color gameboy
