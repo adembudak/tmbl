@@ -1,5 +1,5 @@
 #include "tmbl/config.h"
-#include "tmbl/cartridge/mbc1/mbc1.h"
+#include "tmbl/cartridge/carttypes/mbc1/mbc1.h"
 
 #include <cstddef>
 #include <vector>

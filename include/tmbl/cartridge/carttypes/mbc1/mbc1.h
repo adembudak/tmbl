@@ -1,7 +1,7 @@
 #ifndef MBC1_H
 #define MBC1_H
 
-#include "../../config.h"
+#include "../../../config.h"
 #include <vector>
 
 namespace tmbl {
@@ -41,4 +41,3 @@ private:
 }
 
 #endif
-

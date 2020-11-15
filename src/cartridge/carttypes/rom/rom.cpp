@@ -1,5 +1,5 @@
 #include "tmbl/config.h"
-#include "tmbl/cartridge/rom/rom.h"
+#include "tmbl/cartridge/carttypes/rom/rom.h"
 #include <utility>
 
 namespace tmbl {

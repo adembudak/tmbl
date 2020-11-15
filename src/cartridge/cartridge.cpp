@@ -1,8 +1,8 @@
 #include "tmbl/config.h"
 #include "tmbl/memory_map.h"
 #include "tmbl/cartridge/cartridge.h"
-#include "tmbl/cartridge/mbc1/mbc1.h"
-#include "tmbl/cartridge/rom/rom.h"
+#include "tmbl/cartridge/carttypes/mbc1/mbc1.h"
+#include "tmbl/cartridge/carttypes/rom/rom.h"
 
 #include <filesystem>
 #include <fstream>
@@ -15,22 +15,29 @@
 #include <iostream>
 #include <cassert>
 
+#if defined PRINT_PACK_INFO
+#include <algorithm> // for std::copy_n
+#include "metadata/pakinfo.h"
+#endif
+
 namespace tmbl {
 
-void cartridge::init(const std::filesystem::path p) {
+bool cartridge::init(const std::filesystem::path p) {
   if (std::filesystem::exists(p)) {
 
     std::fstream f(p, std::ios::in | std::ios::binary);
     if (!f.good()) {
       std::cerr << "Something wrong with the rom.\n";
+      return false;
     }
 
     auto dumpedGamePak = std::vector<char>(std::istreambuf_iterator<char>(f), {});
 
-    // decide game title
-    const std::size_t title = 0x0134;
-    const std::size_t title_end = 0x013E + 1; // +1 to use iterator overload of std::string ctor
-    m_title = std::string(&dumpedGamePak[title], &dumpedGamePak[title_end]);
+#if defined PRINT_PACK_INFO
+    std::vector<byte> cartridge_header;
+    std::copy_n(begin(dumpedGamePak), 0x014F + 1, begin(cartridge_header));
+    std::cerr << pak_info(std::move(cartridge_header));
+#endif
 
     // whether the cart support for color gameboy
     const std::size_t CGB_support_code = 0x0143;
@@ -93,14 +100,14 @@ void cartridge::init(const std::filesystem::path p) {
       default:
         break;
     }
+    return true;
   } else {
     std::cerr << p.string() << " not exist.";
+    return false;
   }
 }
 
 bool cartridge::CGB() const noexcept { return m_cgb_support; }
-
-std::string cartridge::title() const noexcept { return m_title; }
 
 byte cartridge::readROM(const std::size_t index) {
   if (auto pRom = std::get_if<rom>(&pak)) {

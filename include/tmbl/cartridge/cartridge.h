@@ -3,8 +3,8 @@
 
 #include "../config.h" // for byte type
 
-#include "rom/rom.h"
-#include "mbc1/mbc1.h"
+#include "carttypes/rom/rom.h"
+#include "carttypes/mbc1/mbc1.h"
 /*
 #include "mbc2/mbc2.h"
 #include "mbc3/mbc3.h"
@@ -29,7 +29,7 @@ public:
   // see: https://archive.org/details/GameBoyProgManVer1.1/page/n126/mode/1up
   // see: https://archive.org/details/GameBoyProgManVer1.1/page/n294/mode/1up
 
-  void init(const std::filesystem::path p);
+  bool init(const std::filesystem::path p);
 
   bool CGB() const noexcept;
   std::string title() const noexcept;
@@ -42,8 +42,6 @@ public:
 
 private:
   bool m_cgb_support = false; // supports cgb functions?
-  std::string m_title;        // game title
-
   std::variant<rom, mbc1 /*,mbc2, mbc3, mbc5, mbc6, mbc7*/> pak;
 };
 }
