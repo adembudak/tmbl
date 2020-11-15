@@ -41,7 +41,7 @@ public:
 
 private:
   bool m_cgb_support = false; // supports cgb functions?
-  std::variant<rom, mbc1 /*,mbc2, mbc3, mbc5, mbc6, mbc7*/> pak;
+  std::variant<std::monostate, rom, mbc1 /*,mbc2, mbc3, mbc5, mbc6, mbc7*/> pak;
 };
 }
 
