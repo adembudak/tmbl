@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
 
 int main() {
   constexpr int argc = 2;
-  char *argv[argc] {"", "path_to_rom"};
+  char *argv[argc] {"", "C:\\Users\\Adem Budak\\Downloads\\Tetris (World) (Rev A)\\tetris.gb"};
 
   debug::main(argc, argv);
 }

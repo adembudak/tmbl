@@ -32,7 +32,6 @@ public:
   bool init(const std::filesystem::path p);
 
   bool CGB() const noexcept;
-  std::string title() const noexcept;
 
   byte readROM(const std::size_t index);
   byte readXRAM(const std::size_t index);
