@@ -31,7 +31,7 @@ bool cartridge::init(const std::filesystem::path p) {
       return false;
     }
 
-    auto dumpedGamePak = std::vector<byte>(std::istream_iterator<byte>(f), {});
+    auto dumpedGamePak = std::vector<byte>(std::istreambuf_iterator<char>(f), {});
 
 #if defined PRINT_PAK_INFO
     std::vector<byte> cartridge_header;
