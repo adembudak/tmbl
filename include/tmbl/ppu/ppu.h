@@ -40,13 +40,16 @@ public:
   void writeOAM(const std::size_t index, const byte val);
 
 private:
-  uint8 ly() const noexcept { return LY; }
-  void ly(const byte val) noexcept {
-    LY = val;
-    LY == LYC ? STAT.match_flag(set) : STAT.match_flag(reset);
-  }
+  enum class decodeMode { normal, xflipped };
+  // encode one line of a tile.
+  // see: https://www.huderlem.com/demos/gameboy2bpp.html
+  std::array<uint8, 8> decode2BPP(const uint8 lo, const uint8 hi,
+                                  const decodeMode mode = decodeMode::normal);
 
-  uint8 vbk() const noexcept { return VBK & 0b0000'0001 ? 1 : 0; }
+  uint8 ly() const noexcept;
+  void ly(const byte val) noexcept;
+
+  uint8 vbk() const noexcept;
 
 private:
   registers &m_regs;

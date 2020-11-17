@@ -42,29 +42,6 @@ void ppu::render(std::function<void(const uint8 x, const uint8 y, const color c)
 
   // encode one line of a tile.
   // see: https://www.huderlem.com/demos/gameboy2bpp.html
-  enum class decodeMode { normal, xflipped };
-
-  auto decode2BPP = [](const uint8 lo, const uint8 hi,
-                       const decodeMode mode = decodeMode::normal) -> std::array<uint8, 8> {
-    std::array<uint8, 8> decodedTileLine{};
-
-    uint8 mask = (mode == decodeMode::normal) ? 0b1000'0000 : 0b0000'0001;
-
-    std::transform(decodedTileLine.begin(), decodedTileLine.end(), decodedTileLine.begin(),
-                   [&](const uint8 /*unused*/) {
-                     uint8 val = 0;
-                     if (mode == decodeMode::normal) {
-                       val = (hi & mask) | (lo & mask); // hi byte first, by 2bpp format
-                       mask >>= 1;
-                     } else {
-                       val = (hi & mask) | (lo & mask);
-                       mask <<= 1;
-                     }
-                     return val;
-                   });
-
-    return decodedTileLine;
-  };
 
   if (LCDC.lcdControllerStatus() == on) { // lcdc.bit7 used
 
@@ -112,5 +89,37 @@ void ppu::writeVRAM(const std::size_t index, const byte val) { m_vram.at(index) 
 
 byte ppu::readOAM(const std::size_t index) { return m_oam.at(index); }
 void ppu::writeOAM(const std::size_t index, const byte val) { m_oam.at(index) = val; }
+
+std::array<uint8, 8> ppu::decode2BPP(const uint8 lo, const uint8 hi, const decodeMode mode) {
+
+  uint8 mask = (mode == decodeMode::normal) ? 0b1000'0000 : 0b0000'0001;
+
+  std::array<uint8, 8> decodedTileLine{};
+
+  std::transform(decodedTileLine.begin(), decodedTileLine.end(), decodedTileLine.begin(),
+                 [&](const uint8 /*unused*/) {
+                   uint8 val = 0;
+                   if (mode == decodeMode::normal) {
+                     val = (hi & mask) | (lo & mask); // hi byte first, by 2bpp format
+                     mask >>= 1;
+                   } else {
+                     val = (hi & mask) | (lo & mask);
+                     mask <<= 1;
+                   }
+                   return val;
+                 });
+
+  return decodedTileLine;
+};
+
+uint8 ppu::ly() const noexcept { return LY; }
+
+void ppu::ly(const byte val) noexcept {
+  LY = val;
+  LY == LYC ? STAT.match_flag(set) : STAT.match_flag(reset);
+}
+
+uint8 ppu::vbk() const noexcept { return VBK & 0b0000'0001 ? 1 : 0; }
+
 }
 
