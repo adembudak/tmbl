@@ -5,8 +5,15 @@
 #include "../io/registers.h"
 #include "internals/stat.h"
 #include "internals/lcdc.h"
+
+// dmg palettes
 #include "internals/bgp.h"
 #include "internals/obp.h"
+// cgg palettes
+#include "internals/bcps.h"
+#include "internals/bcpd.h"
+#include "internals/ocps.h"
+#include "internals/ocpd.h"
 
 #include <cstddef>
 #include <array>
@@ -41,6 +48,7 @@ public:
 
 private:
   enum class decodeMode { normal, xflipped };
+
   // encode one line of a tile.
   // see: https://www.huderlem.com/demos/gameboy2bpp.html
   std::array<uint8, 8> decode2BPP(const uint8 lo, const uint8 hi,
