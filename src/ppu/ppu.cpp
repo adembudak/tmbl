@@ -37,40 +37,42 @@ ppu::ppu(registers &regs_, cartridge &cart_, interrupts &intr_)
 // clang-format on
 {}
 
-// 7 6 5 3 2 1 0
 void ppu::render(std::function<void(const uint8 x, const uint8 y, const color c)> draw, palette p) {
 
   if (LCDC.lcdControllerStatus() == on) { // lcdc.bit7
 
-    for (uint8 dy = WY; dy < screenHeight; ++dy) {
-      for (uint8 dx = WX + 7; dx < screenWidth + 7; ++dx) {
+    for (uint8 dy = 0; dy < screenHeight; ++dy) {
+      for (uint8 dx = 0; dx < screenWidth; ++dx) {
 
-        uint8 scx = SCX / screenWidth;
-        uint8 scy = SCY / screenHeight;
-
+        // draw window (chr)
         if (LCDC.windowStatus() == on) {              // lcdc.bit5
           auto [windowBegin, _] = LCDC.chrCodeArea(); // lcdc.bit6
 
-          auto block = LCDC.bgChrArea();
+          // window is not scrollable, does not use scx, scy.
+          auto block = LCDC.bgChrArea(); // lcdc.bit4
 
-          byte tile_lo = m_vram.at(windowBegin + scx);
-          byte tile_hi = m_vram.at(windowBegin + scx + 1);
+          // draw(WX + 7, WY, obp);
 
-          auto tile_line_colors = decode2BPP(tile_lo, tile_hi);
-
-          draw(scx, scy, p[tile_line_colors[0]]);
         }
 
+        // draw background
         else if (LCDC.bgDisplayStatus() == on) { // lcdc.bit0
-          auto [bgBegin, _] = LCDC.bgCodeArea(); // lcdc.bit3
+
+          uint8 scx = SCX / screenWidth; // wrap around
+          uint8 scy = SCY / screenHeight;
+
           auto block = LCDC.bgChrArea();
 
+          auto [bgBegin, _] = LCDC.bgCodeArea(); // lcdc.bit3
+
+          // draw(scx, scy);
           // draw background
         }
 
+        // draw obj (sprite)
         else if (LCDC.objDisplayStatus() == on) { // lcdc.bit 1
           auto [height, width] = LCDC.objSize();  // lcdc.bit2 used.
-          // draw obj
+                                                  // draw obj
         }
       }
 
