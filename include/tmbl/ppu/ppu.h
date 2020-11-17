@@ -15,6 +15,8 @@
 #include "internals/ocps.h"
 #include "internals/ocpd.h"
 
+#include "data/obj.h"
+
 #include <cstddef>
 #include <array>
 #include <functional>
