@@ -19,14 +19,14 @@ public:
   // Background(BG)             | <-
   // Code area                  | tile map
 
-  cflag lcdControllerStatus() const noexcept;                // bit 7
-  std::pair<uint16, uint16> windowCodeArea() const noexcept; // bit 6 map select
-  cflag windowStatus() const noexcept;                       // bit 5
-  std::pair<uint16, uint16> bgChrArea() const noexcept;      // bit 4 tile block select
-  std::pair<uint16, uint16> bgCodeArea() const noexcept;     // bit 3 map select
-  std::pair<uint8, uint8> objSize() const noexcept;          // bit 2
-  cflag objDisplayStatus() const noexcept;                   // bit 1
-  cflag bgDisplayStatus() const noexcept;                    // bit 0
+  cflag lcdControllerStatus() const noexcept;             // bit 7
+  std::pair<uint16, uint16> chrCodeArea() const noexcept; // bit 6 map select
+  cflag windowStatus() const noexcept;                    // bit 5
+  std::pair<uint16, uint16> bgChrArea() const noexcept;   // bit 4 tile block select
+  std::pair<uint16, uint16> bgCodeArea() const noexcept;  // bit 3 map select
+  std::pair<uint8, uint8> objSize() const noexcept;       // bit 2
+  cflag objDisplayStatus() const noexcept;                // bit 1
+  cflag bgDisplayStatus() const noexcept;                 // bit 0
 
 private:
   byte &m_value;

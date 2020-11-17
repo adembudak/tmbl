@@ -8,7 +8,7 @@ lcdc::lcdc(byte &val_, bool cgb_support) : m_value(val_), cgb_support(cgb_suppor
 
 cflag lcdc::lcdControllerStatus() const noexcept { return m_value & 0b1000'0000 ? on : off; }
 
-std::pair<uint16, uint16> lcdc::windowCodeArea() const noexcept {
+std::pair<uint16, uint16> lcdc::chrCodeArea() const noexcept {
   return m_value & 0b0100'0000 ? std::make_pair(0x9C00, 0x9FFF) : std::make_pair(0x9800, 0x9BFF);
 }
 

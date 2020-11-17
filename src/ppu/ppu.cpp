@@ -37,13 +37,10 @@ ppu::ppu(registers &regs_, cartridge &cart_, interrupts &intr_)
 // clang-format on
 {}
 
+// 7 6 5 3 2 1 0
 void ppu::render(std::function<void(const uint8 x, const uint8 y, const color c)> draw, palette p) {
-  // which colors, interrupts, how to scroll with scx, scy
 
-  // encode one line of a tile.
-  // see: https://www.huderlem.com/demos/gameboy2bpp.html
-
-  if (LCDC.lcdControllerStatus() == on) { // lcdc.bit7 used
+  if (LCDC.lcdControllerStatus() == on) { // lcdc.bit7
 
     for (uint8 dy = WY; dy < screenHeight; ++dy) {
       for (uint8 dx = WX + 7; dx < screenWidth + 7; ++dx) {
@@ -51,9 +48,11 @@ void ppu::render(std::function<void(const uint8 x, const uint8 y, const color c)
         uint8 scx = SCX / screenWidth;
         uint8 scy = SCY / screenHeight;
 
-        if (auto [windowBegin, _] = LCDC.windowCodeArea();
-            LCDC.windowStatus() == on) { // lcdc.bit5, bit6 used
-          // draw life, score, grade etc.
+        if (LCDC.windowStatus() == on) {              // lcdc.bit5
+          auto [windowBegin, _] = LCDC.chrCodeArea(); // lcdc.bit6
+
+          auto block = LCDC.bgChrArea();
+
           byte tile_lo = m_vram.at(windowBegin + scx);
           byte tile_hi = m_vram.at(windowBegin + scx + 1);
 
@@ -62,14 +61,16 @@ void ppu::render(std::function<void(const uint8 x, const uint8 y, const color c)
           draw(scx, scy, p[tile_line_colors[0]]);
         }
 
-        else if (auto [bgBegin, _] = LCDC.bgChrArea(); LCDC.bgDisplayStatus() == on) {
+        else if (LCDC.bgDisplayStatus() == on) { // lcdc.bit0
+          auto [bgBegin, _] = LCDC.bgCodeArea(); // lcdc.bit3
+          auto block = LCDC.bgChrArea();
 
           // draw background
         }
 
-        else if (LCDC.objDisplayStatus() == on) {
-          // bg character area, pair
-          // obj size
+        else if (LCDC.objDisplayStatus() == on) { // lcdc.bit 1
+          auto [height, width] = LCDC.objSize();  // lcdc.bit2 used.
+          // draw obj
         }
       }
 
