@@ -49,8 +49,9 @@ public:
   void writeOAM(const std::size_t index, const byte val);
 
 private:
-  enum class decodeMode { normal, xflipped };
+  void scanline(std::function<void(const uint8 x, const uint8 y, const color c)> draw, palette p);
 
+  enum class decodeMode { normal, xflipped };
   // encode one line of a tile.
   // see: https://www.huderlem.com/demos/gameboy2bpp.html
   std::array<uint8, 8> decode2BPP(const uint8 lo, const uint8 hi,

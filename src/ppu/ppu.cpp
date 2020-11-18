@@ -42,39 +42,7 @@ void ppu::render(std::function<void(const uint8 x, const uint8 y, const color c)
   if (LCDC.lcdControllerStatus() == on) { // lcdc.bit7
 
     for (uint8 dy = 0; dy < screenHeight; ++dy) {
-      for (uint8 dx = 0; dx < screenWidth; ++dx) {
-
-        // draw window (chr)
-        if (LCDC.windowStatus() == on) {              // lcdc.bit5
-          auto [windowBegin, _] = LCDC.chrCodeArea(); // lcdc.bit6
-
-          // window is not scrollable, does not use scx, scy.
-          auto block = LCDC.bgChrArea(); // lcdc.bit4
-
-          // draw(WX + 7, WY, obp);
-
-        }
-
-        // draw background
-        else if (LCDC.bgDisplayStatus() == on) { // lcdc.bit0
-
-          uint8 scx = SCX / screenWidth; // wrap around
-          uint8 scy = SCY / screenHeight;
-
-          auto block = LCDC.bgChrArea();
-
-          auto [bgBegin, _] = LCDC.bgCodeArea(); // lcdc.bit3
-
-          // draw(scx, scy);
-          // draw background
-        }
-
-        // draw obj (sprite)
-        else if (LCDC.objDisplayStatus() == on) { // lcdc.bit 1
-          auto [height, width] = LCDC.objSize();  // lcdc.bit2 used.
-                                                  // draw obj
-        }
-      }
+      scanline(draw, p);
 
       STAT.mode_flag(stat::mode::HORIZONTAL_BLANKING);
     }
@@ -92,6 +60,46 @@ void ppu::writeVRAM(const std::size_t index, const byte val) { m_vram.at(index) 
 
 byte ppu::readOAM(const std::size_t index) { return m_oam.at(index); }
 void ppu::writeOAM(const std::size_t index, const byte val) { m_oam.at(index) = val; }
+
+void ppu::scanline(std::function<void(const uint8 x, const uint8 y, const color c)> draw,
+                   palette p) {
+
+  for (uint8 dx = 0; dx < screenWidth; ++dx) {
+
+    // draw window (chr)
+    if (LCDC.windowStatus() == on) {              // lcdc.bit5
+      auto [windowBeginAddress, _] = LCDC.chrCodeArea(); // lcdc.bit6
+
+
+
+      // window is not scrollable, does not use scx, scy.
+      auto block = LCDC.bgChrArea(); // lcdc.bit4
+
+      // draw(WX + 7, WY, obp);
+
+    }
+
+    // draw background
+    else if (LCDC.bgDisplayStatus() == on) { // lcdc.bit0
+
+      uint8 scx = SCX / screenWidth; // wrap around
+      uint8 scy = SCY / screenHeight;
+
+      auto block = LCDC.bgChrArea();
+
+      auto [bgBegin, _] = LCDC.bgCodeArea(); // lcdc.bit3
+
+      // draw(scx, scy);
+      // draw background
+    }
+
+    // draw obj (sprite)
+    else if (LCDC.objDisplayStatus() == on) { // lcdc.bit 1
+      auto [height, width] = LCDC.objSize();  // lcdc.bit2 used.
+                                              // draw obj
+    }
+  }
+}
 
 std::array<uint8, 8> ppu::decode2BPP(const uint8 lo, const uint8 hi, const decodeMode mode) {
 
@@ -122,7 +130,6 @@ void ppu::ly(const byte val) noexcept {
   LY == LYC ? STAT.match_flag(set) : STAT.match_flag(reset);
 }
 
-uint8 ppu::vbk() const noexcept { return VBK & 0b0000'0001 ? 1 : 0; }
+uint8 ppu::vbk() const noexcept { return cgb_support ? (VBK & 0b0000'0001) : 0 }
 
 }
-
