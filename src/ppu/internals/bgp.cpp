@@ -18,10 +18,9 @@ int bgp::bgPalette(const uint8 val) {
 
 std::array<int, 4> bgp::bgPalette() {
   // clang-format off
-    return { (m_value & 0b1100'0000) >> 6,
-	     (m_value & 0b0011'0000) >> 4, 
-	     (m_value & 0b0000'1100) >> 2, 
-	     (m_value & 0b0000'0011) };
+  return { (m_value & 0b0000'0011),
+	       (m_value & 0b0000'1100) >> 2, 
+	       (m_value & 0b0011'0000) >> 4, 
+           (m_value & 0b1100'0000) >> 6 };
   }
-
 }
