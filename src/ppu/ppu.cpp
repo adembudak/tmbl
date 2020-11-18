@@ -64,18 +64,14 @@ void ppu::writeOAM(const std::size_t index, const byte val) { m_oam.at(index) = 
 void ppu::scanline(std::function<void(const uint8 x, const uint8 y, const color c)> draw,
                    palette p) {
 
-  for (uint8 dx = 0; dx < screenWidth; ++dx) {
+  for (uint8 dx = 0; dx < (screenWidth / tileWidth); ++dx) {
 
     // draw window (chr)
-    if (LCDC.windowStatus() == on) {              // lcdc.bit5
+    if (LCDC.windowStatus() == on) {                     // lcdc.bit5
       auto [windowBeginAddress, _] = LCDC.chrCodeArea(); // lcdc.bit6
-
-
 
       // window is not scrollable, does not use scx, scy.
       auto block = LCDC.bgChrArea(); // lcdc.bit4
-
-      // draw(WX + 7, WY, obp);
 
     }
 
@@ -102,25 +98,20 @@ void ppu::scanline(std::function<void(const uint8 x, const uint8 y, const color 
 }
 
 std::array<uint8, 8> ppu::decode2BPP(const uint8 lo, const uint8 hi, const decodeMode mode) {
-
+  std::array<uint8, 8> paletteIndexes{};
   uint8 mask = (mode == decodeMode::normal) ? 0b1000'0000 : 0b0000'0001;
 
-  std::array<uint8, 8> decodedTileLine{};
+  std::generate(paletteIndexes.begin(), paletteIndexes.end(), [&] {
+    uint8 val = (hi & mask) | (lo & mask); // hi byte first, by 2bpp format
+    if (mode == decodeMode::normal) {
+      mask >>= 1;
+    } else {
+      mask <<= 1;
+    }
+    return val;
+  });
 
-  std::transform(decodedTileLine.begin(), decodedTileLine.end(), decodedTileLine.begin(),
-                 [&](const uint8 /*unused*/) {
-                   uint8 val = 0;
-                   if (mode == decodeMode::normal) {
-                     val = (hi & mask) | (lo & mask); // hi byte first, by 2bpp format
-                     mask >>= 1;
-                   } else {
-                     val = (hi & mask) | (lo & mask);
-                     mask <<= 1;
-                   }
-                   return val;
-                 });
-
-  return decodedTileLine;
+  return paletteIndexes;
 };
 
 uint8 ppu::ly() const noexcept { return LY; }
@@ -130,6 +121,6 @@ void ppu::ly(const byte val) noexcept {
   LY == LYC ? STAT.match_flag(set) : STAT.match_flag(reset);
 }
 
-uint8 ppu::vbk() const noexcept { return cgb_support ? (VBK & 0b0000'0001) : 0 }
+uint8 ppu::vbk() const noexcept { return cgb_support ? (VBK & 0b0000'0001) : 0; }
 
 }
