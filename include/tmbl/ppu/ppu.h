@@ -33,6 +33,13 @@ public:
   static constexpr uint8 screenWidth = 160;
   static constexpr uint8 screenHeight = 144;
 
+  static constexpr uint8 screenVBlankHeight = 153;
+
+  static constexpr uint8 oamCycles = 80;
+  static constexpr uint8 vramCycles = 172;
+  static constexpr uint8 hblankCycles = 204;
+  static constexpr uint16 scanlineCycles = 456;
+
   struct color {
     uint8 r, g, b, a;
   };
@@ -41,6 +48,8 @@ public:
 
   void render(std::function<void(const uint8 x, const uint8 y, const color c)> draw,
               palette p = default_palette);
+
+  void update();
 
   byte readVRAM(const std::size_t index);
   void writeVRAM(const std::size_t index, const byte val);

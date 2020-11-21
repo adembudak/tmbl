@@ -10,7 +10,7 @@ namespace tmbl {
 
 class stat {
 public:
-  explicit stat(byte &val_);
+  explicit stat(byte &val_, byte &ly, byte &lyc);
 
   enum class mode : uint8 {
     HORIZONTAL_BLANKING = 0b00,
@@ -32,6 +32,9 @@ public:
 
 private:
   byte &m_value;
+
+  byte &LY;
+  byte &LYC;
 };
 
 }

@@ -15,7 +15,8 @@ class registers;
 // clang-format off
 ppu::ppu(registers &regs_, cartridge &cart_, interrupts &intr_)
     : m_regs(regs_), m_cart(cart_), m_intr(intr_), cgb_support(m_cart.CGB()),
-	STAT(m_regs.getAt(0xFF41)), LCDC(m_regs.getAt(0xFF40), m_cart.CGB()),
+	STAT(m_regs.getAt(0xFF41), /*ly*/ m_regs.getAt(0xFF44), /*lyc*/m_regs.getAt(0xFF45)), 
+    LCDC(m_regs.getAt(0xFF40), m_cart.CGB()),
 
     SCY(m_regs.getAt(0xFF42)), SCX(m_regs.getAt(0xFF43)), 
 
@@ -52,6 +53,32 @@ void ppu::render(std::function<void(const uint8 x, const uint8 y, const color c)
 
   else {
     // draw palette color 5
+  }
+}
+
+void ppu::update() {
+  if (LCDC.lcdControllerStatus() == on) {
+
+    switch (STAT.mode_flag()) {
+      case STAT.mode::SEARCHING_OAM: // mode 2
+        // things
+        STAT.mode_flag(STAT.mode::TRANSFERING_DATA_TO_LCD);
+        break;
+      case STAT.mode::TRANSFERING_DATA_TO_LCD: // mode 3
+                                               // things
+        STAT.mode_flag(STAT.mode::HORIZONTAL_BLANKING);
+        break;
+      case STAT.mode::HORIZONTAL_BLANKING: // mode 0
+                                           // things
+        STAT.mode_flag(STAT.mode::VERTICAL_BLANKING);
+        break;
+      case STAT.mode::VERTICAL_BLANKING: // mode 1
+                                         // things
+        STAT.mode_flag(STAT.mode::SEARCHING_OAM);
+        break;
+      default:
+        break;
+    }
   }
 }
 

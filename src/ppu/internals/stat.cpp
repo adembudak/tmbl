@@ -5,7 +5,7 @@ namespace tmbl {
 
 class registers;
 
-stat::stat(byte &val_) : m_value(val_) {}
+stat::stat(byte &val_, byte &ly, byte &lyc) : m_value(val_), LY(ly), LYC(lyc) {}
 
 stat::mode stat::mode_flag() const noexcept {
 
@@ -43,7 +43,7 @@ void stat::mode_flag(const mode m) noexcept {
   }
 }
 
-cflag stat::match_flag() const noexcept { return false; /*return LY == LYC;*/ }
+cflag stat::match_flag() const noexcept { return LY == LYC; }
 void stat::match_flag(cflag val) noexcept { val ? m_value |= 0b0000'0100 : m_value &= 0b1111'1011; }
 
 cflag stat::matchHblank() const noexcept { return m_value & 0b0000'1000; }
