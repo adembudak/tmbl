@@ -76,8 +76,7 @@ byte bus::readBus(const std::size_t index) {
   }
 
   else if (index >= memory::noUsable && index <= memory::noUsable_end) {
-    std::cerr << "read from the no usable area\n";
-    return {};
+    return 0xFF; // read from the no usable area
   }
 
   else if (index >= memory::io && index <= memory::io_end) {
