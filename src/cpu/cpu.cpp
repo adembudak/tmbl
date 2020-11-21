@@ -2947,7 +2947,7 @@ void cpu::jp(const cc c, const n16 nn) {
   }
 }
 void cpu::jr(const e8 e) {
-  PC = e.value();
+  PC = PC + e.value();
 
   m_clock.cycle(3);
 }
@@ -3007,8 +3007,7 @@ void cpu::rst(const uint8 u) {
   m_bus.writeBus(SP - 2, PC & r16::reset_upper);
   SP -= 2;
 
-  PC = PC & r16::reset_upper;
-  PC = rst_vec.at(u);
+  PC = (PC & r16::reset_upper) | rst_vec.at(u);
 
   m_clock.cycle(4);
 }
