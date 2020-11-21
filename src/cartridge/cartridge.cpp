@@ -130,7 +130,7 @@ byte cartridge::readXRAM(const std::size_t index) {
 }
 void cartridge::writeROM(const std::size_t index, const byte val) {
   if (auto pRom = std::get_if<rom>(&pak)) {
-    std::cerr << "Only mbc type carts can take ROM area address to write (to set bank registers.\n";
+    pRom->write_rom(index, val);
   } else if (auto pMbc1 = std::get_if<mbc1>(&pak)) {
     pMbc1->write(index, val);
   } else /*if*/ {

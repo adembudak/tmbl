@@ -11,6 +11,9 @@ rom::rom(std::vector<byte> &&rom_, int xram_size) : m_rom(std::move(rom_)) {
 }
 
 byte rom::read_rom(const std::size_t index) { return m_rom.at(index); }
+
+void rom::write_rom(const std::size_t index, const byte val) {}
+
 byte rom::read_xram(const std::size_t index) { return m_xram.size() ? m_xram.at(index) : 0xFF; }
 
 void rom::write_xram(const std::size_t index, const byte val) {
