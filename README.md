@@ -1,1 +1,1 @@
-[![Windows](https://github.com/p1v0t/tombul/workflows/Windows/badge.svg)](https://github.com/p1v0t/tombul/actions?query=workflow%3AWindows) [![Ubuntu](https://github.com/p1v0t/tombul/workflows/Ubuntu/badge.svg)](https://github.com/p1v0t/tombul/actions?query=workflow%3AUbuntu)
+[![Windows](https://github.com/adembudak/tombul/workflows/Windows/badge.svg)](https://github.com/adembudak/tombul/actions?query=workflow%3AWindows) [![Ubuntu](https://github.com/adembudak/tombul/workflows/Ubuntu/badge.svg)](https://github.com/adembudak/tombul/actions?query=workflow%3AUbuntu)
