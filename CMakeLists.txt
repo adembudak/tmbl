@@ -7,7 +7,7 @@ project(
   LANGUAGES CXX)
 
 option(ENABLE_INCLUDE_WHAT_YOU_USE "Apply iwyu to source" OFF)
-option(ENABLE_ROM_TESTS "Run test ROMs" ON)
+option(ENABLE_ROM_TESTS "Run test ROMs" OFF)
 
 include(CTest)
 
