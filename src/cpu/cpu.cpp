@@ -59,2071 +59,2069 @@ void cpu::run() {
   auto fetch_byte = [&] { return m_bus.readBus(PC++); };
   auto fetch_word = [&] { return fetch_byte() | (fetch_byte() << 8); };
 
-  for (;;) {
-    if (IME) {
-      if (m_intr.IE() && m_intr.IF() && 0b0001'1111) {
-        if (m_intr.vblank_pending && m_intr.vblank_enabled) {
-          m_intr.vblank_pending = false;
-          di();
-          call(intr_vec[0]);
-        } else if (m_intr.stat_pending && m_intr.stat_enabled) {
-          m_intr.stat_pending = false;
-          di();
-          call(intr_vec[1]);
-        } else if (m_intr.timer_pending && m_intr.timer_enabled) {
-          m_intr.timer_pending = false;
-          di();
-          call(intr_vec[2]);
-        } else if (m_intr.serial_pending && m_intr.serial_enabled) {
-          m_intr.serial_pending = false;
-          di();
-          call(intr_vec[3]);
-        } else if (m_intr.joypad_pending && m_intr.joypad_enabled) {
-          m_intr.joypad_pending = false;
-          di();
-          call(intr_vec[4]);
-        }
+  if (IME) {
+    if (m_intr.IE() && m_intr.IF() && 0b0001'1111) {
+      if (m_intr.vblank_pending && m_intr.vblank_enabled) {
+        m_intr.vblank_pending = false;
+        di();
+        call(intr_vec[0]);
+      } else if (m_intr.stat_pending && m_intr.stat_enabled) {
+        m_intr.stat_pending = false;
+        di();
+        call(intr_vec[1]);
+      } else if (m_intr.timer_pending && m_intr.timer_enabled) {
+        m_intr.timer_pending = false;
+        di();
+        call(intr_vec[2]);
+      } else if (m_intr.serial_pending && m_intr.serial_enabled) {
+        m_intr.serial_pending = false;
+        di();
+        call(intr_vec[3]);
+      } else if (m_intr.joypad_pending && m_intr.joypad_enabled) {
+        m_intr.joypad_pending = false;
+        di();
+        call(intr_vec[4]);
       }
     }
+  }
+
+  switch (fetch_byte()) {
+    case 0x00:
+      nop();
+      break;
+
+    case 0x01:
+      ld(BC, n16(fetch_word()));
+      break;
+
+    case 0x02:
+      ld(BC.value(), A);
+      break;
+
+    case 0x03:
+      inc(BC);
+      break;
+
+    case 0x04:
+      inc(BC.hi());
+      break;
+
+    case 0x05:
+      dec(BC.hi());
+      break;
+
+    case 0x06:
+      ld(BC.hi(), n8(fetch_byte()));
+      break;
+
+    case 0x07:
+      rlca();
+      break;
+
+    case 0x08:
+      m_bus.writeBus(n16(fetch_word()).value(), SP);
+      m_clock.cycle(4);
+      break;
+
+    case 0x09:
+      add(BC);
+      break;
+
+    case 0x0A:
+      ld(A, BC.value());
+      break;
+
+    case 0x0B:
+      dec(BC);
+      break;
+
+    case 0x0C:
+      inc(BC.lo());
+      break;
+
+    case 0x0D:
+      add(BC.lo());
+      break;
+
+    case 0x0E:
+      ld(BC.lo(), n8(fetch_byte()));
+      break;
+
+    case 0x0F:
+      rrca();
+      break;
+
+    case 0x10:
+      stop();
+      break;
+
+    case 0x11:
+      ld(DE, n16(fetch_word()));
+      break;
+
+    case 0x12:
+      ld(DE.value(), A);
+      break;
+
+    case 0x13:
+      inc(DE);
+      break;
+
+    case 0x14:
+      inc(DE.hi());
+      break;
+
+    case 0x15:
+      dec(DE.hi());
+      break;
+
+    case 0x16:
+      ld(DE.hi(), n8(fetch_byte()));
+      break;
+
+    case 0x17:
+      rla();
+      break;
+
+    case 0x18:
+      PC += 1;
+      jr(e8(m_bus.readBus(PC++)));
+      break;
+
+    case 0x19:
+      add(DE);
+      break;
+
+    case 0x1A:
+      ld(A, DE.value());
+      break;
+
+    case 0x1B:
+      dec(DE);
+      break;
+
+    case 0x1C:
+      inc(DE.lo());
+      break;
+
+    case 0x1D:
+      dec(DE.hi());
+      break;
+
+    case 0x1E:
+      ld(DE.lo(), n8(fetch_byte()));
+      break;
+
+    case 0x1F:
+      rra();
+      break;
+
+    case 0x20:
+      PC += 1;
+      jr(cc::NZ, e8(m_bus.readBus(PC++)));
+      break;
+
+    case 0x21:
+      ld(HL, n16(fetch_word()));
+      break;
+
+    case 0x22:
+      ldi(HL, A);
+      break;
+
+    case 0x23:
+      inc(HL);
+      break;
+
+    case 0x24:
+      inc(HL.hi());
+      break;
+
+    case 0x25:
+      dec(HL.hi());
+      break;
+
+    case 0x26:
+      ld(HL.hi(), n8(fetch_byte()));
+      break;
+
+    case 0x27:
+      daa();
+      break;
+
+    case 0x28:
+      PC += 1;
+      jr(cc::Z, e8(m_bus.readBus(PC++)));
+      break;
+
+    case 0x29:
+      add(HL);
+      break;
+
+    case 0x2A:
+      ldi(A, HL);
+      break;
+
+    case 0x2B:
+      dec(HL);
+      break;
+
+    case 0x2C:
+      inc(HL.lo());
+      break;
+
+    case 0x2D:
+      dec(HL.lo());
+      break;
+
+    case 0x2E:
+      ld(HL.lo(), n8(fetch_byte()));
+      break;
+
+    case 0x2F:
+      cpl();
+      break;
+
+    case 0x30:
+      PC += 1;
+      jr(cc::NC, e8(m_bus.readBus(PC++)));
+      break;
+
+    case 0x31:
+      SP = n16(fetch_word()).value();
+      m_clock.cycle(3);
+      break;
 
-    switch (fetch_byte()) {
-      case 0x00:
-        nop();
-        break;
-
-      case 0x01:
-        ld(BC, n16(fetch_word()));
-        break;
-
-      case 0x02:
-        ld(BC.value(), A);
-        break;
-
-      case 0x03:
-        inc(BC);
-        break;
-
-      case 0x04:
-        inc(BC.hi());
-        break;
-
-      case 0x05:
-        dec(BC.hi());
-        break;
-
-      case 0x06:
-        ld(BC.hi(), n8(fetch_byte()));
-        break;
-
-      case 0x07:
-        rlca();
-        break;
-
-      case 0x08:
-        m_bus.writeBus(n16(fetch_word()).value(), SP);
-        m_clock.cycle(4);
-        break;
-
-      case 0x09:
-        add(BC);
-        break;
-
-      case 0x0A:
-        ld(A, BC.value());
-        break;
-
-      case 0x0B:
-        dec(BC);
-        break;
-
-      case 0x0C:
-        inc(BC.lo());
-        break;
-
-      case 0x0D:
-        add(BC.lo());
-        break;
-
-      case 0x0E:
-        ld(BC.lo(), n8(fetch_byte()));
-        break;
-
-      case 0x0F:
-        rrca();
-        break;
-
-      case 0x10:
-        stop();
-        break;
-
-      case 0x11:
-        ld(DE, n16(fetch_word()));
-        break;
-
-      case 0x12:
-        ld(DE.value(), A);
-        break;
-
-      case 0x13:
-        inc(DE);
-        break;
-
-      case 0x14:
-        inc(DE.hi());
-        break;
-
-      case 0x15:
-        dec(DE.hi());
-        break;
-
-      case 0x16:
-        ld(DE.hi(), n8(fetch_byte()));
-        break;
-
-      case 0x17:
-        rla();
-        break;
-
-      case 0x18:
-        PC += 1;
-        jr(e8(m_bus.readBus(PC++)));
-        break;
-
-      case 0x19:
-        add(DE);
-        break;
-
-      case 0x1A:
-        ld(A, DE.value());
-        break;
-
-      case 0x1B:
-        dec(DE);
-        break;
-
-      case 0x1C:
-        inc(DE.lo());
-        break;
-
-      case 0x1D:
-        dec(DE.hi());
-        break;
-
-      case 0x1E:
-        ld(DE.lo(), n8(fetch_byte()));
-        break;
-
-      case 0x1F:
-        rra();
-        break;
-
-      case 0x20:
-        PC += 1;
-        jr(cc::NZ, e8(m_bus.readBus(PC++)));
-        break;
-
-      case 0x21:
-        ld(HL, n16(fetch_word()));
-        break;
-
-      case 0x22:
-        ldi(HL, A);
-        break;
-
-      case 0x23:
-        inc(HL);
-        break;
+    case 0x32:
+      ldd(HL, A);
+      break;
 
-      case 0x24:
-        inc(HL.hi());
-        break;
+    case 0x33:
+
+      ++SP;
+      m_clock.cycle(2);
+      break;
+
+    case 0x34:
+      inc(HL.value());
+      break;
+
+    case 0x35:
+      dec(HL.value());
+      break;
+
+    case 0x36:
+      m_bus.writeBus(HL.value(), n8(fetch_byte()).value());
+      m_clock.cycle(3);
+      break;
+
+    case 0x37:
+      scf();
+      break;
+
+    case 0x38:
+      PC += 1;
+      jr(cc::C, e8(m_bus.readBus(PC++)));
+      break;
 
-      case 0x25:
-        dec(HL.hi());
-        break;
+    case 0x39: {
+
+      uint8 t_old_lo_reg_val = HL.lo().value();
+      uint16 t_old_reg_val = HL.value();
+
+      HL.lo() = SP & 0x00FF;
+      HL.hi() = (SP & 0xFF00) >> 8;
 
-      case 0x26:
-        ld(HL.hi(), n8(fetch_byte()));
-        break;
+      F.n(reset);
+      t_old_reg_val > HL.value() ? F.c(set) : F.c(reset);
+      t_old_lo_reg_val > HL.lo().value() ? F.h(set) : F.h(reset);
 
-      case 0x27:
-        daa();
-        break;
+      m_clock.cycle(2);
+    } break;
+
+    case 0x3A:
+      ldd(A, HL);
+      break;
+
+    case 0x3B:
+      SP--;
+      break;
+
+    case 0x3C:
+      inc(A);
+      break;
+
+    case 0x3D:
+      dec(A);
+      break;
+
+    case 0x3E:
+      ld(A, n8(fetch_byte()));
+      break;
+
+    case 0x3F:
+      ccf();
+      break;
+
+    case 0x40:
+      ld(BC.hi(), BC.hi());
+      break;
+
+    case 0x41:
+      ld(BC.hi(), BC.lo());
+      break;
+
+    case 0x42:
+      ld(BC.hi(), DE.hi());
+      break;
+
+    case 0x43:
+      ld(BC.hi(), DE.lo());
+      break;
+
+    case 0x44:
+      ld(BC.hi(), HL.hi());
+      break;
+
+    case 0x45:
+      ld(BC.hi(), HL.lo());
+      break;
+
+    case 0x46:
+      ld(BC.hi(), HL.value());
+      break;
+
+    case 0x47:
+      ld(BC.hi(), A);
+      break;
+
+    case 0x48:
+      ld(BC.lo(), BC.hi());
+      break;
+
+    case 0x49:
+      ld(BC.lo(), BC.lo());
+      break;
+
+    case 0x4A:
+      ld(BC.lo(), DE.hi());
+      break;
+
+    case 0x4B:
+      ld(BC.lo(), DE.lo());
+      break;
+
+    case 0x4C:
+      ld(BC.lo(), HL.hi());
+      break;
+
+    case 0x4D:
+      ld(BC.lo(), HL.lo());
+      break;
+
+    case 0x4E:
+      ld(BC.lo(), HL.value());
+      break;
+
+    case 0x4F:
+      ld(BC.lo(), A);
+      break;
+
+    case 0x50:
+      ld(DE.hi(), BC.hi());
+      break;
+
+    case 0x51:
+      ld(DE.hi(), BC.lo());
+      break;
+
+    case 0x52:
+      ld(DE.hi(), DE.hi());
+      break;
+
+    case 0x53:
+      ld(DE.hi(), DE.lo());
+      break;
+
+    case 0x54:
+      ld(DE.hi(), HL.hi());
+      break;
+
+    case 0x55:
+      ld(DE.hi(), HL.lo());
+      break;
+
+    case 0x56:
+      ld(DE.hi(), HL.value());
+      break;
+
+    case 0x57:
+      ld(DE.hi(), A);
+      break;
+
+    case 0x58:
+      ld(DE.lo(), BC.hi());
+      break;
+
+    case 0x59:
+      ld(DE.lo(), BC.lo());
+      break;
+
+    case 0x5A:
+      ld(DE.lo(), DE.hi());
+      break;
+
+    case 0x5B:
+      ld(DE.lo(), DE.lo());
+      break;
+
+    case 0x5C:
+      ld(DE.lo(), HL.hi());
+      break;
+
+    case 0x5D:
+      ld(DE.lo(), HL.lo());
+      break;
+
+    case 0x5E:
+      ld(DE.lo(), HL.value());
+      break;
+
+    case 0x5F:
+      ld(DE.lo(), A);
+      break;
+
+    case 0x60:
+      ld(HL.hi(), BC.hi());
+      break;
+
+    case 0x61:
+      ld(HL.hi(), BC.lo());
+      break;
+
+    case 0x62:
+      ld(HL.hi(), DE.hi());
+      break;
+
+    case 0x63:
+      ld(HL.hi(), DE.lo());
+      break;
+
+    case 0x64:
+      ld(HL.hi(), HL.hi());
+      break;
+
+    case 0x65:
+      ld(HL.hi(), HL.lo());
+      break;
+
+    case 0x66:
+      ld(HL.hi(), HL.value());
+      break;
+
+    case 0x67:
+      ld(HL.hi(), A);
+      break;
+
+    case 0x68:
+      ld(HL.lo(), BC.hi());
+      break;
+
+    case 0x69:
+      ld(HL.lo(), BC.lo());
+      break;
+
+    case 0x6A:
+      ld(HL.lo(), DE.hi());
+      break;
+
+    case 0x6B:
+      ld(HL.lo(), DE.lo());
+      break;
+
+    case 0x6C:
+      ld(HL.lo(), HL.hi());
+      break;
+
+    case 0x6D:
+      ld(HL.lo(), HL.lo());
+      break;
+
+    case 0x6E:
+      ld(HL.lo(), HL.value());
+      break;
+
+    case 0x6F:
+      ld(HL.lo(), A);
+      break;
+
+    case 0x70:
+      ld(HL.value(), BC.hi());
+      break;
+
+    case 0x71:
+      ld(HL.value(), BC.lo());
+      break;
+
+    case 0x72:
+      ld(HL.value(), DE.hi());
+      break;
+
+    case 0x73:
+      ld(HL.value(), DE.lo());
+      break;
+
+    case 0x74:
+      ld(HL.value(), HL.hi());
+      break;
+
+    case 0x75:
+      ld(HL.value(), HL.lo());
+      break;
+
+    case 0x76:
+      halt();
+      break;
+
+    case 0x77:
+      ld(HL.value(), A);
+      break;
+
+    case 0x78:
+      ld(A, BC.hi());
+      break;
+
+    case 0x79:
+      ld(A, BC.lo());
+      break;
+
+    case 0x7A:
+      ld(A, DE.hi());
+      break;
+
+    case 0x7B:
+      ld(A, DE.lo());
+      break;
+
+    case 0x7C:
+      ld(A, HL.hi());
+      break;
+
+    case 0x7D:
+      ld(A, HL.lo());
+      break;
+
+    case 0x7E:
+      ld(A, HL.value());
+      break;
+
+    case 0x7F:
+      ld(A, A);
+      break;
+
+    case 0x80:
+      add(BC.hi());
+      break;
+
+    case 0x81:
+      add(BC.lo());
+      break;
+
+    case 0x82:
+      add(DE.hi());
+      break;
+
+    case 0x83:
+      add(DE.lo());
+      break;
+
+    case 0x84:
+      add(HL.hi());
+      break;
+
+    case 0x85:
+      add(HL.lo());
+      break;
+
+    case 0x86:
+      add(m_bus.readBus(HL.value()));
+      break;
+
+    case 0x87:
+      add(A);
+      break;
+
+    case 0x88:
+      adc(BC.hi());
+      break;
+
+    case 0x89:
+      adc(BC.lo());
+      break;
+
+    case 0x8A:
+      adc(DE.hi());
+      break;
+
+    case 0x8B:
+      adc(DE.lo());
+      break;
+
+    case 0x8C:
+      adc(HL.hi());
+      break;
+
+    case 0x8D:
+      adc(HL.lo());
+      break;
+
+    case 0x8E:
+      adc(m_bus.readBus(HL.value()));
+      break;
+
+    case 0x8F:
+      adc(A);
+      break;
+
+    case 0x90:
+      sub(BC.hi());
+      break;
+
+    case 0x91:
+      sub(BC.lo());
+      break;
+
+    case 0x92:
+      sub(DE.hi());
+      break;
+
+    case 0x93:
+      sub(DE.lo());
+      break;
+
+    case 0x94:
+      sub(HL.hi());
+      break;
+
+    case 0x95:
+      sub(HL.lo());
+      break;
+
+    case 0x96:
+      sub(m_bus.readBus(HL.value()));
+      break;
+
+    case 0x97:
+      sub(A);
+      break;
+
+    case 0x98:
+      sbc(BC.hi());
+      break;
+
+    case 0x99:
+      sbc(BC.lo());
+      break;
+
+    case 0x9A:
+      sbc(DE.hi());
+      break;
+
+    case 0x9B:
+      sbc(DE.lo());
+      break;
+
+    case 0x9C:
+      sbc(HL.hi());
+      break;
+
+    case 0x9D:
+      sbc(HL.lo());
+      break;
+
+    case 0x9E:
+      sbc(m_bus.readBus(HL.value()));
+      break;
+
+    case 0x9F:
+      sbc(A);
+      break;
+
+    case 0xA0:
+      and_(BC.hi());
+      break;
+
+    case 0xA1:
+      and_(BC.lo());
+      break;
+
+    case 0xA2:
+      and_(DE.hi());
+      break;
+
+    case 0xA3:
+      and_(DE.hi());
+      break;
+
+    case 0xA4:
+      and_(HL.hi());
+      break;
+
+    case 0xA5:
+      and_(HL.lo());
+      break;
+
+    case 0xA6:
+      and_(m_bus.readBus(HL.value()));
+      break;
+
+    case 0xA7:
+      and_(A);
+      break;
+
+    case 0xA8:
+      xor_(BC.hi());
+      break;
+
+    case 0xA9:
+      xor_(BC.lo());
+      break;
+
+    case 0xAA:
+      xor_(DE.hi());
+      break;
+
+    case 0xAB:
+      xor_(DE.lo());
+      break;
+
+    case 0xAC:
+      xor_(HL.hi());
+      break;
+
+    case 0xAD:
+      xor_(HL.lo());
+      break;
+
+    case 0xAE:
+      xor_(m_bus.readBus(HL.value()));
+      break;
+
+    case 0xAF:
+      xor_(A);
+      break;
+
+    case 0xB0:
+      or_(BC.hi());
+      break;
+
+    case 0xB1:
+      or_(BC.lo());
+      break;
+
+    case 0xB2:
+      or_(DE.hi());
+      break;
 
-      case 0x28:
-        PC += 1;
-        jr(cc::Z, e8(m_bus.readBus(PC++)));
-        break;
-
-      case 0x29:
-        add(HL);
-        break;
-
-      case 0x2A:
-        ldi(A, HL);
-        break;
-
-      case 0x2B:
-        dec(HL);
-        break;
-
-      case 0x2C:
-        inc(HL.lo());
-        break;
-
-      case 0x2D:
-        dec(HL.lo());
-        break;
-
-      case 0x2E:
-        ld(HL.lo(), n8(fetch_byte()));
-        break;
-
-      case 0x2F:
-        cpl();
-        break;
-
-      case 0x30:
-        PC += 1;
-        jr(cc::NC, e8(m_bus.readBus(PC++)));
-        break;
-
-      case 0x31:
-        SP = n16(fetch_word()).value();
-        m_clock.cycle(3);
-        break;
+    case 0xB3:
+      or_(DE.lo());
+      break;
+
+    case 0xB4:
+      or_(HL.hi());
+      break;
+
+    case 0xB5:
+      or_(HL.lo());
+      break;
+
+    case 0xB6:
+      or_(m_bus.readBus(HL.value()));
+      break;
+
+    case 0xB7:
+      or_(A);
+      break;
+
+    case 0xB8:
+      cp(BC.hi());
+      break;
+
+    case 0xB9:
+      cp(BC.lo());
+      break;
+
+    case 0xBA:
+      cp(DE.hi());
+      break;
+
+    case 0xBB:
+      cp(DE.lo());
+      break;
+
+    case 0xBC:
+      cp(HL.hi());
+      break;
+
+    case 0xBD:
+      cp(HL.lo());
+      break;
+
+    case 0xBE:
+      cp(m_bus.readBus(HL.value()));
+      break;
+
+    case 0xBF:
+      cp(A);
+      break;
+
+    case 0xC0:
+      ret(cc::NZ);
+      break;
+
+    case 0xC1:
+      pop(BC);
+      break;
+
+    case 0xC2:
+      jp(cc::NZ, n16(fetch_word()));
+      break;
+
+    case 0xC3:
+      jp(n16(fetch_word()));
+      break;
+
+    case 0xC4:
+      call(cc::NZ, n16(fetch_word()));
+      break;
+
+    case 0xC5:
+      push(BC);
+      break;
+
+    case 0xC6:
+      PC += 1;
+      add(m_bus.readBus(PC++));
+      break;
 
-      case 0x32:
-        ldd(HL, A);
-        break;
+    case 0xC7:
+      rst(0);
+      break;
 
-      case 0x33:
-
-        ++SP;
-        m_clock.cycle(2);
-        break;
-
-      case 0x34:
-        inc(HL.value());
-        break;
-
-      case 0x35:
-        dec(HL.value());
-        break;
-
-      case 0x36:
-        m_bus.writeBus(HL.value(), n8(fetch_byte()).value());
-        m_clock.cycle(3);
-        break;
-
-      case 0x37:
-        scf();
-        break;
-
-      case 0x38:
-        PC += 1;
-        jr(cc::C, e8(m_bus.readBus(PC++)));
-        break;
+    case 0xC8:
+      ret(cc::Z);
+      break;
 
-      case 0x39: {
-
-        uint8 t_old_lo_reg_val = HL.lo().value();
-        uint16 t_old_reg_val = HL.value();
+    case 0xC9:
+      ret();
+      break;
 
-        HL.lo() = SP & 0x00FF;
-        HL.hi() = (SP & 0xFF00) >> 8;
+    case 0xCA:
+      jp(cc::Z, n16(fetch_word()));
+      break;
 
-        F.n(reset);
-        t_old_reg_val > HL.value() ? F.c(set) : F.c(reset);
-        t_old_lo_reg_val > HL.lo().value() ? F.h(set) : F.h(reset);
-
-        m_clock.cycle(2);
-      } break;
-
-      case 0x3A:
-        ldd(A, HL);
-        break;
-
-      case 0x3B:
-        SP--;
-        break;
-
-      case 0x3C:
-        inc(A);
-        break;
-
-      case 0x3D:
-        dec(A);
-        break;
-
-      case 0x3E:
-        ld(A, n8(fetch_byte()));
-        break;
-
-      case 0x3F:
-        ccf();
-        break;
-
-      case 0x40:
-        ld(BC.hi(), BC.hi());
-        break;
-
-      case 0x41:
-        ld(BC.hi(), BC.lo());
-        break;
-
-      case 0x42:
-        ld(BC.hi(), DE.hi());
-        break;
-
-      case 0x43:
-        ld(BC.hi(), DE.lo());
-        break;
-
-      case 0x44:
-        ld(BC.hi(), HL.hi());
-        break;
-
-      case 0x45:
-        ld(BC.hi(), HL.lo());
-        break;
-
-      case 0x46:
-        ld(BC.hi(), HL.value());
-        break;
-
-      case 0x47:
-        ld(BC.hi(), A);
-        break;
-
-      case 0x48:
-        ld(BC.lo(), BC.hi());
-        break;
-
-      case 0x49:
-        ld(BC.lo(), BC.lo());
-        break;
-
-      case 0x4A:
-        ld(BC.lo(), DE.hi());
-        break;
-
-      case 0x4B:
-        ld(BC.lo(), DE.lo());
-        break;
-
-      case 0x4C:
-        ld(BC.lo(), HL.hi());
-        break;
-
-      case 0x4D:
-        ld(BC.lo(), HL.lo());
-        break;
-
-      case 0x4E:
-        ld(BC.lo(), HL.value());
-        break;
-
-      case 0x4F:
-        ld(BC.lo(), A);
-        break;
-
-      case 0x50:
-        ld(DE.hi(), BC.hi());
-        break;
-
-      case 0x51:
-        ld(DE.hi(), BC.lo());
-        break;
-
-      case 0x52:
-        ld(DE.hi(), DE.hi());
-        break;
-
-      case 0x53:
-        ld(DE.hi(), DE.lo());
-        break;
-
-      case 0x54:
-        ld(DE.hi(), HL.hi());
-        break;
-
-      case 0x55:
-        ld(DE.hi(), HL.lo());
-        break;
-
-      case 0x56:
-        ld(DE.hi(), HL.value());
-        break;
-
-      case 0x57:
-        ld(DE.hi(), A);
-        break;
-
-      case 0x58:
-        ld(DE.lo(), BC.hi());
-        break;
-
-      case 0x59:
-        ld(DE.lo(), BC.lo());
-        break;
-
-      case 0x5A:
-        ld(DE.lo(), DE.hi());
-        break;
-
-      case 0x5B:
-        ld(DE.lo(), DE.lo());
-        break;
-
-      case 0x5C:
-        ld(DE.lo(), HL.hi());
-        break;
-
-      case 0x5D:
-        ld(DE.lo(), HL.lo());
-        break;
-
-      case 0x5E:
-        ld(DE.lo(), HL.value());
-        break;
-
-      case 0x5F:
-        ld(DE.lo(), A);
-        break;
-
-      case 0x60:
-        ld(HL.hi(), BC.hi());
-        break;
-
-      case 0x61:
-        ld(HL.hi(), BC.lo());
-        break;
-
-      case 0x62:
-        ld(HL.hi(), DE.hi());
-        break;
-
-      case 0x63:
-        ld(HL.hi(), DE.lo());
-        break;
-
-      case 0x64:
-        ld(HL.hi(), HL.hi());
-        break;
-
-      case 0x65:
-        ld(HL.hi(), HL.lo());
-        break;
-
-      case 0x66:
-        ld(HL.hi(), HL.value());
-        break;
-
-      case 0x67:
-        ld(HL.hi(), A);
-        break;
-
-      case 0x68:
-        ld(HL.lo(), BC.hi());
-        break;
-
-      case 0x69:
-        ld(HL.lo(), BC.lo());
-        break;
-
-      case 0x6A:
-        ld(HL.lo(), DE.hi());
-        break;
-
-      case 0x6B:
-        ld(HL.lo(), DE.lo());
-        break;
-
-      case 0x6C:
-        ld(HL.lo(), HL.hi());
-        break;
-
-      case 0x6D:
-        ld(HL.lo(), HL.lo());
-        break;
-
-      case 0x6E:
-        ld(HL.lo(), HL.value());
-        break;
-
-      case 0x6F:
-        ld(HL.lo(), A);
-        break;
-
-      case 0x70:
-        ld(HL.value(), BC.hi());
-        break;
-
-      case 0x71:
-        ld(HL.value(), BC.lo());
-        break;
-
-      case 0x72:
-        ld(HL.value(), DE.hi());
-        break;
-
-      case 0x73:
-        ld(HL.value(), DE.lo());
-        break;
-
-      case 0x74:
-        ld(HL.value(), HL.hi());
-        break;
-
-      case 0x75:
-        ld(HL.value(), HL.lo());
-        break;
-
-      case 0x76:
-        halt();
-        break;
-
-      case 0x77:
-        ld(HL.value(), A);
-        break;
-
-      case 0x78:
-        ld(A, BC.hi());
-        break;
-
-      case 0x79:
-        ld(A, BC.lo());
-        break;
-
-      case 0x7A:
-        ld(A, DE.hi());
-        break;
-
-      case 0x7B:
-        ld(A, DE.lo());
-        break;
-
-      case 0x7C:
-        ld(A, HL.hi());
-        break;
-
-      case 0x7D:
-        ld(A, HL.lo());
-        break;
-
-      case 0x7E:
-        ld(A, HL.value());
-        break;
-
-      case 0x7F:
-        ld(A, A);
-        break;
-
-      case 0x80:
-        add(BC.hi());
-        break;
-
-      case 0x81:
-        add(BC.lo());
-        break;
-
-      case 0x82:
-        add(DE.hi());
-        break;
-
-      case 0x83:
-        add(DE.lo());
-        break;
-
-      case 0x84:
-        add(HL.hi());
-        break;
-
-      case 0x85:
-        add(HL.lo());
-        break;
-
-      case 0x86:
-        add(m_bus.readBus(HL.value()));
-        break;
-
-      case 0x87:
-        add(A);
-        break;
-
-      case 0x88:
-        adc(BC.hi());
-        break;
-
-      case 0x89:
-        adc(BC.lo());
-        break;
-
-      case 0x8A:
-        adc(DE.hi());
-        break;
-
-      case 0x8B:
-        adc(DE.lo());
-        break;
-
-      case 0x8C:
-        adc(HL.hi());
-        break;
-
-      case 0x8D:
-        adc(HL.lo());
-        break;
-
-      case 0x8E:
-        adc(m_bus.readBus(HL.value()));
-        break;
-
-      case 0x8F:
-        adc(A);
-        break;
-
-      case 0x90:
-        sub(BC.hi());
-        break;
-
-      case 0x91:
-        sub(BC.lo());
-        break;
-
-      case 0x92:
-        sub(DE.hi());
-        break;
-
-      case 0x93:
-        sub(DE.lo());
-        break;
-
-      case 0x94:
-        sub(HL.hi());
-        break;
-
-      case 0x95:
-        sub(HL.lo());
-        break;
-
-      case 0x96:
-        sub(m_bus.readBus(HL.value()));
-        break;
-
-      case 0x97:
-        sub(A);
-        break;
-
-      case 0x98:
-        sbc(BC.hi());
-        break;
-
-      case 0x99:
-        sbc(BC.lo());
-        break;
-
-      case 0x9A:
-        sbc(DE.hi());
-        break;
-
-      case 0x9B:
-        sbc(DE.lo());
-        break;
-
-      case 0x9C:
-        sbc(HL.hi());
-        break;
-
-      case 0x9D:
-        sbc(HL.lo());
-        break;
-
-      case 0x9E:
-        sbc(m_bus.readBus(HL.value()));
-        break;
-
-      case 0x9F:
-        sbc(A);
-        break;
-
-      case 0xA0:
-        and_(BC.hi());
-        break;
-
-      case 0xA1:
-        and_(BC.lo());
-        break;
-
-      case 0xA2:
-        and_(DE.hi());
-        break;
-
-      case 0xA3:
-        and_(DE.hi());
-        break;
-
-      case 0xA4:
-        and_(HL.hi());
-        break;
-
-      case 0xA5:
-        and_(HL.lo());
-        break;
-
-      case 0xA6:
-        and_(m_bus.readBus(HL.value()));
-        break;
-
-      case 0xA7:
-        and_(A);
-        break;
-
-      case 0xA8:
-        xor_(BC.hi());
-        break;
-
-      case 0xA9:
-        xor_(BC.lo());
-        break;
-
-      case 0xAA:
-        xor_(DE.hi());
-        break;
-
-      case 0xAB:
-        xor_(DE.lo());
-        break;
-
-      case 0xAC:
-        xor_(HL.hi());
-        break;
-
-      case 0xAD:
-        xor_(HL.lo());
-        break;
-
-      case 0xAE:
-        xor_(m_bus.readBus(HL.value()));
-        break;
-
-      case 0xAF:
-        xor_(A);
-        break;
-
-      case 0xB0:
-        or_(BC.hi());
-        break;
-
-      case 0xB1:
-        or_(BC.lo());
-        break;
-
-      case 0xB2:
-        or_(DE.hi());
-        break;
-
-      case 0xB3:
-        or_(DE.lo());
-        break;
-
-      case 0xB4:
-        or_(HL.hi());
-        break;
-
-      case 0xB5:
-        or_(HL.lo());
-        break;
-
-      case 0xB6:
-        or_(m_bus.readBus(HL.value()));
-        break;
-
-      case 0xB7:
-        or_(A);
-        break;
-
-      case 0xB8:
-        cp(BC.hi());
-        break;
-
-      case 0xB9:
-        cp(BC.lo());
-        break;
-
-      case 0xBA:
-        cp(DE.hi());
-        break;
-
-      case 0xBB:
-        cp(DE.lo());
-        break;
-
-      case 0xBC:
-        cp(HL.hi());
-        break;
-
-      case 0xBD:
-        cp(HL.lo());
-        break;
-
-      case 0xBE:
-        cp(m_bus.readBus(HL.value()));
-        break;
-
-      case 0xBF:
-        cp(A);
-        break;
-
-      case 0xC0:
-        ret(cc::NZ);
-        break;
-
-      case 0xC1:
-        pop(BC);
-        break;
-
-      case 0xC2:
-        jp(cc::NZ, n16(fetch_word()));
-        break;
-
-      case 0xC3:
-        jp(n16(fetch_word()));
-        break;
-
-      case 0xC4:
-        call(cc::NZ, n16(fetch_word()));
-        break;
-
-      case 0xC5:
-        push(BC);
-        break;
-
-      case 0xC6:
-        PC += 1;
-        add(m_bus.readBus(PC++));
-        break;
-
-      case 0xC7:
-        rst(0);
-        break;
-
-      case 0xC8:
-        ret(cc::Z);
-        break;
-
-      case 0xC9:
-        ret();
-        break;
-
-      case 0xCA:
-        jp(cc::Z, n16(fetch_word()));
-        break;
-
-      case 0xCB: // 0xCB Prefixed:
-
-        switch (fetch_byte()) {
-          case 0x00:
-            rlc(BC.hi());
-            break;
-
-          case 0x01:
-            rlc(BC.lo());
-            break;
-
-          case 0x02:
-            rlc(DE.hi());
-            break;
-
-          case 0x03:
-            rlc(DE.lo());
-            break;
-
-          case 0x04:
-            rlc(HL.hi());
-            break;
-
-          case 0x05:
-            rlc(HL.lo());
-            break;
-
-          case 0x06:
-            rlc(HL.value());
-            break;
-
-          case 0x07:
-            rlc(A);
-            break;
-
-          case 0x08:
-            rrc(BC.hi());
-            break;
-
-          case 0x09:
-            rrc(BC.lo());
-            break;
-
-          case 0x0A:
-            rrc(DE.hi());
-            break;
-
-          case 0x0B:
-            rrc(DE.lo());
-            break;
-
-          case 0x0C:
-            rrc(HL.hi());
-            break;
-
-          case 0x0D:
-            rrc(HL.lo());
-            break;
-
-          case 0x0E:
-            rrc(HL.value());
-            break;
-
-          case 0x0F:
-            rrc(A);
-            break;
-
-          case 0x10:
-            rl(BC.hi());
-            break;
-
-          case 0x11:
-            rl(BC.lo());
-            break;
-
-          case 0x12:
-            rl(DE.hi());
-            break;
-
-          case 0x13:
-            rl(DE.lo());
-            break;
-
-          case 0x14:
-            rl(HL.hi());
-            break;
-
-          case 0x15:
-            rl(HL.lo());
-            break;
-
-          case 0x16:
-            rl(HL.value());
-            break;
-
-          case 0x17:
-            rl(A);
-            break;
-
-          case 0x18:
-            rr(BC.hi());
-            break;
-
-          case 0x19:
-            rr(BC.lo());
-            break;
-
-          case 0x1A:
-            rr(DE.hi());
-            break;
-
-          case 0x1B:
-            rr(DE.lo());
-            break;
-
-          case 0x1C:
-            rr(HL.hi());
-            break;
-
-          case 0x1D:
-            rr(HL.lo());
-            break;
-
-          case 0x1E:
-            rr(HL.value());
-            break;
-
-          case 0x1F:
-            rr(A);
-            break;
-
-          case 0x20:
-            sla(BC.hi());
-            break;
-
-          case 0x21:
-            sla(BC.lo());
-            break;
-
-          case 0x22:
-            sla(DE.hi());
-            break;
-
-          case 0x23:
-            sla(DE.lo());
-            break;
-
-          case 0x24:
-            sla(HL.hi());
-            break;
-
-          case 0x25:
-            sla(HL.lo());
-            break;
-
-          case 0x26:
-            sla(HL.value());
-            break;
-
-          case 0x27:
-            sla(A);
-            break;
-
-          case 0x28:
-            sra(BC.hi());
-            break;
-
-          case 0x29:
-            sra(BC.lo());
-            break;
-
-          case 0x2A:
-            sra(DE.hi());
-            break;
-
-          case 0x2B:
-            sra(DE.lo());
-            break;
-
-          case 0x2C:
-            sra(HL.hi());
-            break;
-
-          case 0x2D:
-            sra(HL.lo());
-            break;
-
-          case 0x2E:
-            sra(HL.value());
-            break;
-
-          case 0x2F:
-            sra(A);
-            break;
-
-          case 0x30:
-            swap(BC.hi());
-            break;
-
-          case 0x31:
-            swap(BC.lo());
-            break;
-
-          case 0x32:
-            swap(DE.hi());
-            break;
-
-          case 0x33:
-            swap(DE.lo());
-            break;
-
-          case 0x34:
-            swap(HL.hi());
-            break;
-
-          case 0x35:
-            swap(HL.lo());
-            break;
-
-          case 0x36:
-            swap(HL.value());
-            break;
-
-          case 0x37:
-            swap(A);
-            break;
-
-          case 0x38:
-            srl(BC.hi());
-            break;
-
-          case 0x39:
-            srl(BC.lo());
-            break;
-
-          case 0x3A:
-            srl(DE.hi());
-            break;
-
-          case 0x3B:
-            srl(DE.lo());
-            break;
-
-          case 0x3C:
-            srl(HL.hi());
-            break;
-
-          case 0x3D:
-            srl(HL.lo());
-            break;
-
-          case 0x3E:
-            srl(HL.value());
-            break;
-
-          case 0x3F:
-            srl(A);
-            break;
-
-          case 0x40:
-            bit(0, BC.hi());
-            break;
-
-          case 0x41:
-            bit(0, BC.lo());
-            break;
-
-          case 0x42:
-            bit(0, DE.hi());
-            break;
-
-          case 0x43:
-            bit(0, DE.lo());
-            break;
-
-          case 0x44:
-            bit(0, HL.hi());
-            break;
-
-          case 0x45:
-            bit(0, HL.lo());
-            break;
-
-          case 0x46:
-            bit(0, m_bus.readBus(HL.value()));
-            break;
-
-          case 0x47:
-            bit(0, A);
-            break;
-
-          case 0x48:
-            bit(1, BC.hi());
-            break;
-
-          case 0x49:
-            bit(1, BC.lo());
-            break;
-
-          case 0x4A:
-            bit(1, DE.hi());
-            break;
-
-          case 0x4B:
-            bit(1, DE.lo());
-            break;
-
-          case 0x4C:
-            bit(1, HL.hi());
-            break;
-
-          case 0x4D:
-            bit(1, HL.lo());
-            break;
-
-          case 0x4E:
-            bit(1, m_bus.readBus(HL.value()));
-            break;
-
-          case 0x4F:
-            bit(1, A);
-            break;
-
-          case 0x50:
-            bit(2, BC.hi());
-            break;
-
-          case 0x51:
-            bit(2, BC.lo());
-            break;
-
-          case 0x52:
-            bit(2, DE.hi());
-            break;
-
-          case 0x53:
-            bit(2, DE.lo());
-            break;
-
-          case 0x54:
-            bit(2, HL.hi());
-            break;
-
-          case 0x55:
-            bit(2, HL.lo());
-            break;
-
-          case 0x56:
-            bit(2, m_bus.readBus(HL.value()));
-            break;
-
-          case 0x57:
-            bit(2, A);
-            break;
-
-          case 0x58:
-            bit(3, BC.hi());
-            break;
-
-          case 0x59:
-            bit(3, BC.lo());
-            break;
-
-          case 0x5A:
-            bit(3, DE.hi());
-            break;
-
-          case 0x5B:
-            bit(3, DE.lo());
-            break;
-
-          case 0x5C:
-            bit(3, HL.hi());
-            break;
-
-          case 0x5D:
-            bit(3, HL.lo());
-            break;
-
-          case 0x5E:
-            bit(3, m_bus.readBus(HL.value()));
-            break;
-
-          case 0x5F:
-            bit(3, A);
-            break;
-
-          case 0x60:
-            bit(4, BC.hi());
-            break;
-
-          case 0x61:
-            bit(4, BC.lo());
-            break;
-
-          case 0x62:
-            bit(4, DE.hi());
-            break;
-
-          case 0x63:
-            bit(4, DE.lo());
-            break;
-
-          case 0x64:
-            bit(4, HL.hi());
-            break;
-
-          case 0x65:
-            bit(4, HL.lo());
-            break;
-
-          case 0x66:
-            bit(4, m_bus.readBus(HL.value()));
-            break;
-
-          case 0x67:
-            bit(4, A);
-            break;
-
-          case 0x68:
-            bit(5, BC.hi());
-            break;
-
-          case 0x69:
-            bit(5, BC.lo());
-            break;
-
-          case 0x6A:
-            bit(5, DE.hi());
-            break;
-
-          case 0x6B:
-            bit(5, DE.lo());
-            break;
-
-          case 0x6C:
-            bit(5, HL.hi());
-            break;
-
-          case 0x6D:
-            bit(5, HL.lo());
-            break;
-
-          case 0x6E:
-            bit(5, m_bus.readBus(HL.value()));
-            break;
-
-          case 0x6F:
-            bit(5, A);
-            break;
-
-          case 0x70:
-            bit(6, BC.hi());
-            break;
-
-          case 0x71:
-            bit(6, BC.lo());
-            break;
-
-          case 0x72:
-            bit(6, DE.hi());
-            break;
-
-          case 0x73:
-            bit(6, DE.lo());
-            break;
-
-          case 0x74:
-            bit(6, HL.hi());
-            break;
-
-          case 0x75:
-            bit(6, HL.lo());
-            break;
-
-          case 0x76:
-            bit(6, m_bus.readBus(HL.value()));
-            break;
-
-          case 0x77:
-            bit(6, A);
-            break;
-
-          case 0x78:
-            bit(7, BC.hi());
-            break;
-
-          case 0x79:
-            bit(7, BC.lo());
-            break;
-
-          case 0x7A:
-            bit(7, DE.hi());
-            break;
-
-          case 0x7B:
-            bit(7, DE.lo());
-            break;
-
-          case 0x7C:
-            bit(7, HL.hi());
-            break;
-
-          case 0x7D:
-            bit(7, HL.lo());
-            break;
-
-          case 0x7E:
-            bit(7, m_bus.readBus(HL.value()));
-            break;
-
-          case 0x7F:
-            bit(7, A);
-            break;
-
-          case 0x80:
-            res(0, BC.hi());
-            break;
-
-          case 0x81:
-            res(0, BC.lo());
-            break;
-
-          case 0x82:
-            res(0, DE.hi());
-            break;
-
-          case 0x83:
-            res(0, DE.lo());
-            break;
-
-          case 0x84:
-            res(0, HL.hi());
-            break;
-
-          case 0x85:
-            res(0, HL.lo());
-            break;
-
-          case 0x86:
-            res(0, HL.value());
-            break;
-
-          case 0x87:
-            res(0, A);
-            break;
-
-          case 0x88:
-            res(1, BC.hi());
-            break;
-
-          case 0x89:
-            res(1, BC.lo());
-            break;
-
-          case 0x8A:
-            res(1, DE.hi());
-            break;
-
-          case 0x8B:
-            res(1, DE.lo());
-            break;
-
-          case 0x8C:
-            res(1, HL.hi());
-            break;
-
-          case 0x8D:
-            res(1, HL.lo());
-            break;
-
-          case 0x8E:
-            res(1, HL.value());
-            break;
-
-          case 0x8F:
-            res(1, A);
-            break;
-
-          case 0x90:
-            res(2, BC.hi());
-            break;
-
-          case 0x91:
-            res(2, BC.lo());
-            break;
-
-          case 0x92:
-            res(2, DE.hi());
-            break;
-
-          case 0x93:
-            res(2, DE.lo());
-            break;
-
-          case 0x94:
-            res(2, HL.hi());
-            break;
-
-          case 0x95:
-            res(2, HL.lo());
-            break;
-
-          case 0x96:
-            res(2, HL.value());
-            break;
-
-          case 0x97:
-            res(2, A);
-            break;
-
-          case 0x98:
-            res(3, BC.hi());
-            break;
-
-          case 0x99:
-            res(3, BC.lo());
-            break;
-
-          case 0x9A:
-            res(3, DE.hi());
-            break;
-
-          case 0x9B:
-            res(3, DE.lo());
-            break;
-
-          case 0x9C:
-            res(3, HL.hi());
-            break;
-
-          case 0x9D:
-            res(3, HL.lo());
-            break;
-
-          case 0x9E:
-            res(3, HL.value());
-            break;
-
-          case 0x9F:
-            res(3, A);
-            break;
-
-          case 0xA0:
-            res(4, BC.hi());
-            break;
-
-          case 0xA1:
-            res(4, BC.lo());
-            break;
-
-          case 0xA2:
-            res(4, DE.hi());
-            break;
-
-          case 0xA3:
-            res(4, DE.lo());
-            break;
-
-          case 0xA4:
-            res(4, HL.hi());
-            break;
-
-          case 0xA5:
-            res(4, HL.lo());
-            break;
-
-          case 0xA6:
-            res(4, HL.value());
-            break;
-
-          case 0xA7:
-            res(4, A);
-            break;
-
-          case 0xA8:
-            res(5, BC.hi());
-            break;
-
-          case 0xA9:
-            res(5, BC.lo());
-            break;
-
-          case 0xAA:
-            res(5, DE.hi());
-            break;
-
-          case 0xAB:
-            res(5, DE.lo());
-            break;
-
-          case 0xAC:
-            res(5, HL.hi());
-            break;
-
-          case 0xAD:
-            res(5, HL.lo());
-            break;
-
-          case 0xAE:
-            res(5, HL.value());
-            break;
-
-          case 0xAF:
-            res(5, A);
-            break;
-
-          case 0xB0:
-            res(6, BC.hi());
-            break;
-
-          case 0xB1:
-            res(6, BC.lo());
-            break;
-
-          case 0xB2:
-            res(6, DE.hi());
-            break;
-
-          case 0xB3:
-            res(6, DE.lo());
-            break;
-
-          case 0xB4:
-            res(6, HL.hi());
-            break;
-
-          case 0xB5:
-            res(6, HL.lo());
-            break;
-
-          case 0xB6:
-            res(6, HL.value());
-            break;
-
-          case 0xB7:
-            res(6, A);
-            break;
-
-          case 0xB8:
-            res(7, BC.hi());
-            break;
-
-          case 0xB9:
-            res(7, BC.lo());
-            break;
-
-          case 0xBA:
-            res(7, DE.hi());
-            break;
-
-          case 0xBB:
-            res(7, DE.lo());
-            break;
-
-          case 0xBC:
-            res(7, HL.hi());
-            break;
-
-          case 0xBD:
-            res(7, HL.lo());
-            break;
-
-          case 0xBE:
-            res(7, HL.value());
-            break;
-
-          case 0xBF:
-            res(7, A);
-            break;
-
-          case 0xC0:
-            set_(0, BC.hi());
-            break;
-
-          case 0xC1:
-            set_(0, BC.lo());
-            break;
-
-          case 0xC2:
-            set_(0, DE.hi());
-            break;
-
-          case 0xC3:
-            set_(0, DE.lo());
-            break;
-
-          case 0xC4:
-            set_(0, HL.hi());
-            break;
-
-          case 0xC5:
-            set_(0, HL.lo());
-            break;
-
-          case 0xC6:
-            set_(0, HL.value());
-            break;
-
-          case 0xC7:
-            set_(0, A);
-            break;
-
-          case 0xC8:
-            set_(1, BC.hi());
-            break;
-
-          case 0xC9:
-            set_(1, BC.lo());
-            break;
-
-          case 0xCA:
-            set_(1, DE.hi());
-            break;
-
-          case 0xCB:
-            set_(1, DE.lo());
-            break;
-
-          case 0xCC:
-            set_(1, HL.hi());
-            break;
-
-          case 0xCD:
-            set_(1, HL.lo());
-            break;
-
-          case 0xCE:
-            set_(1, HL.value());
-            break;
-
-          case 0xCF:
-            set_(1, A);
-            break;
-
-          case 0xD0:
-            set_(2, BC.hi());
-            break;
-
-          case 0xD1:
-            set_(2, BC.lo());
-            break;
-
-          case 0xD2:
-            set_(2, DE.hi());
-            break;
-
-          case 0xD3:
-            set_(2, DE.lo());
-            break;
-
-          case 0xD4:
-            set_(2, HL.hi());
-            break;
-
-          case 0xD5:
-            set_(2, HL.lo());
-            break;
-
-          case 0xD6:
-            set_(2, HL.value());
-            break;
-
-          case 0xD7:
-            set_(2, A);
-            break;
-
-          case 0xD8:
-            set_(3, BC.hi());
-            break;
-
-          case 0xD9:
-            set_(3, BC.lo());
-            break;
-
-          case 0xDA:
-            set_(3, DE.hi());
-            break;
-
-          case 0xDB:
-            set_(3, DE.lo());
-            break;
-
-          case 0xDC:
-            set_(3, HL.hi());
-            break;
-
-          case 0xDD:
-            set_(3, HL.lo());
-            break;
-
-          case 0xDE:
-            set_(3, HL.value());
-            break;
-
-          case 0xDF:
-            set_(3, A);
-            break;
-
-          case 0xE0:
-            set_(4, BC.hi());
-            break;
-
-          case 0xE1:
-            set_(4, BC.lo());
-            break;
-
-          case 0xE2:
-            set_(4, DE.hi());
-            break;
-
-          case 0xE3:
-            set_(4, DE.lo());
-            break;
-
-          case 0xE4:
-            set_(4, HL.hi());
-            break;
-
-          case 0xE5:
-            set_(4, HL.lo());
-            break;
-
-          case 0xE6:
-            set_(4, HL.value());
-            break;
-
-          case 0xE7:
-            set_(4, A);
-            break;
-
-          case 0xE8:
-            set_(5, BC.hi());
-            break;
-
-          case 0xE9:
-            set_(5, BC.lo());
-            break;
-
-          case 0xEA:
-            set_(5, DE.hi());
-            break;
-
-          case 0xEB:
-            set_(5, DE.lo());
-            break;
-
-          case 0xEC:
-            set_(5, HL.hi());
-            break;
-
-          case 0xED:
-            set_(5, HL.lo());
-            break;
-
-          case 0xEE:
-            set_(5, HL.value());
-            break;
-
-          case 0xEF:
-            set_(5, A);
-            break;
-
-          case 0xF0:
-            set_(6, BC.hi());
-            break;
-
-          case 0xF1:
-            set_(6, BC.lo());
-            break;
-
-          case 0xF2:
-            set_(6, DE.hi());
-            break;
-
-          case 0xF3:
-            set_(6, DE.lo());
-            break;
-
-          case 0xF4:
-            set_(6, HL.hi());
-            break;
-
-          case 0xF5:
-            set_(6, HL.lo());
-            break;
-
-          case 0xF6:
-            set_(6, HL.value());
-            break;
-
-          case 0xF7:
-            set_(6, A);
-            break;
-
-          case 0xF8:
-            set_(7, BC.hi());
-            break;
-
-          case 0xF9:
-            set_(7, BC.lo());
-            break;
-
-          case 0xFA:
-            set_(7, DE.hi());
-            break;
-
-          case 0xFB:
-            set_(7, DE.lo());
-            break;
-
-          case 0xFC:
-            set_(7, HL.hi());
-            break;
-
-          case 0xFD:
-            set_(7, HL.lo());
-            break;
-
-          case 0xFE:
-            set_(7, HL.value());
-            break;
-
-          case 0xFF:
-            set_(7, A);
-            break;
-
-          default:
-            break;
-        }
-        break;
-
-      case 0xCC:
-        call(cc::Z, n16(fetch_word()));
-        break;
-
-      case 0xCD:
-        call(n16(fetch_word()));
-        break;
-
-      case 0xCE:
-        adc(n8(fetch_byte()));
-        break;
-
-      case 0xCF:
-        rst(1);
-        break;
-
-      case 0xD0:
-        ret(cc::NC);
-        break;
-
-      case 0xD1:
-        pop(DE);
-        break;
-
-      case 0xD2:
-        jp(cc::NC, n16(fetch_word()));
-        break;
-
-      case 0xD4:
-        call(cc::NC, n16(fetch_word()));
-        break;
-
-      case 0xD5:
-        push(DE);
-        break;
-
-      case 0xD6:
-        sub(n8(fetch_byte()));
-        break;
-
-      case 0xD7:
-        rst(2);
-        break;
-
-      case 0xD8:
-        ret(cc::C);
-        break;
-
-      case 0xD9:
-        reti();
-        break;
-
-      case 0xDA:
-        jp(cc::C, n16(fetch_word()));
-        break;
-
-      case 0xDC:
-        call(cc::C, n16(fetch_word()));
-        break;
-
-      case 0xDE:
-        sbc(n8(fetch_byte()));
-        break;
-
-      case 0xDF:
-        rst(3);
-        break;
-
-      case 0xE0:
-        ldio(0xFF00 + n8(fetch_byte()).value(), A);
-        break;
-
-      case 0xE1:
-        pop(HL);
-        break;
-
-      case 0xE2:
-        ldio(0xFF00 + BC.lo().value(), A);
-        break;
-
-      case 0xE5:
-        push(HL);
-        break;
-
-      case 0xE6:
-        and_(n8(fetch_byte()));
-        break;
-
-      case 0xE7:
-        rst(4);
-        break;
-
-      case 0xE8:
-        PC += 1;
-        add(e8(m_bus.readBus(PC++)));
-        break;
-
-      case 0xE9:
-        jp();
-        break;
-
-      case 0xEA:
-        ld(n16(fetch_word()), tag{});
-        break;
-
-      case 0xEE:
-        xor_(n8(fetch_byte()));
-        break;
-
-      case 0xEF:
-        rst(5);
-        break;
-
-      case 0xF0:
-        ldio(A, 0xFF00 + n8(fetch_byte()).value());
-        break;
-
-      case 0xF1:
-        pop();
-        break;
-
-      case 0xF2:
-        ldio(A, 0xFF00 + BC.lo().value());
-        break;
-
-      case 0xF3:
-        di();
-        break;
-
-      case 0xF5:
-        push();
-        break;
-
-      case 0xF6:
-        or_(n8(fetch_byte()));
-        break;
-
-      case 0xF7:
-        rst(6);
-        break;
-
-      case 0xF8:
-        PC += 1;
-        HL = SP + e8(m_bus.readBus(PC++)).value();
-        m_clock.cycle(3);
-        break;
-
-      case 0xF9:
-        SP = HL.value();
-        m_clock.cycle(2);
-        break;
-
-      case 0xFA:
-        ld(tag{}, n16(fetch_word()));
-        break;
-
-      case 0xFB:
-        ei();
-        break;
-
-      case 0xFE:
-        cp(n8(fetch_byte()));
-        break;
-
-      case 0xFF:
-        rst(7);
-        break;
-
-      default:
-        break;
-    }
+    case 0xCB: // 0xCB Prefixed:
+
+      switch (fetch_byte()) {
+        case 0x00:
+          rlc(BC.hi());
+          break;
+
+        case 0x01:
+          rlc(BC.lo());
+          break;
+
+        case 0x02:
+          rlc(DE.hi());
+          break;
+
+        case 0x03:
+          rlc(DE.lo());
+          break;
+
+        case 0x04:
+          rlc(HL.hi());
+          break;
+
+        case 0x05:
+          rlc(HL.lo());
+          break;
+
+        case 0x06:
+          rlc(HL.value());
+          break;
+
+        case 0x07:
+          rlc(A);
+          break;
+
+        case 0x08:
+          rrc(BC.hi());
+          break;
+
+        case 0x09:
+          rrc(BC.lo());
+          break;
+
+        case 0x0A:
+          rrc(DE.hi());
+          break;
+
+        case 0x0B:
+          rrc(DE.lo());
+          break;
+
+        case 0x0C:
+          rrc(HL.hi());
+          break;
+
+        case 0x0D:
+          rrc(HL.lo());
+          break;
+
+        case 0x0E:
+          rrc(HL.value());
+          break;
+
+        case 0x0F:
+          rrc(A);
+          break;
+
+        case 0x10:
+          rl(BC.hi());
+          break;
+
+        case 0x11:
+          rl(BC.lo());
+          break;
+
+        case 0x12:
+          rl(DE.hi());
+          break;
+
+        case 0x13:
+          rl(DE.lo());
+          break;
+
+        case 0x14:
+          rl(HL.hi());
+          break;
+
+        case 0x15:
+          rl(HL.lo());
+          break;
+
+        case 0x16:
+          rl(HL.value());
+          break;
+
+        case 0x17:
+          rl(A);
+          break;
+
+        case 0x18:
+          rr(BC.hi());
+          break;
+
+        case 0x19:
+          rr(BC.lo());
+          break;
+
+        case 0x1A:
+          rr(DE.hi());
+          break;
+
+        case 0x1B:
+          rr(DE.lo());
+          break;
+
+        case 0x1C:
+          rr(HL.hi());
+          break;
+
+        case 0x1D:
+          rr(HL.lo());
+          break;
+
+        case 0x1E:
+          rr(HL.value());
+          break;
+
+        case 0x1F:
+          rr(A);
+          break;
+
+        case 0x20:
+          sla(BC.hi());
+          break;
+
+        case 0x21:
+          sla(BC.lo());
+          break;
+
+        case 0x22:
+          sla(DE.hi());
+          break;
+
+        case 0x23:
+          sla(DE.lo());
+          break;
+
+        case 0x24:
+          sla(HL.hi());
+          break;
+
+        case 0x25:
+          sla(HL.lo());
+          break;
+
+        case 0x26:
+          sla(HL.value());
+          break;
+
+        case 0x27:
+          sla(A);
+          break;
+
+        case 0x28:
+          sra(BC.hi());
+          break;
+
+        case 0x29:
+          sra(BC.lo());
+          break;
+
+        case 0x2A:
+          sra(DE.hi());
+          break;
+
+        case 0x2B:
+          sra(DE.lo());
+          break;
+
+        case 0x2C:
+          sra(HL.hi());
+          break;
+
+        case 0x2D:
+          sra(HL.lo());
+          break;
+
+        case 0x2E:
+          sra(HL.value());
+          break;
+
+        case 0x2F:
+          sra(A);
+          break;
+
+        case 0x30:
+          swap(BC.hi());
+          break;
+
+        case 0x31:
+          swap(BC.lo());
+          break;
+
+        case 0x32:
+          swap(DE.hi());
+          break;
+
+        case 0x33:
+          swap(DE.lo());
+          break;
+
+        case 0x34:
+          swap(HL.hi());
+          break;
+
+        case 0x35:
+          swap(HL.lo());
+          break;
+
+        case 0x36:
+          swap(HL.value());
+          break;
+
+        case 0x37:
+          swap(A);
+          break;
+
+        case 0x38:
+          srl(BC.hi());
+          break;
+
+        case 0x39:
+          srl(BC.lo());
+          break;
+
+        case 0x3A:
+          srl(DE.hi());
+          break;
+
+        case 0x3B:
+          srl(DE.lo());
+          break;
+
+        case 0x3C:
+          srl(HL.hi());
+          break;
+
+        case 0x3D:
+          srl(HL.lo());
+          break;
+
+        case 0x3E:
+          srl(HL.value());
+          break;
+
+        case 0x3F:
+          srl(A);
+          break;
+
+        case 0x40:
+          bit(0, BC.hi());
+          break;
+
+        case 0x41:
+          bit(0, BC.lo());
+          break;
+
+        case 0x42:
+          bit(0, DE.hi());
+          break;
+
+        case 0x43:
+          bit(0, DE.lo());
+          break;
+
+        case 0x44:
+          bit(0, HL.hi());
+          break;
+
+        case 0x45:
+          bit(0, HL.lo());
+          break;
+
+        case 0x46:
+          bit(0, m_bus.readBus(HL.value()));
+          break;
+
+        case 0x47:
+          bit(0, A);
+          break;
+
+        case 0x48:
+          bit(1, BC.hi());
+          break;
+
+        case 0x49:
+          bit(1, BC.lo());
+          break;
+
+        case 0x4A:
+          bit(1, DE.hi());
+          break;
+
+        case 0x4B:
+          bit(1, DE.lo());
+          break;
+
+        case 0x4C:
+          bit(1, HL.hi());
+          break;
+
+        case 0x4D:
+          bit(1, HL.lo());
+          break;
+
+        case 0x4E:
+          bit(1, m_bus.readBus(HL.value()));
+          break;
+
+        case 0x4F:
+          bit(1, A);
+          break;
+
+        case 0x50:
+          bit(2, BC.hi());
+          break;
+
+        case 0x51:
+          bit(2, BC.lo());
+          break;
+
+        case 0x52:
+          bit(2, DE.hi());
+          break;
+
+        case 0x53:
+          bit(2, DE.lo());
+          break;
+
+        case 0x54:
+          bit(2, HL.hi());
+          break;
+
+        case 0x55:
+          bit(2, HL.lo());
+          break;
+
+        case 0x56:
+          bit(2, m_bus.readBus(HL.value()));
+          break;
+
+        case 0x57:
+          bit(2, A);
+          break;
+
+        case 0x58:
+          bit(3, BC.hi());
+          break;
+
+        case 0x59:
+          bit(3, BC.lo());
+          break;
+
+        case 0x5A:
+          bit(3, DE.hi());
+          break;
+
+        case 0x5B:
+          bit(3, DE.lo());
+          break;
+
+        case 0x5C:
+          bit(3, HL.hi());
+          break;
+
+        case 0x5D:
+          bit(3, HL.lo());
+          break;
+
+        case 0x5E:
+          bit(3, m_bus.readBus(HL.value()));
+          break;
+
+        case 0x5F:
+          bit(3, A);
+          break;
+
+        case 0x60:
+          bit(4, BC.hi());
+          break;
+
+        case 0x61:
+          bit(4, BC.lo());
+          break;
+
+        case 0x62:
+          bit(4, DE.hi());
+          break;
+
+        case 0x63:
+          bit(4, DE.lo());
+          break;
+
+        case 0x64:
+          bit(4, HL.hi());
+          break;
+
+        case 0x65:
+          bit(4, HL.lo());
+          break;
+
+        case 0x66:
+          bit(4, m_bus.readBus(HL.value()));
+          break;
+
+        case 0x67:
+          bit(4, A);
+          break;
+
+        case 0x68:
+          bit(5, BC.hi());
+          break;
+
+        case 0x69:
+          bit(5, BC.lo());
+          break;
+
+        case 0x6A:
+          bit(5, DE.hi());
+          break;
+
+        case 0x6B:
+          bit(5, DE.lo());
+          break;
+
+        case 0x6C:
+          bit(5, HL.hi());
+          break;
+
+        case 0x6D:
+          bit(5, HL.lo());
+          break;
+
+        case 0x6E:
+          bit(5, m_bus.readBus(HL.value()));
+          break;
+
+        case 0x6F:
+          bit(5, A);
+          break;
+
+        case 0x70:
+          bit(6, BC.hi());
+          break;
+
+        case 0x71:
+          bit(6, BC.lo());
+          break;
+
+        case 0x72:
+          bit(6, DE.hi());
+          break;
+
+        case 0x73:
+          bit(6, DE.lo());
+          break;
+
+        case 0x74:
+          bit(6, HL.hi());
+          break;
+
+        case 0x75:
+          bit(6, HL.lo());
+          break;
+
+        case 0x76:
+          bit(6, m_bus.readBus(HL.value()));
+          break;
+
+        case 0x77:
+          bit(6, A);
+          break;
+
+        case 0x78:
+          bit(7, BC.hi());
+          break;
+
+        case 0x79:
+          bit(7, BC.lo());
+          break;
+
+        case 0x7A:
+          bit(7, DE.hi());
+          break;
+
+        case 0x7B:
+          bit(7, DE.lo());
+          break;
+
+        case 0x7C:
+          bit(7, HL.hi());
+          break;
+
+        case 0x7D:
+          bit(7, HL.lo());
+          break;
+
+        case 0x7E:
+          bit(7, m_bus.readBus(HL.value()));
+          break;
+
+        case 0x7F:
+          bit(7, A);
+          break;
+
+        case 0x80:
+          res(0, BC.hi());
+          break;
+
+        case 0x81:
+          res(0, BC.lo());
+          break;
+
+        case 0x82:
+          res(0, DE.hi());
+          break;
+
+        case 0x83:
+          res(0, DE.lo());
+          break;
+
+        case 0x84:
+          res(0, HL.hi());
+          break;
+
+        case 0x85:
+          res(0, HL.lo());
+          break;
+
+        case 0x86:
+          res(0, HL.value());
+          break;
+
+        case 0x87:
+          res(0, A);
+          break;
+
+        case 0x88:
+          res(1, BC.hi());
+          break;
+
+        case 0x89:
+          res(1, BC.lo());
+          break;
+
+        case 0x8A:
+          res(1, DE.hi());
+          break;
+
+        case 0x8B:
+          res(1, DE.lo());
+          break;
+
+        case 0x8C:
+          res(1, HL.hi());
+          break;
+
+        case 0x8D:
+          res(1, HL.lo());
+          break;
+
+        case 0x8E:
+          res(1, HL.value());
+          break;
+
+        case 0x8F:
+          res(1, A);
+          break;
+
+        case 0x90:
+          res(2, BC.hi());
+          break;
+
+        case 0x91:
+          res(2, BC.lo());
+          break;
+
+        case 0x92:
+          res(2, DE.hi());
+          break;
+
+        case 0x93:
+          res(2, DE.lo());
+          break;
+
+        case 0x94:
+          res(2, HL.hi());
+          break;
+
+        case 0x95:
+          res(2, HL.lo());
+          break;
+
+        case 0x96:
+          res(2, HL.value());
+          break;
+
+        case 0x97:
+          res(2, A);
+          break;
+
+        case 0x98:
+          res(3, BC.hi());
+          break;
+
+        case 0x99:
+          res(3, BC.lo());
+          break;
+
+        case 0x9A:
+          res(3, DE.hi());
+          break;
+
+        case 0x9B:
+          res(3, DE.lo());
+          break;
+
+        case 0x9C:
+          res(3, HL.hi());
+          break;
+
+        case 0x9D:
+          res(3, HL.lo());
+          break;
+
+        case 0x9E:
+          res(3, HL.value());
+          break;
+
+        case 0x9F:
+          res(3, A);
+          break;
+
+        case 0xA0:
+          res(4, BC.hi());
+          break;
+
+        case 0xA1:
+          res(4, BC.lo());
+          break;
+
+        case 0xA2:
+          res(4, DE.hi());
+          break;
+
+        case 0xA3:
+          res(4, DE.lo());
+          break;
+
+        case 0xA4:
+          res(4, HL.hi());
+          break;
+
+        case 0xA5:
+          res(4, HL.lo());
+          break;
+
+        case 0xA6:
+          res(4, HL.value());
+          break;
+
+        case 0xA7:
+          res(4, A);
+          break;
+
+        case 0xA8:
+          res(5, BC.hi());
+          break;
+
+        case 0xA9:
+          res(5, BC.lo());
+          break;
+
+        case 0xAA:
+          res(5, DE.hi());
+          break;
+
+        case 0xAB:
+          res(5, DE.lo());
+          break;
+
+        case 0xAC:
+          res(5, HL.hi());
+          break;
+
+        case 0xAD:
+          res(5, HL.lo());
+          break;
+
+        case 0xAE:
+          res(5, HL.value());
+          break;
+
+        case 0xAF:
+          res(5, A);
+          break;
+
+        case 0xB0:
+          res(6, BC.hi());
+          break;
+
+        case 0xB1:
+          res(6, BC.lo());
+          break;
+
+        case 0xB2:
+          res(6, DE.hi());
+          break;
+
+        case 0xB3:
+          res(6, DE.lo());
+          break;
+
+        case 0xB4:
+          res(6, HL.hi());
+          break;
+
+        case 0xB5:
+          res(6, HL.lo());
+          break;
+
+        case 0xB6:
+          res(6, HL.value());
+          break;
+
+        case 0xB7:
+          res(6, A);
+          break;
+
+        case 0xB8:
+          res(7, BC.hi());
+          break;
+
+        case 0xB9:
+          res(7, BC.lo());
+          break;
+
+        case 0xBA:
+          res(7, DE.hi());
+          break;
+
+        case 0xBB:
+          res(7, DE.lo());
+          break;
+
+        case 0xBC:
+          res(7, HL.hi());
+          break;
+
+        case 0xBD:
+          res(7, HL.lo());
+          break;
+
+        case 0xBE:
+          res(7, HL.value());
+          break;
+
+        case 0xBF:
+          res(7, A);
+          break;
+
+        case 0xC0:
+          set_(0, BC.hi());
+          break;
+
+        case 0xC1:
+          set_(0, BC.lo());
+          break;
+
+        case 0xC2:
+          set_(0, DE.hi());
+          break;
+
+        case 0xC3:
+          set_(0, DE.lo());
+          break;
+
+        case 0xC4:
+          set_(0, HL.hi());
+          break;
+
+        case 0xC5:
+          set_(0, HL.lo());
+          break;
+
+        case 0xC6:
+          set_(0, HL.value());
+          break;
+
+        case 0xC7:
+          set_(0, A);
+          break;
+
+        case 0xC8:
+          set_(1, BC.hi());
+          break;
+
+        case 0xC9:
+          set_(1, BC.lo());
+          break;
+
+        case 0xCA:
+          set_(1, DE.hi());
+          break;
+
+        case 0xCB:
+          set_(1, DE.lo());
+          break;
+
+        case 0xCC:
+          set_(1, HL.hi());
+          break;
+
+        case 0xCD:
+          set_(1, HL.lo());
+          break;
+
+        case 0xCE:
+          set_(1, HL.value());
+          break;
+
+        case 0xCF:
+          set_(1, A);
+          break;
+
+        case 0xD0:
+          set_(2, BC.hi());
+          break;
+
+        case 0xD1:
+          set_(2, BC.lo());
+          break;
+
+        case 0xD2:
+          set_(2, DE.hi());
+          break;
+
+        case 0xD3:
+          set_(2, DE.lo());
+          break;
+
+        case 0xD4:
+          set_(2, HL.hi());
+          break;
+
+        case 0xD5:
+          set_(2, HL.lo());
+          break;
+
+        case 0xD6:
+          set_(2, HL.value());
+          break;
+
+        case 0xD7:
+          set_(2, A);
+          break;
+
+        case 0xD8:
+          set_(3, BC.hi());
+          break;
+
+        case 0xD9:
+          set_(3, BC.lo());
+          break;
+
+        case 0xDA:
+          set_(3, DE.hi());
+          break;
+
+        case 0xDB:
+          set_(3, DE.lo());
+          break;
+
+        case 0xDC:
+          set_(3, HL.hi());
+          break;
+
+        case 0xDD:
+          set_(3, HL.lo());
+          break;
+
+        case 0xDE:
+          set_(3, HL.value());
+          break;
+
+        case 0xDF:
+          set_(3, A);
+          break;
+
+        case 0xE0:
+          set_(4, BC.hi());
+          break;
+
+        case 0xE1:
+          set_(4, BC.lo());
+          break;
+
+        case 0xE2:
+          set_(4, DE.hi());
+          break;
+
+        case 0xE3:
+          set_(4, DE.lo());
+          break;
+
+        case 0xE4:
+          set_(4, HL.hi());
+          break;
+
+        case 0xE5:
+          set_(4, HL.lo());
+          break;
+
+        case 0xE6:
+          set_(4, HL.value());
+          break;
+
+        case 0xE7:
+          set_(4, A);
+          break;
+
+        case 0xE8:
+          set_(5, BC.hi());
+          break;
+
+        case 0xE9:
+          set_(5, BC.lo());
+          break;
+
+        case 0xEA:
+          set_(5, DE.hi());
+          break;
+
+        case 0xEB:
+          set_(5, DE.lo());
+          break;
+
+        case 0xEC:
+          set_(5, HL.hi());
+          break;
+
+        case 0xED:
+          set_(5, HL.lo());
+          break;
+
+        case 0xEE:
+          set_(5, HL.value());
+          break;
+
+        case 0xEF:
+          set_(5, A);
+          break;
+
+        case 0xF0:
+          set_(6, BC.hi());
+          break;
+
+        case 0xF1:
+          set_(6, BC.lo());
+          break;
+
+        case 0xF2:
+          set_(6, DE.hi());
+          break;
+
+        case 0xF3:
+          set_(6, DE.lo());
+          break;
+
+        case 0xF4:
+          set_(6, HL.hi());
+          break;
+
+        case 0xF5:
+          set_(6, HL.lo());
+          break;
+
+        case 0xF6:
+          set_(6, HL.value());
+          break;
+
+        case 0xF7:
+          set_(6, A);
+          break;
+
+        case 0xF8:
+          set_(7, BC.hi());
+          break;
+
+        case 0xF9:
+          set_(7, BC.lo());
+          break;
+
+        case 0xFA:
+          set_(7, DE.hi());
+          break;
+
+        case 0xFB:
+          set_(7, DE.lo());
+          break;
+
+        case 0xFC:
+          set_(7, HL.hi());
+          break;
+
+        case 0xFD:
+          set_(7, HL.lo());
+          break;
+
+        case 0xFE:
+          set_(7, HL.value());
+          break;
+
+        case 0xFF:
+          set_(7, A);
+          break;
+
+        default:
+          break;
+      }
+      break;
+
+    case 0xCC:
+      call(cc::Z, n16(fetch_word()));
+      break;
+
+    case 0xCD:
+      call(n16(fetch_word()));
+      break;
+
+    case 0xCE:
+      adc(n8(fetch_byte()));
+      break;
+
+    case 0xCF:
+      rst(1);
+      break;
+
+    case 0xD0:
+      ret(cc::NC);
+      break;
+
+    case 0xD1:
+      pop(DE);
+      break;
+
+    case 0xD2:
+      jp(cc::NC, n16(fetch_word()));
+      break;
+
+    case 0xD4:
+      call(cc::NC, n16(fetch_word()));
+      break;
+
+    case 0xD5:
+      push(DE);
+      break;
+
+    case 0xD6:
+      sub(n8(fetch_byte()));
+      break;
+
+    case 0xD7:
+      rst(2);
+      break;
+
+    case 0xD8:
+      ret(cc::C);
+      break;
+
+    case 0xD9:
+      reti();
+      break;
+
+    case 0xDA:
+      jp(cc::C, n16(fetch_word()));
+      break;
+
+    case 0xDC:
+      call(cc::C, n16(fetch_word()));
+      break;
+
+    case 0xDE:
+      sbc(n8(fetch_byte()));
+      break;
+
+    case 0xDF:
+      rst(3);
+      break;
+
+    case 0xE0:
+      ldio(0xFF00 + n8(fetch_byte()).value(), A);
+      break;
+
+    case 0xE1:
+      pop(HL);
+      break;
+
+    case 0xE2:
+      ldio(0xFF00 + BC.lo().value(), A);
+      break;
+
+    case 0xE5:
+      push(HL);
+      break;
+
+    case 0xE6:
+      and_(n8(fetch_byte()));
+      break;
+
+    case 0xE7:
+      rst(4);
+      break;
+
+    case 0xE8:
+      PC += 1;
+      add(e8(m_bus.readBus(PC++)));
+      break;
+
+    case 0xE9:
+      jp();
+      break;
+
+    case 0xEA:
+      ld(n16(fetch_word()), tag{});
+      break;
+
+    case 0xEE:
+      xor_(n8(fetch_byte()));
+      break;
+
+    case 0xEF:
+      rst(5);
+      break;
+
+    case 0xF0:
+      ldio(A, 0xFF00 + n8(fetch_byte()).value());
+      break;
+
+    case 0xF1:
+      pop();
+      break;
+
+    case 0xF2:
+      ldio(A, 0xFF00 + BC.lo().value());
+      break;
+
+    case 0xF3:
+      di();
+      break;
+
+    case 0xF5:
+      push();
+      break;
+
+    case 0xF6:
+      or_(n8(fetch_byte()));
+      break;
+
+    case 0xF7:
+      rst(6);
+      break;
+
+    case 0xF8:
+      PC += 1;
+      HL = SP + e8(m_bus.readBus(PC++)).value();
+      m_clock.cycle(3);
+      break;
+
+    case 0xF9:
+      SP = HL.value();
+      m_clock.cycle(2);
+      break;
+
+    case 0xFA:
+      ld(tag{}, n16(fetch_word()));
+      break;
+
+    case 0xFB:
+      ei();
+      break;
+
+    case 0xFE:
+      cp(n8(fetch_byte()));
+      break;
+
+    case 0xFF:
+      rst(7);
+      break;
+
+    default:
+      break;
   }
 }
 

@@ -38,24 +38,6 @@ ppu::ppu(registers &regs_, cartridge &cart_, interrupts &intr_)
 // clang-format on
 {}
 
-void ppu::render(std::function<void(const uint8 x, const uint8 y, const color c)> draw, palette p) {
-
-  if (LCDC.lcdControllerStatus() == on) { // lcdc.bit7
-
-    for (uint8 dy = 0; dy < screenHeight; ++dy) {
-      scanline(draw, p);
-
-      STAT.mode_flag(stat::mode::HORIZONTAL_BLANKING);
-    }
-    STAT.mode_flag(stat::mode::VERTICAL_BLANKING);
-
-  }
-
-  else {
-    // draw palette color 5
-  }
-}
-
 void ppu::update() {
   if (LCDC.lcdControllerStatus() == on) {
 
@@ -113,13 +95,12 @@ void ppu::scanline(std::function<void(const uint8 x, const uint8 y, const color 
       auto [bgBegin, _] = LCDC.bgCodeArea(); // lcdc.bit3
 
       // draw(scx, scy);
-      // draw background
     }
 
     // draw obj (sprite)
-    else if (LCDC.objDisplayStatus() == on) { // lcdc.bit 1
-      auto [height, width] = LCDC.objSize();  // lcdc.bit2 used.
-                                              // draw obj
+    else if (LCDC.objDisplayStatus() == on) {      // lcdc.bit 1
+      auto [_ /*width*/, height] = LCDC.objSize(); // lcdc.bit2 used.
+                                                   // draw obj
     }
   }
 }

@@ -34,7 +34,6 @@ public:
   static constexpr uint8 screenHeight = 144;
 
   static constexpr uint8 screenVBlankHeight = 153;
-
   static constexpr uint8 oamCycles = 80;
   static constexpr uint8 vramCycles = 172;
   static constexpr uint8 hblankCycles = 204;
@@ -43,11 +42,9 @@ public:
   struct color {
     uint8 r, g, b, a;
   };
-
   using palette = std::array<color, 5>; // 5th color for idle screen, i.e. when in LCDC.bit7 is 0
-
-  void render(std::function<void(const uint8 x, const uint8 y, const color c)> draw,
-              palette p = default_palette);
+  using screenline = std::array<color, screenWidth>;
+  using frame = std::array<screenline, screenHeight>;
 
   void update();
 
