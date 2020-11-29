@@ -42,22 +42,26 @@ void ppu::update() {
   if (LCDC.lcdControllerStatus() == on) {
 
     switch (STAT.mode_flag()) {
-      case STAT.mode::SEARCHING_OAM: // mode 2
-        // things
-        STAT.mode_flag(STAT.mode::TRANSFERING_DATA_TO_LCD);
+      case stat::mode::SEARCHING_OAM: // mode 2
+                                      // things
+        STAT.mode_flag(stat::mode::TRANSFERING_DATA_TO_LCD);
         break;
-      case STAT.mode::TRANSFERING_DATA_TO_LCD: // mode 3
-                                               // things
-        STAT.mode_flag(STAT.mode::HORIZONTAL_BLANKING);
+
+      case stat::mode::TRANSFERING_DATA_TO_LCD: // mode 3
+                                                // things
+        STAT.mode_flag(stat::mode::HORIZONTAL_BLANKING);
         break;
-      case STAT.mode::HORIZONTAL_BLANKING: // mode 0
-                                           // things
-        STAT.mode_flag(STAT.mode::VERTICAL_BLANKING);
+
+      case stat::mode::HORIZONTAL_BLANKING: // mode 0
+                                            // things
+        STAT.mode_flag(stat::mode::VERTICAL_BLANKING);
         break;
-      case STAT.mode::VERTICAL_BLANKING: // mode 1
-                                         // things
-        STAT.mode_flag(STAT.mode::SEARCHING_OAM);
+
+      case stat::mode::VERTICAL_BLANKING: // mode 1
+                                          // things
+        STAT.mode_flag(stat::mode::SEARCHING_OAM);
         break;
+
       default:
         break;
     }
