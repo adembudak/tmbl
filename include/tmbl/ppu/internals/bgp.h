@@ -11,7 +11,7 @@ namespace tmbl {
 class bgp {
 public:
   explicit bgp(byte &val_);
-  int bgPalette(const uint8 val);
+  std::size_t bgPalette(const uint8 val);
   std::array<int, 4> bgPalette();
 
 private:
