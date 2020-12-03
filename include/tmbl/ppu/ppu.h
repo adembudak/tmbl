@@ -55,8 +55,7 @@ public:
   void writeOAM(const std::size_t index, const byte val);
 
 private:
-  void scanline(std::function<void(const uint8 x, const uint8 y, const color c)> draw, palette p);
-
+  void scanline(std::function<void(const uint8 x, const uint8 y, const color c)> draw);
   enum class decodeMode { normal, xflipped };
   // encode one line of a tile.
   // see: https://www.huderlem.com/demos/gameboy2bpp.html
@@ -109,6 +108,7 @@ private:
 
   std::array<byte, 16_KB> m_vram{}; // it's 8KB on DMG
   std::array<byte, 160_B> m_oam{};
+  frame framebuffer;
 
   uint8 tileWidth = 8;
   bool cgb_support = false;

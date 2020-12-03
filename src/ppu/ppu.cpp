@@ -16,9 +16,9 @@ class registers;
 ppu::ppu(registers &regs_, cartridge &cart_, interrupts &intr_)
     : m_regs(regs_), m_cart(cart_), m_intr(intr_), cgb_support(m_cart.CGB()),
 	STAT(m_regs.getAt(0xFF41), /*ly*/ m_regs.getAt(0xFF44), /*lyc*/m_regs.getAt(0xFF45)), 
-    LCDC(m_regs.getAt(0xFF40), m_cart.CGB()),
+        LCDC(m_regs.getAt(0xFF40), m_cart.CGB()),
 
-    SCY(m_regs.getAt(0xFF42)), SCX(m_regs.getAt(0xFF43)), 
+        SCY(m_regs.getAt(0xFF42)), SCX(m_regs.getAt(0xFF43)), 
 
 	LY(m_regs.getAt(0xFF44)), LYC(m_regs.getAt(0xFF45)), 
 
@@ -74,29 +74,54 @@ void ppu::writeVRAM(const std::size_t index, const byte val) { m_vram.at(index) 
 byte ppu::readOAM(const std::size_t index) { return m_oam.at(index); }
 void ppu::writeOAM(const std::size_t index, const byte val) { m_oam.at(index) = val; }
 
-void ppu::scanline(std::function<void(const uint8 x, const uint8 y, const color c)> draw,
-                   palette p) {
+void ppu::scanline(std::function<void(const uint8 x, const uint8 y, const color c)> draw) {
 
-  for (uint8 dx = 0; dx < (screenWidth / tileWidth); ++dx) {
+  for (uint8 dx = 0; dx < screenWidth; ++dx) {
 
     // draw window (chr)
-    if (LCDC.windowStatus() == on) {                     // lcdc.bit5
-      auto [windowBeginAddress, _] = LCDC.chrCodeArea(); // lcdc.bit6
+    if (LCDC.windowStatus() == on) {                          // lcdc.bit5
+      auto [windowBeginAddress, _] = LCDC.chrMapAreaSelect(); // lcdc.bit6
 
       // window is not scrollable, does not use scx, scy.
-      auto block = LCDC.bgChrArea(); // lcdc.bit4
+      auto block = LCDC.bgChrBlockSelect(); // lcdc.bit4
+
+      if (cgb_support) {
+        // use color gameboy palette
+        //
+      } else {
+        // use bgp
+        framebuffer[10][10] = default_palette[BGP.bgPalette(1)];
+      }
 
     }
 
     // draw background
     else if (LCDC.bgDisplayStatus() == on) { // lcdc.bit0
 
-      uint8 scx = SCX / screenWidth; // wrap around
-      uint8 scy = SCY / screenHeight;
+      uint8 scy = SCY % screenHeight; // wrap around
+      uint8 scx = SCX % screenWidth;
 
-      auto block = LCDC.bgChrArea();
+      auto [bgBegin, _] = LCDC.bgMapAreaSelect(); // lcdc.bit3
+      auto [base_ptr, _t] = LCDC.bgChrBlockSelect();
 
-      auto [bgBegin, _] = LCDC.bgCodeArea(); // lcdc.bit3
+      byte tile = 0x0;
+
+      if (cgb_support) {
+        auto [priority, yfliped, xfliped, chrbank, colorpalette] = [&tile]() {
+          // https://archive.org/details/GameBoyProgManVer1.1/page/n53/mode/1up
+          bool priority = tile & 0b1000'0000;
+          bool yfliped = tile & 0b0100'0000;
+          bool xfliped = tile & 0b0010'0000;
+          bool chrbank = tile & 0b0000'1000;
+          byte colorpalette = tile & 0b0000'0111;
+
+          return std::make_tuple(priority, yfliped, xfliped, chrbank, colorpalette);
+        }();
+        // use bcps bcpd
+      } else {
+        //
+        // use bgp
+      }
 
       // draw(scx, scy);
     }
@@ -105,6 +130,12 @@ void ppu::scanline(std::function<void(const uint8 x, const uint8 y, const color 
     else if (LCDC.objDisplayStatus() == on) {      // lcdc.bit 1
       auto [_ /*width*/, height] = LCDC.objSize(); // lcdc.bit2 used.
                                                    // draw obj
+                                                   // sprites always uses 0x8000
+      if (cgb_support) {
+        // use ocps, ocpd
+      } else {
+        // oam palette selection flag 0->obp0, 1-> obp1
+      }
     }
   }
 }
