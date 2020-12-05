@@ -44,21 +44,29 @@ void ppu::update() {
     switch (STAT.mode_flag()) {
       case stat::mode::SEARCHING_OAM: // mode 2
                                       // things
+        oam_accessable = false;
+        vram_accessable = true;
         STAT.mode_flag(stat::mode::TRANSFERING_DATA_TO_LCD);
         break;
 
       case stat::mode::TRANSFERING_DATA_TO_LCD: // mode 3
                                                 // things
+        oam_accessable = false;
+        vram_accessable = false;
         STAT.mode_flag(stat::mode::HORIZONTAL_BLANKING);
         break;
 
       case stat::mode::HORIZONTAL_BLANKING: // mode 0
                                             // things
+        oam_accessable = true;
+        vram_accessable = true;
         STAT.mode_flag(stat::mode::VERTICAL_BLANKING);
         break;
 
       case stat::mode::VERTICAL_BLANKING: // mode 1
                                           // things
+        oam_accessable = true;
+        vram_accessable = true;
         STAT.mode_flag(stat::mode::SEARCHING_OAM);
         break;
 
@@ -68,11 +76,29 @@ void ppu::update() {
   }
 }
 
-byte ppu::readVRAM(const std::size_t index) { return m_vram.at(index); }
-void ppu::writeVRAM(const std::size_t index, const byte val) { m_vram.at(index) = val; }
+byte ppu::readVRAM(const std::size_t index) {
+  if (vram_accessable) {
+    return m_vram.at(index);
+  }
+}
 
-byte ppu::readOAM(const std::size_t index) { return m_oam.at(index); }
-void ppu::writeOAM(const std::size_t index, const byte val) { m_oam.at(index) = val; }
+void ppu::writeVRAM(const std::size_t index, const byte val) {
+  if (vram_accessable) {
+    m_vram.at(index) = val;
+  }
+}
+
+byte ppu::readOAM(const std::size_t index) {
+  if (oam_accessable) {
+    return m_oam.at(index);
+  }
+}
+
+void ppu::writeOAM(const std::size_t index, const byte val) {
+  if (oam_accessable) {
+    m_oam.at(index) = val;
+  }
+}
 
 void ppu::scanline(std::function<void(const uint8 x, const uint8 y, const color c)> draw) {
 

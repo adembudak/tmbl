@@ -113,6 +113,9 @@ private:
   uint8 tileWidth = 8;
   bool cgb_support = false;
 
+  bool vram_accessable = false;
+  bool oam_accessable = false;
+
   // clang-format off
   inline static palette default_palette{color{155, 188, 15, 0},  // light green
                                         color{139, 172, 15, 0},
