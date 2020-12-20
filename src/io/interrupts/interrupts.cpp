@@ -32,6 +32,7 @@ void interrupts::write(const std::size_t index, const byte val) noexcept {
       timer_pending =  val & 0b000'0010;
       serial_pending = val & 0b000'0011;
       joypad_pending = val & 0b000'0100;
+      break;
 
     case 0xFFFF:
       vblank_enabled = val & 0b000'0000;
@@ -39,6 +40,7 @@ void interrupts::write(const std::size_t index, const byte val) noexcept {
       timer_enabled =  val & 0b000'0010;
       serial_enabled = val & 0b000'0011;
       joypad_enabled = val & 0b000'0100;
+      break;
 
      default: break;
   }
