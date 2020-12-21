@@ -26,6 +26,15 @@ namespace tmbl {
 class cartridge;
 class interrupts;
 
+// VRAM structure
+//   |                  (each tile is 16 bytes)                  |  (1KB = 32x32 = [0,1024) indexes)
+//   | 2KB = 128 tiles   |  2KB = 128 tiles  |  2KB = 128 tiles  | 1KB      | 1KB      | = 8KB total
+//   |   Block 0         |    Block 1        |    Block 2        |*LCDC.3=0*|*LCDC.3=1*|
+//   |+++++++++++++++LCDC.4=1++++++++++++++++|                   |          |          |
+//   |                   |~~~~~~~~~~~~~~~~LCDC.4=0~~~~~~~~~~~~~~~|,LCDC.6=0,|,LCDC.6=1,|
+//   |-------------------|-------------------|-------------------|----------|----------|
+// 0x8000             0x8800               0x9000             0x9800     0x9C00     0xA000
+
 class ppu {
 public:
   ppu(registers &regs_, cartridge &cart_, interrupts &intr_);
@@ -80,7 +89,7 @@ private:
   byte &SCY;
   byte &SCX;
 
-  byte &LY;
+  byte &LY; // in range [0,153]. [144, 153] is vblank period
   byte &LYC;
 
   byte &DMA;
