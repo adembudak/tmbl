@@ -8,6 +8,7 @@ project(
 
 option(ENABLE_INCLUDE_WHAT_YOU_USE "Apply iwyu to source" OFF)
 option(ENABLE_ROM_TESTS "Run test ROMs" OFF)
+option(ENABLE_UNIT_TESTS "build unit tests" OFF)
 
 include(CTest)
 
@@ -37,6 +38,12 @@ add_subdirectory(src)
 
 if(ENABLE_ROM_TESTS AND BUILD_TESTING)
   enable_testing()
-  add_subdirectory(tests)
+  add_subdirectory(tests/rom)
 endif()
+
+if(ENABLE_UNIT_TESTS AND BUILD_TESTING)
+  enable_testing()
+  add_subdirectory(tests/unit)
+endif()
+
 
