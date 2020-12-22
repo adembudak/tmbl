@@ -14,8 +14,8 @@ std::pair<uint16, uint16> lcdc::chrMapAreaSelect() const noexcept {
 
 cflag lcdc::windowStatus() const noexcept { return m_value & 0b0010'0000 ? on : off; }
 
-std::pair<uint16, uint16> lcdc::bgChrBlockSelect() const noexcept {
-  return m_value & 0b0001'0000 ? std::make_pair(0x0000, 0x0FFF) : std::make_pair(0x0800, 0x17FF);
+std::pair<uint16, bool> lcdc::bgChrBlockSelect() const noexcept {
+  return m_value & 0b0001'0000 ? std::make_pair(0x0000, false) : std::make_pair(0x0800, true);
 }
 
 std::pair<uint16, uint16> lcdc::bgMapAreaSelect() const noexcept {
@@ -31,4 +31,3 @@ cflag lcdc::objDisplayStatus() const noexcept { return m_value & 0b0000'0010 ? o
 cflag lcdc::bgDisplayStatus() const noexcept { return cgb_support ? on : m_value & 0b0000'0001; }
 
 }
-

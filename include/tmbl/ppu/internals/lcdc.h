@@ -22,7 +22,7 @@ public:
   cflag lcdControllerStatus() const noexcept;                  // bit 7
   std::pair<uint16, uint16> chrMapAreaSelect() const noexcept; // bit 6 map select
   cflag windowStatus() const noexcept;                         // bit 5
-  std::pair<uint16, uint16> bgChrBlockSelect() const noexcept; // bit 4 tile block select
+  std::pair<uint16, bool> bgChrBlockSelect() const noexcept;   // bit 4 tile block select
   std::pair<uint16, uint16> bgMapAreaSelect() const noexcept;  // bit 3 map select
   std::pair<uint8, uint8> objSize() const noexcept;            // bit 2
   cflag objDisplayStatus() const noexcept;                     // bit 1
@@ -36,4 +36,3 @@ private:
 }
 
 #endif
-
