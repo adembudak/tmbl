@@ -20,11 +20,11 @@ private:
 bool operator==(const n8 left, const n8 right);
 bool operator!=(const n8 left, const n8 right);
 
+bool operator<(const n8 left, const n8 right);
 bool operator>(const n8 left, const n8 right);
-bool operator>=(const n8 left, const n8 right);
 
 bool operator<=(const n8 left, const n8 right);
-bool operator<(const n8 left, const n8 right);
+bool operator>=(const n8 left, const n8 right);
 
 }
 
