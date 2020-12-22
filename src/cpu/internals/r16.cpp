@@ -18,7 +18,9 @@ r16 &r16::operator=(const n16 &nn) {
 }
 
 const r16 r16::operator++(int dummy) noexcept {
-  if (m_hi == 0) {
+  if (value() == r16::max) {
+    m_hi = m_lo = r8::min;
+  } else if (m_hi == 0) {
     m_lo++;
   } else {
     m_hi++;
@@ -27,7 +29,9 @@ const r16 r16::operator++(int dummy) noexcept {
 }
 
 const r16 r16::operator--(int dummy) noexcept {
-  if (m_hi == 0) {
+  if (value() == r16::min) {
+    m_hi = m_lo = r8::max;
+  } else if (m_hi == 0) {
     m_lo--;
   } else {
     m_hi--;

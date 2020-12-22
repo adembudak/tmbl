@@ -9,4 +9,5 @@ function (add_tmbl_test source)
 endfunction()
 
 add_tmbl_test(r8_test)
+add_tmbl_test(r16_test)
 
