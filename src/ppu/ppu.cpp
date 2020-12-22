@@ -1,15 +1,13 @@
 #include "tmbl/config.h"
 #include "tmbl/ppu/ppu.h"
 #include "tmbl/cartridge/cartridge.h"
+#include "tmbl/io/interrupts/interrupts.h"
 
 #include <array>
 #include <cstddef>
-#include <algorithm>
 
 namespace tmbl {
 
-class cartridge;
-class interrupts;
 class registers;
 
 // clang-format off
@@ -38,41 +36,60 @@ ppu::ppu(registers &regs_, cartridge &cart_, interrupts &intr_)
 // clang-format on
 {}
 
-void ppu::update() {
+void ppu::update(/*SDL_Renderer *renderer*/) {
   if (LCDC.lcdControllerStatus() == on) {
+    if (STAT.mode_flag() == stat::mode::HORIZONTAL_BLANKING) {
+      oam_accessable = true;
+      vram_accessable = true;
 
-    switch (STAT.mode_flag()) {
-      case stat::mode::SEARCHING_OAM: // mode 2
-                                      // things
-        oam_accessable = false;
-        vram_accessable = true;
-        STAT.mode_flag(stat::mode::TRANSFERING_DATA_TO_LCD);
-        break;
+      STAT.matchHblank(set);
+      m_intr.stat_enabled = true;
 
-      case stat::mode::TRANSFERING_DATA_TO_LCD: // mode 3
-                                                // things
-        oam_accessable = false;
-        vram_accessable = false;
-        STAT.mode_flag(stat::mode::HORIZONTAL_BLANKING);
-        break;
-
-      case stat::mode::HORIZONTAL_BLANKING: // mode 0
-                                            // things
-        oam_accessable = true;
-        vram_accessable = true;
-        STAT.mode_flag(stat::mode::VERTICAL_BLANKING);
-        break;
-
-      case stat::mode::VERTICAL_BLANKING: // mode 1
-                                          // things
-        oam_accessable = true;
-        vram_accessable = true;
-        STAT.mode_flag(stat::mode::SEARCHING_OAM);
-        break;
-
-      default:
-        break;
+      m_clock.cycle(22);
     }
+
+    if (STAT.mode_flag() == stat::mode::VERTICAL_BLANKING) {
+      oam_accessable = true;
+      vram_accessable = true;
+
+      STAT.matchVblank(set);
+      m_intr.stat_enabled = true;
+
+      m_clock.cycle(1140);
+    }
+
+    if (STAT.mode_flag() == stat::mode::SEARCHING_OAM) {
+      oam_accessable = false;
+      vram_accessable = true;
+
+      STAT.matchSearchOAM(set);
+      m_intr.stat_enabled = true;
+
+      m_clock.cycle(20);
+    }
+
+    if (STAT.mode_flag() == stat::mode::TRANSFERING_DATA_TO_LCD) {
+      oam_accessable = false;
+      vram_accessable = false;
+
+      m_clock.cycle(43);
+    }
+
+    if (STAT.match_flag()) { // LY == LYC
+      STAT.matchCoincidence(set);
+      m_intr.stat_enabled = true;
+    }
+
+    if (LY == 144) {
+      m_intr.vblank_enabled = true;
+
+      if (LY == 153) {
+        LY = 0;
+      }
+    }
+  } else {
+    LY = 0;
+    // draw idle color
   }
 }
 
@@ -100,96 +117,44 @@ void ppu::writeOAM(const std::size_t index, const byte val) {
   }
 }
 
-void ppu::scanline(std::function<void(const uint8 x, const uint8 y, const color c)> draw) {
+void ppu::scanline() {
+  bool window_active = (LCDC.windowStatus() == on) && (LY >= WY);
+  auto [dataBlock, is_signed] = LCDC.bgChrBlockSelect();
+  auto [tile_map, _] = window_active ? LCDC.chrMapAreaSelect() : LCDC.bgMapAreaSelect();
+  uint8 y = window_active ? LY - WY : LY + SCY;
+  uint16 tile_row = y / tileHeight;
 
   for (uint8 dx = 0; dx < screenWidth; ++dx) {
-
-    // draw window (chr)
-    if (LCDC.windowStatus() == on) {                          // lcdc.bit5
-      auto [windowBeginAddress, _] = LCDC.chrMapAreaSelect(); // lcdc.bit6
-
-      // window is not scrollable, does not use scx, scy.
-      auto block = LCDC.bgChrBlockSelect(); // lcdc.bit4
-
-      if (cgb_support) {
-        // use color gameboy palette
-        //
-      } else {
-        // use bgp
-        framebuffer[10][10] = default_palette[BGP.bgPalette(1)];
-      }
-
+    uint8 x = dx + SCX;
+    if (window_active && (dx >= WX)) {
+      x = dx - WX;
     }
 
-    // draw background
-    else if (LCDC.bgDisplayStatus() == on) { // lcdc.bit0
+    uint16 tile_column = x / tileWidth;
+    uint16 address = tile_map + (tile_row * 32) + tile_column;
+    uint16 tile_number = is_signed ? static_cast<int8>(readVRAM(address)) : readVRAM(address);
 
-      uint8 scy = SCY % screenHeight; // wrap around
-      uint8 scx = SCX % screenWidth;
+    uint16 tile_address = is_signed ? dataBlock + (tile_number * tileSize)
+                                    : dataBlock + ((tile_number + 128) * tileSize);
 
-      auto [bgBegin, _] = LCDC.bgMapAreaSelect(); // lcdc.bit3
-      auto [base_ptr, _t] = LCDC.bgChrBlockSelect();
+    uint8 line_number = y % tileHeight;
+    line_number *= 2;
+    byte lo = readVRAM(tile_address + line_number);
+    byte hi = readVRAM(tile_address + line_number + 1);
 
-      byte tile = 0x0;
+    // lo |7|6|5|4|3|2|1|0|
+    // hi |7|6|5|4|3|2|1|0|
+    uint8 bit_check_mask = 7 - (x % 8); // start from left most bit and check
+    uint8 lo_bit = (lo >> bit_check_mask) & 0b1;
+    uint8 hi_bit = (hi >> bit_check_mask) & 0b1;
+    uint8 color_id = (lo_bit << 1) | hi_bit;
+    std::size_t palette_index = BGP.bgPalette(color_id);
 
-      if (cgb_support) {
-        auto [priority, yfliped, xfliped, chrbank, colorpalette] = [&tile]() {
-          // https://archive.org/details/GameBoyProgManVer1.1/page/n53/mode/1up
-          bool priority = tile & 0b1000'0000;
-          bool yfliped = tile & 0b0100'0000;
-          bool xfliped = tile & 0b0010'0000;
-          bool chrbank = tile & 0b0000'1000;
-          byte colorpalette = tile & 0b0000'0111;
+    framebuffer[dx][LY] = default_palette[palette_index];
 
-          return std::make_tuple(priority, yfliped, xfliped, chrbank, colorpalette);
-        }();
-        // use bcps bcpd
-      } else {
-        //
-        // use bgp
-      }
-
-      // draw(scx, scy);
-    }
-
-    // draw obj (sprite)
-    else if (LCDC.objDisplayStatus() == on) {      // lcdc.bit 1
-      auto [_ /*width*/, height] = LCDC.objSize(); // lcdc.bit2 used.
-                                                   // draw obj
-                                                   // sprites always uses 0x8000
-      if (cgb_support) {
-        // use ocps, ocpd
-      } else {
-        // oam palette selection flag 0->obp0, 1-> obp1
-      }
-    }
+    m_clock.cycle(1);
   }
 }
 
-std::array<uint8, 8> ppu::decode2BPP(const uint8 lo, const uint8 hi, const decodeMode mode) {
-  std::array<uint8, 8> paletteIndexes{};
-  uint8 mask = (mode == decodeMode::normal) ? 0b1000'0000 : 0b0000'0001;
-
-  std::generate(paletteIndexes.begin(), paletteIndexes.end(), [&] {
-    uint8 val = (hi & mask) | (lo & mask); // hi byte first, by 2bpp format
-    if (mode == decodeMode::normal) {
-      mask >>= 1;
-    } else {
-      mask <<= 1;
-    }
-    return val;
-  });
-
-  return paletteIndexes;
-};
-
-uint8 ppu::ly() const noexcept { return LY; }
-
-void ppu::ly(const byte val) noexcept {
-  LY = val;
-  LY == LYC ? STAT.match_flag(set) : STAT.match_flag(reset);
-}
-
 uint8 ppu::vbk() const noexcept { return cgb_support ? (VBK & 0b0000'0001) : 0; }
-
 }

@@ -2,6 +2,7 @@
 #define PPU_H
 
 #include "../config.h"
+#include "tmbl/clock/clock.h"
 #include "../io/registers.h"
 #include "internals/stat.h"
 #include "internals/lcdc.h"
@@ -64,16 +65,7 @@ public:
   void writeOAM(const std::size_t index, const byte val);
 
 private:
-  void scanline(std::function<void(const uint8 x, const uint8 y, const color c)> draw);
-  enum class decodeMode { normal, xflipped };
-  // encode one line of a tile.
-  // see: https://www.huderlem.com/demos/gameboy2bpp.html
-  std::array<uint8, 8> decode2BPP(const uint8 lo, const uint8 hi,
-                                  const decodeMode mode = decodeMode::normal);
-
-  uint8 ly() const noexcept;
-  void ly(const byte val) noexcept;
-
+  void scanline();
   uint8 vbk() const noexcept;
 
 private:
@@ -120,8 +112,10 @@ private:
   frame framebuffer;
 
   uint8 tileWidth = 8;
-  bool cgb_support = false;
+  uint8 tileHeight = 8;
+  uint8 tileSize = 16_B;
 
+  bool cgb_support = false;
   bool vram_accessable = false;
   bool oam_accessable = false;
 
@@ -131,6 +125,8 @@ private:
                                         color{48, 98, 48, 0},
                                         color{15, 56, 15, 0},    // dark green
                                         color{161, 193, 19, 0}}; // idle screen color
+
+  clock m_clock;
 };
 }
 
