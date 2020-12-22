@@ -13,4 +13,5 @@ add_tmbl_test(r16_test)
 add_tmbl_test(n8_test)
 add_tmbl_test(n16_test)
 add_tmbl_test(e8_test)
+add_tmbl_test(flags_test)
 
