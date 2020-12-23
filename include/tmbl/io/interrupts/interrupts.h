@@ -7,6 +7,7 @@
 namespace tmbl {
 
 // https://eldred.fr/gb-asm-tutorial/interrupts.html
+// https://archive.org/details/GameBoyProgManVer1.1/page/n25/mode/1up;w
 
 class interrupts {
 
@@ -14,8 +15,8 @@ public:
   byte read(const std::size_t index) noexcept;
   void write(const std::size_t index, const byte val) noexcept;
 
-  uint8 IF() const noexcept; // interrupt flag
-  uint8 IE() const noexcept; // interrupt enabled
+  uint8 IF() const noexcept; // 0xFF0F, interrupt flag
+  uint8 IE() const noexcept; // 0xFFFF, interrupt enabled
 
   bool vblank_pending = false; //  vertical blanking intr requested
   bool stat_pending = false;   //  lcd status intr requested
