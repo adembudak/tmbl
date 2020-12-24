@@ -18,33 +18,32 @@ ppu::ppu(registers &regs_, cartridge &cart_, interrupts &intr_)
 
         SCY(m_regs.getAt(0xFF42)), SCX(m_regs.getAt(0xFF43)), 
 
-	LY(m_regs.getAt(0xFF44)), LYC(m_regs.getAt(0xFF45)), 
+        LY(m_regs.getAt(0xFF44)), LYC(m_regs.getAt(0xFF45)), 
 
-	DMA(m_regs.getAt(0xFF46)), 
+        DMA(m_regs.getAt(0xFF46)), 
 
-	BGP(m_regs.getAt(0xFF47)), OBP0(m_regs.getAt(0xFF48)), OBP1(m_regs.getAt(0xFF49)), 
+        BGP(m_regs.getAt(0xFF47)), OBP0(m_regs.getAt(0xFF48)), OBP1(m_regs.getAt(0xFF49)), 
 
-	WY(m_regs.getAt(0xFF4A)), WX(m_regs.getAt(0xFF4B)), 
+        WY(m_regs.getAt(0xFF4A)), WX(m_regs.getAt(0xFF4B)), 
 
-	VBK(m_regs.getAt(0xFF4F)), 
+        VBK(m_regs.getAt(0xFF4F)), 
 
-	HDMA1(m_regs.getAt(0xFF51)), HDMA2(m_regs.getAt(0xFF52)), HDMA3(m_regs.getAt(0xFF53)), 
-	HDMA4(m_regs.getAt(0xFF54)), HDMA5(m_regs.getAt(0xFF55)), 
+        HDMA1(m_regs.getAt(0xFF51)), HDMA2(m_regs.getAt(0xFF52)), HDMA3(m_regs.getAt(0xFF53)), 
+        HDMA4(m_regs.getAt(0xFF54)), HDMA5(m_regs.getAt(0xFF55)), 
 
-	BCPS(m_regs.getAt(0xFF68)), BCPD(m_regs.getAt(0xFF69)), 
-	OCPS(m_regs.getAt(0xFF6A)), OCPD(m_regs.getAt(0xFF6B))
+        BCPS(m_regs.getAt(0xFF68)), BCPD(m_regs.getAt(0xFF69)), 
+        OCPS(m_regs.getAt(0xFF6A)), OCPD(m_regs.getAt(0xFF6B))
 // clang-format on
 {}
 
-void ppu::update(/*SDL_Renderer *renderer*/) {
+void ppu::update() {
   if (LCDC.lcdControllerStatus() == on) {
 
     if (STAT.mode_flag() == stat::mode::SEARCHING_OAM) { //// mode 2
       oam_accessible = false;
       vram_accessible = true;
 
-      STAT.matchSearchOAM(set);
-      m_intr.stat_enabled = true;
+      m_intr.LCDC_Status_IRQ = STAT.matchSearchOAM();
 
       m_clock.cycle(oamCycles);
       STAT.mode_flag(stat::mode::TRANSFERING_DATA_TO_LCD);
@@ -66,8 +65,7 @@ void ppu::update(/*SDL_Renderer *renderer*/) {
       oam_accessible = true;
       vram_accessible = true;
 
-      STAT.matchHblank(set);
-      m_intr.stat_enabled = true;
+      m_intr.LCDC_Status_IRQ = STAT.matchHblank();
 
       m_clock.cycle(hblankCycles);
       STAT.mode_flag(stat::mode::SEARCHING_OAM);
@@ -77,8 +75,7 @@ void ppu::update(/*SDL_Renderer *renderer*/) {
       oam_accessible = true;
       vram_accessible = true;
 
-      STAT.matchVblank(set);
-      m_intr.vblank_enabled = true;
+      m_intr.VBlank_IRQ = STAT.matchVblank();
 
       for (uint8 i = 0; i < 10; ++i) { // 10 scanlines of vertical blank
         ++LY;
@@ -93,8 +90,7 @@ void ppu::update(/*SDL_Renderer *renderer*/) {
     }
 
     if (STAT.match_flag()) { // LY == LYC
-      STAT.matchCoincidence(set);
-      m_intr.stat_enabled = true;
+      m_intr.LCDC_Status_IRQ = STAT.matchCoincidence();
     }
 
   } else {
@@ -127,16 +123,15 @@ void ppu::writeOAM(const std::size_t index, const byte val) {
   }
 }
 
-void ppu::scanline() {
-  bool window_active = (LCDC.windowStatus() == on) && (LY >= WY);
+void ppu::fetchCHR() {
   auto [dataBlock, is_signed] = LCDC.bgChrBlockSelect();
-  auto [tile_map, _] = window_active ? LCDC.chrMapAreaSelect() : LCDC.bgMapAreaSelect();
-  uint8 y = window_active ? LY - WY : LY + SCY;
+  auto [tile_map, _] = LCDC.chrMapAreaSelect();
+  uint8 y = LY - WY;
   uint16 tile_row = y / tileHeight;
 
   for (uint8 dx = 0; dx < screenWidth; ++dx) {
     uint8 x = dx + SCX;
-    if (window_active && (dx >= WX)) {
+    if (dx >= WX) {
       x = dx - WX;
     }
 
@@ -163,6 +158,78 @@ void ppu::scanline() {
     framebuffer[dx][LY] = default_palette[palette_index];
 
     m_clock.cycle(1);
+  }
+}
+
+void ppu::fetchBG() {
+
+  auto [dataBlock, is_signed] = LCDC.bgChrBlockSelect();
+  auto [tile_map, _] = LCDC.bgMapAreaSelect();
+  uint8 y = LY + SCY;
+  uint16 tile_row = y / tileHeight;
+
+  for (uint8 dx = 0; dx < screenWidth; ++dx) {
+    uint8 x = dx + SCX;
+
+    uint16 tile_column = x / tileWidth;
+    uint16 address = tile_map + (tile_row * 32) + tile_column;
+    uint16 tile_number = is_signed ? static_cast<int8>(readVRAM(address)) : readVRAM(address);
+
+    uint16 tile_address = is_signed ? dataBlock + (tile_number * tileSize)
+                                    : dataBlock + ((tile_number + 128) * tileSize);
+
+    uint8 line_number = y % tileHeight;
+    line_number *= 2;
+    byte lo = readVRAM(tile_address + line_number);
+    byte hi = readVRAM(tile_address + line_number + 1);
+
+    // lo |7|6|5|4|3|2|1|0|
+    // hi |7|6|5|4|3|2|1|0|
+    uint8 bit_check_mask = 7 - (x % 8); // start from left most bit and check
+    uint8 lo_bit = (lo >> bit_check_mask) & 0b1;
+    uint8 hi_bit = (hi >> bit_check_mask) & 0b1;
+    uint8 color_id = (lo_bit << 1) | hi_bit;
+    std::size_t palette_index = BGP.bgPalette(color_id);
+
+    framebuffer[dx][LY] = default_palette[palette_index];
+  }
+}
+
+// are we drawing window or background or sprite.
+// sprite on top of window, which on top of background
+//
+// first choose tile area
+// second choose tile map
+// third locate current scanline
+
+// for i<-0 - 144
+//  scanline(i);
+
+// scanline(int i) {
+// for k<-0 - 160
+//   draw(framebuffer[i][k])
+// }
+
+// scanline called on data to lcd tranfer case on stat
+
+// who calls the scaneline
+// but what calls fetch function
+
+// how to segreate gui from logic
+
+void ppu::scanline() {
+
+  if (LCDC.windowStatus() == on) {
+    // (LY >= WY);
+    fetchCHR();
+  }
+
+  if (LCDC.bgDisplayStatus() == on) {
+    fetchBG();
+  }
+
+  if (LCDC.objDisplayStatus() == on) {
+    fetchOBJ();
   }
 }
 

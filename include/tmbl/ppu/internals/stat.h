@@ -25,10 +25,10 @@ public:
   cflag match_flag() const noexcept;   // bit2
   void match_flag(cflag val) noexcept; // bit2
 
-  void matchHblank(cflag val) const noexcept;      // bit3
-  void matchVblank(cflag val) const noexcept;      // bit4
-  void matchSearchOAM(cflag val) const noexcept;   // bit5
-  void matchCoincidence(cflag val) const noexcept; // bit6
+  bool matchHblank() const noexcept;      // bit3
+  bool matchVblank() const noexcept;      // bit4
+  bool matchSearchOAM() const noexcept;   // bit5
+  bool matchCoincidence() const noexcept; // bit6
 
 private:
   byte &m_value;

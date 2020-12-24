@@ -68,6 +68,10 @@ public:
 
 private:
   void scanline();
+  void fetchCHR();
+  void fetchBG();
+  void fetchOBJ();
+
   uint8 vbk() const noexcept;
 
 private:

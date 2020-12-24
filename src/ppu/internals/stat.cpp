@@ -44,25 +44,11 @@ void stat::mode_flag(const mode m) noexcept {
 }
 
 cflag stat::match_flag() const noexcept { return LY == LYC; }
+void stat::match_flag(cflag val) noexcept { val ? m_value |= 0b0000'0100 : m_value &= 0b1111'1011; }
 
-void stat::match_flag(cflag val) noexcept {
-  (val == set) ? m_value |= 0b0000'0100 : m_value &= 0b1111'1011;
-}
-
-void stat::matchHblank(cflag val) const noexcept {
-  (val == set) ? m_value |= 0b0000'1000 : m_value &= 0b1111'0111;
-}
-
-void stat::matchVblank(cflag val) const noexcept {
-  (val == set) ? m_value |= 0b0001'0000 : m_value &= 0b1110'1111;
-}
-
-void stat::matchSearchOAM(cflag val) const noexcept {
-  (val == set) ? m_value |= 0b0010'0000 : m_value &= 0b1101'1111;
-}
-
-void stat::matchCoincidence(cflag val) const noexcept {
-  (val == set) ? m_value |= 0b0100'0000 : m_value &= 0b1011'1111;
-}
+bool stat::matchHblank() const noexcept { return m_value & 0b0000'1000; }
+bool stat::matchVblank() const noexcept { return m_value & 0b0001'0000; }
+bool stat::matchSearchOAM() const noexcept { return m_value & 0b0010'0000; }
+bool stat::matchCoincidence() const noexcept { return m_value & 0b0100'0000; }
 
 }
