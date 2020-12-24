@@ -45,11 +45,11 @@ public:
   static constexpr uint8 screenWidth = 160;
   static constexpr uint8 screenHeight = 144;
 
-  static constexpr uint8 screenVBlankHeight = 153;
-  static constexpr uint8 oamCycles = 80;
-  static constexpr uint8 vramCycles = 172;
-  static constexpr uint8 hblankCycles = 204;
-  static constexpr uint16 scanlineCycles = 456;
+  static constexpr uint8 screenVBlankHeight = 154; // n([0, 153]) = 154
+  static constexpr uint8 oamCycles = 20;
+  static constexpr uint8 vramCycles = 43;
+  static constexpr uint8 hblankCycles = 22;
+  static constexpr uint16 scanlineCycles = 114;
 
   struct color {
     uint8 r, g, b, a;
@@ -118,11 +118,11 @@ private:
   uint8 tileSize = 16_B;
 
   bool cgb_support = false;
-  bool vram_accessable = false;
-  bool oam_accessable = false;
+  bool vram_accessible = false;
+  bool oam_accessible = false;
 
   // clang-format off
-  inline static palette default_palette{color{155, 188, 15, 0},  // light green
+  inline static const palette default_palette{color{155, 188, 15, 0},  // light green
                                         color{139, 172, 15, 0},
                                         color{48, 98, 48, 0},
                                         color{15, 56, 15, 0},    // dark green

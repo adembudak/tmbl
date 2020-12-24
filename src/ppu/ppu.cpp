@@ -38,41 +38,58 @@ ppu::ppu(registers &regs_, cartridge &cart_, interrupts &intr_)
 
 void ppu::update(/*SDL_Renderer *renderer*/) {
   if (LCDC.lcdControllerStatus() == on) {
-    if (STAT.mode_flag() == stat::mode::HORIZONTAL_BLANKING) {
-      oam_accessable = true;
-      vram_accessable = true;
 
-      STAT.matchHblank(set);
-      m_intr.stat_enabled = true;
-
-      m_clock.cycle(22);
-    }
-
-    if (STAT.mode_flag() == stat::mode::VERTICAL_BLANKING) {
-      oam_accessable = true;
-      vram_accessable = true;
-
-      STAT.matchVblank(set);
-      m_intr.stat_enabled = true;
-
-      m_clock.cycle(1140);
-    }
-
-    if (STAT.mode_flag() == stat::mode::SEARCHING_OAM) {
-      oam_accessable = false;
-      vram_accessable = true;
+    if (STAT.mode_flag() == stat::mode::SEARCHING_OAM) { //// mode 2
+      oam_accessible = false;
+      vram_accessible = true;
 
       STAT.matchSearchOAM(set);
       m_intr.stat_enabled = true;
 
-      m_clock.cycle(20);
+      m_clock.cycle(oamCycles);
+      STAT.mode_flag(stat::mode::TRANSFERING_DATA_TO_LCD);
     }
 
-    if (STAT.mode_flag() == stat::mode::TRANSFERING_DATA_TO_LCD) {
-      oam_accessable = false;
-      vram_accessable = false;
+    if (STAT.mode_flag() == stat::mode::TRANSFERING_DATA_TO_LCD) { //// mode 3
+      oam_accessible = false;
+      vram_accessible = false;
 
-      m_clock.cycle(43);
+      // draw: render framebuffer
+
+      ++LY;
+
+      m_clock.cycle(vramCycles);
+      STAT.mode_flag(stat::mode::HORIZONTAL_BLANKING);
+    }
+
+    if (STAT.mode_flag() == stat::mode::HORIZONTAL_BLANKING) { //// mode 0
+      oam_accessible = true;
+      vram_accessible = true;
+
+      STAT.matchHblank(set);
+      m_intr.stat_enabled = true;
+
+      m_clock.cycle(hblankCycles);
+      STAT.mode_flag(stat::mode::SEARCHING_OAM);
+    }
+
+    if (LY == screenHeight) { //// mode 1
+      oam_accessible = true;
+      vram_accessible = true;
+
+      STAT.matchVblank(set);
+      m_intr.vblank_enabled = true;
+
+      for (uint8 i = 0; i < 10; ++i) { // 10 scanlines of vertical blank
+        ++LY;
+        m_clock.cycle(scanlineCycles);
+      }
+
+      if (LY == screenVBlankHeight) {
+        LY = 0;
+      }
+
+      STAT.mode_flag(stat::mode::SEARCHING_OAM);
     }
 
     if (STAT.match_flag()) { // LY == LYC
@@ -80,39 +97,32 @@ void ppu::update(/*SDL_Renderer *renderer*/) {
       m_intr.stat_enabled = true;
     }
 
-    if (LY == 144) {
-      m_intr.vblank_enabled = true;
-
-      if (LY == 153) {
-        LY = 0;
-      }
-    }
   } else {
     LY = 0;
-    // draw idle color
+    STAT.mode_flag(stat::mode::VERTICAL_BLANKING);
   }
 }
 
 byte ppu::readVRAM(const std::size_t index) {
-  if (vram_accessable) {
+  if (vram_accessible) {
     return m_vram.at(index);
   }
 }
 
 void ppu::writeVRAM(const std::size_t index, const byte val) {
-  if (vram_accessable) {
+  if (vram_accessible) {
     m_vram.at(index) = val;
   }
 }
 
 byte ppu::readOAM(const std::size_t index) {
-  if (oam_accessable) {
+  if (oam_accessible) {
     return m_oam.at(index);
   }
 }
 
 void ppu::writeOAM(const std::size_t index, const byte val) {
-  if (oam_accessable) {
+  if (oam_accessible) {
     m_oam.at(index) = val;
   }
 }
