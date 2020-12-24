@@ -1,5 +1,5 @@
 - Figure out how to make use of PPU registers for draw.
 - Add setters to interrupt class.
-- Implement timer module and its interrupt (is interrupt procedure correct?)
 - Write tests for cpu instructions.
+- How to segregate gui from logic? 
 
