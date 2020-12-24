@@ -61,24 +61,25 @@ void cpu::run() {
 
   if (IME) {
     if (m_intr.IE() && m_intr.IF() && 0b0001'1111) {
-      if (m_intr.vblank_pending && m_intr.vblank_enabled) {
-        m_intr.vblank_pending = false;
+      if (m_intr.VBlank_IRQ && m_intr.VBlank_Enabled) {
+        m_intr.VBlank_IRQ = false;
         di();
         call(intr_vec[0]);
-      } else if (m_intr.stat_pending && m_intr.stat_enabled) {
-        m_intr.stat_pending = false;
+      } else if (m_intr.LCDC_Status_IRQ && m_intr.LCDC_Status_Enabled) {
+        m_intr.LCDC_Status_IRQ = false;
         di();
         call(intr_vec[1]);
-      } else if (m_intr.timer_pending && m_intr.timer_enabled) {
-        m_intr.timer_pending = false;
+      } else if (m_intr.Timer_Overflow_IRQ && m_intr.Timer_Overflow_Enabled) {
+        m_intr.Timer_Overflow_IRQ = false;
         di();
         call(intr_vec[2]);
-      } else if (m_intr.serial_pending && m_intr.serial_enabled) {
-        m_intr.serial_pending = false;
+      } else if (m_intr.Serial_Transfer_Completion_IRQ &&
+                 m_intr.Serial_Transfer_Completion_Enabled) {
+        m_intr.Serial_Transfer_Completion_IRQ = false;
         di();
         call(intr_vec[3]);
-      } else if (m_intr.joypad_pending && m_intr.joypad_enabled) {
-        m_intr.joypad_pending = false;
+      } else if (m_intr.Button_Pressed_IRQ && m_intr.Button_Pressed_Enabled) {
+        m_intr.Button_Pressed_IRQ = false;
         di();
         call(intr_vec[4]);
       }
