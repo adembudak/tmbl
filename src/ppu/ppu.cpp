@@ -195,27 +195,12 @@ void ppu::fetchBG() {
   }
 }
 
-// are we drawing window or background or sprite.
-// sprite on top of window, which on top of background
-//
-// first choose tile area
-// second choose tile map
-// third locate current scanline
-
-// for i<-0 - 144
-//  scanline(i);
-
-// scanline(int i) {
-// for k<-0 - 160
-//   draw(framebuffer[i][k])
-// }
-
-// scanline called on data to lcd tranfer case on stat
-
-// who calls the scaneline
-// but what calls fetch function
-
-// how to segreate gui from logic
+void ppu::fetchOBJ() {
+  // implement this
+  // how much this (and other fetch fucntions on color gameboy)
+  // should I write a seperate function for them or just a switch to
+  // get around the difference
+}
 
 void ppu::scanline() {
 
