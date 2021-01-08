@@ -30,6 +30,7 @@ cpu::cpu(bus &bus_, registers &reg_, interrupts &intr_)
   HL.lo() = 0x4D;
 
   SP = 0xFFFE;
+  PC = 0x0100;
 }
 
 // see: double speed mode switch procedure
