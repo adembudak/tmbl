@@ -99,11 +99,12 @@ private:
 };
 
 int main(int argc, char *argv[]) {
-  gameboy myboy;
-
-  myboy.plugCart("C:\\Users\\Adem Budak\\Downloads\\Tetris (World) (Rev A)\\tetris.gb");
-  myboy.run();
-
-  return 0;
+  if (argc > 1) {
+    gameboy myboy;
+    myboy.plugCart("argv[1]");
+    myboy.run();
+  } else {
+    std::cout << "Usage: tombul [ROM file]\n";
+  }
 }
 
