@@ -2,4 +2,6 @@
 - Add setters to interrupt class.
 - Write tests for cpu instructions.
 - How to segregate gui from logic? 
+- Implement timer functions, TMA, TAC and the frequency stuff.
+- Implement DMA stuff.
 
