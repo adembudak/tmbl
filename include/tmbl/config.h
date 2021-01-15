@@ -15,16 +15,18 @@ using byte = std::uint8_t;
 using flag = bool;
 using cflag = const flag;
 
-constexpr cflag set = true;
-constexpr cflag reset = false;
+// helper variables
+inline constexpr cflag set = true;
+inline constexpr cflag reset = !set;
 
-constexpr cflag on = true;
-constexpr cflag off = false;
+inline constexpr cflag on = set;
+inline constexpr cflag off = reset;
 
 // helper functions
-constexpr std::size_t operator""_B(unsigned long long val) { return val; }
-constexpr std::size_t operator""_KB(unsigned long long val) { return val * 1024; }
-constexpr std::size_t operator""_MB(unsigned long long val) { return val * 1024 * 1024; }
+// mostly used as container size to increase readability
+inline constexpr std::size_t operator""_B(unsigned long long val) { return val; }
+inline constexpr std::size_t operator""_KB(unsigned long long val) { return val * 1024; }
+inline constexpr std::size_t operator""_MB(unsigned long long val) { return val * 1024 * 1024; }
 
 }
 
