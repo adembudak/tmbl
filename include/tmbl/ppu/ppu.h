@@ -115,7 +115,7 @@ private:
 
   std::array<byte, 16_KB> m_vram{}; // it's 8KB on DMG
   std::array<byte, 160_B> m_oam{};
-  frame framebuffer;
+  frame framebuffer{};
 
   uint8 tileWidth = 8;
   uint8 tileHeight = 8;
@@ -132,7 +132,7 @@ private:
                                         color{15, 56, 15, 0},    // dark green
                                         color{161, 193, 19, 0}}; // idle screen color
 
-  clock m_clock;
+  clock &m_clock = clock::instance(m_regs);
 };
 }
 
