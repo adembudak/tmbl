@@ -12,7 +12,7 @@
 
 namespace tmbl {
 cpu::cpu(bus &bus_, registers &reg_, interrupts &intr_)
-    : m_bus(bus_), m_reg(reg_), m_intr(intr_), KEY1(m_reg.getAt(0xFF4D)) {
+    : m_bus(bus_), m_regs(reg_), m_intr(intr_), KEY1(m_regs.getAt(0xFF4D)) {
 
   // Put initial values of the registers
   // see: https://gbdev.io/pandocs/#power-up-sequence
@@ -41,7 +41,7 @@ void cpu::enableDoubleSpeedMode() {
     m_clock.enableDoubleSpeedMode(true);
     m_bus.writeBus(0xFF0F /*IF*/, 0);
     m_bus.writeBus(0xFFFF /*IE*/, 0);
-    m_reg.getAt(0xFF00 /*P1*/) |= 0b0011'0000;
+    m_regs.getAt(0xFF00 /*P1*/) |= 0b0011'0000;
     stop();
   }
 }
@@ -3127,5 +3127,6 @@ void cpu::scf() {
 
 void cpu::stop() {
   // implement this.
+  m_clock.resetDIV();
 }
 } // namespace tmbl
