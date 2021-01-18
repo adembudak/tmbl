@@ -8,8 +8,10 @@ namespace tmbl {
 
 // type definitions
 using uint8 = std::uint_fast8_t;
-using int8 = std::int_fast8_t;
 using uint16 = std::uint_fast16_t;
+using uint32 = std::uint_fast32_t;
+using uint64 = std::uint_fast64_t;
+using int8 = std::int_fast8_t;
 using byte = std::uint8_t;
 
 using flag = bool;
