@@ -1,7 +1,7 @@
 #ifndef CODES_H
 #define CODES_H
 
-#include <string>
+#include <string_view>
 #include <map>
 #include <vector>
 // credit: https://raw.githubusercontent.com/gb-archive/salvage/master/txt-files/gbrom.txt
@@ -17,7 +17,7 @@ std::vector<byte> nintendo_logo{0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B, 
                                0xD9, 0x99, 0xBB, 0xBB, 0x67, 0x63, 0x6E, 0x0E, 0xEC, 0xCC,
                                0xDD, 0xDC, 0x99, 0x9F, 0xBB, 0xB9, 0x33, 0x3E};
 
-std::map<byte, std::string> new_licensee{
+std::map<byte, std::string_view> new_licensee{
 {0, "None"},
 {1, "Nintendo"},
 {8, "Capcom"},
