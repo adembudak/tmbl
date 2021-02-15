@@ -98,10 +98,10 @@ private:
   tmbl::cpu m_cpu{m_bus, m_regs, m_intr};
 };
 
-int main(int argc, char *argv[]) {
+int main(int argc, const char *const argv[]) {
   if (argc > 1) {
     gameboy myboy;
-    myboy.plugCart("argv[1]");
+    myboy.plugCart(std::filesystem::path{argv[1]});
     myboy.run();
   } else {
     std::cout << "Usage: tombul [ROM file]\n";
