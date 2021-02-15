@@ -1,13 +1,13 @@
 ---
-name: Ubuntu 
+name: MacOS
 
 on:
   push:
     branches: main
 
 jobs:
-  build-ubuntu:
-    runs-on: ubuntu-latest
+  build-msvc2019:
+    runs-on: macos-latest
     steps:
       - name: checkout code
         uses: actions/checkout@v2
@@ -15,12 +15,7 @@ jobs:
           fetch-depth: 5
 
       - name: cmake
-        run: |
-            cmake \
-            -DCMAKE_CXX_COMPILER=/usr/bin/g++-9 \
-            -DCMAKE_BUILD_TYPE=Release \
-            -S . \
-            -B build
+        run: cmake -DCMAKE_BUILD_TYPE=Release -S . -B build
 
       - name: build
         run: cmake --build build --parallel 4
