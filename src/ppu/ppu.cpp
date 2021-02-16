@@ -36,6 +36,13 @@ ppu::ppu(registers &regs_, cartridge &cart_, interrupts &intr_)
 // clang-format on
 {}
 
+/*
+Mode 2  2_____2_____2_____2_____2_____2___________________2____
+Mode 3  _33____33____33____33____33____33__________________3___
+Mode 0  ___000___000___000___000___000___000________________000
+Mode 1  ____________________________________11111111111111_____
+ */
+
 void ppu::update() {
   if (LCDC.lcdControllerStatus() == on) {
 
@@ -53,10 +60,6 @@ void ppu::update() {
       oam_accessible = false;
       vram_accessible = false;
 
-      // draw: render framebuffer
-
-      ++LY;
-
       m_clock.cycle(vramCycles);
       STAT.mode_flag(stat::mode::HORIZONTAL_BLANKING);
     }
@@ -66,6 +69,8 @@ void ppu::update() {
       vram_accessible = true;
 
       m_intr.LCDC_Status_IRQ = STAT.matchHblank();
+
+      ++LY; // increase ly
 
       m_clock.cycle(hblankCycles);
       STAT.mode_flag(stat::mode::SEARCHING_OAM);
@@ -124,36 +129,27 @@ void ppu::writeOAM(const std::size_t index, const byte val) {
 }
 
 void ppu::fetchCHR() {
-  auto [dataBlock, is_signed] = LCDC.bgChrBlockSelect();
-  auto [tile_map, _] = LCDC.chrMapAreaSelect();
-  uint8 y = LY - WY;
-  uint16 tile_row = y / tileHeight;
+  const auto [dataBlock, is_signed] = LCDC.bgChrBlockSelect();
+  const auto [tile_map, _] = LCDC.chrMapAreaSelect();
+  const uint8 y = LY - WY;
+  const uint16 tile_row = y / tileHeight;
 
   for (uint8 dx = 0; dx < screenWidth; ++dx) {
-    uint8 x = dx + SCX;
-    if (dx >= WX) {
-      x = dx - WX;
-    }
-
-    uint16 tile_column = x / tileWidth;
-    uint16 address = tile_map + (tile_row * 32) + tile_column;
-    uint16 tile_number = is_signed ? static_cast<int8>(readVRAM(address)) : readVRAM(address);
-
-    uint16 tile_address = is_signed ? dataBlock + (tile_number * tileSize)
-                                    : dataBlock + ((tile_number + 128) * tileSize);
-
+    const uint8 x = (dx >= WX) ? dx - WX : dx + WX;
+    const uint16 tile_column = x / tileWidth;
+    const uint16 address = tile_map + (tile_row * 32) + tile_column;
+    const uint16 tile_number = is_signed ? int8(readVRAM(address)) : readVRAM(address);
+    const uint16 tile_address = is_signed ? dataBlock + (tile_number * tileSize)
+                                          : dataBlock + ((tile_number + 128) * tileSize);
     uint8 line_number = y % tileHeight;
     line_number *= 2;
-    byte lo = readVRAM(tile_address + line_number);
-    byte hi = readVRAM(tile_address + line_number + 1);
-
-    // lo |7|6|5|4|3|2|1|0|
-    // hi |7|6|5|4|3|2|1|0|
-    uint8 bit_check_mask = 7 - (x % 8); // start from left most bit and check
-    uint8 lo_bit = (lo >> bit_check_mask) & 0b1;
-    uint8 hi_bit = (hi >> bit_check_mask) & 0b1;
-    uint8 color_id = (lo_bit << 1) | hi_bit;
-    std::size_t palette_index = BGP.bgPalette(color_id);
+    const byte lo = readVRAM(tile_address + line_number);
+    const byte hi = readVRAM(tile_address + line_number + 1);
+    const uint8 bit_check_mask = 7 - (x % 8); // start from left most bit and check
+    const uint8 lo_bit = (lo >> bit_check_mask) & 0b1;
+    const uint8 hi_bit = (hi >> bit_check_mask) & 0b1;
+    const uint8 color_id = (lo_bit << 1) | hi_bit;
+    const std::size_t palette_index = BGP.bgPalette(color_id);
 
     framebuffer[dx][LY] = default_palette[palette_index];
 
@@ -162,34 +158,33 @@ void ppu::fetchCHR() {
 }
 
 void ppu::fetchBG() {
-
-  auto [dataBlock, is_signed] = LCDC.bgChrBlockSelect();
-  auto [tile_map, _] = LCDC.bgMapAreaSelect();
-  uint8 y = LY + SCY;
-  uint16 tile_row = y / tileHeight;
+  const auto [dataBlock, is_signed] = LCDC.bgChrBlockSelect();
+  const auto [tile_map, _] = LCDC.bgMapAreaSelect();
+  const uint8 y = SCY + LY;
+  const uint16 tile_row = y / tileHeight;
 
   for (uint8 dx = 0; dx < screenWidth; ++dx) {
-    uint8 x = dx + SCX;
+    const uint8 x = SCX + dx;
 
-    uint16 tile_column = x / tileWidth;
-    uint16 address = tile_map + (tile_row * 32) + tile_column;
-    uint16 tile_number = is_signed ? static_cast<int8>(readVRAM(address)) : readVRAM(address);
+    const uint16 tile_column = x / tileWidth;
+    const uint16 address = tile_map + (tile_row * 32) + tile_column;
+    const uint16 tile_number = is_signed ? int8(readVRAM(address)) : readVRAM(address);
 
-    uint16 tile_address = is_signed ? dataBlock + (tile_number * tileSize)
-                                    : dataBlock + ((tile_number + 128) * tileSize);
+    const uint16 tile_address = is_signed ? dataBlock + (tile_number * tileSize)
+                                          : dataBlock + ((tile_number + 128) * tileSize);
 
     uint8 line_number = y % tileHeight;
     line_number *= 2;
-    byte lo = readVRAM(tile_address + line_number);
-    byte hi = readVRAM(tile_address + line_number + 1);
+    const byte lo = readVRAM(tile_address + line_number);
+    const byte hi = readVRAM(tile_address + line_number + 1);
 
     // lo |7|6|5|4|3|2|1|0|
     // hi |7|6|5|4|3|2|1|0|
-    uint8 bit_check_mask = 7 - (x % 8); // start from left most bit and check
-    uint8 lo_bit = (lo >> bit_check_mask) & 0b1;
-    uint8 hi_bit = (hi >> bit_check_mask) & 0b1;
-    uint8 color_id = (lo_bit << 1) | hi_bit;
-    std::size_t palette_index = BGP.bgPalette(color_id);
+    const uint8 bit_check_mask = 7 - (x % 8); // start from left most bit and check
+    const uint8 lo_bit = (lo >> bit_check_mask) & 0b1;
+    const uint8 hi_bit = (hi >> bit_check_mask) & 0b1;
+    const uint8 color_id = (lo_bit << 1) | hi_bit;
+    const std::size_t palette_index = BGP.bgPalette(color_id);
 
     framebuffer[dx][LY] = default_palette[palette_index];
   }
@@ -197,9 +192,6 @@ void ppu::fetchBG() {
 
 void ppu::fetchOBJ() {
   // implement this
-  // how much this (and other fetch fucntions on color gameboy)
-  // should I write a seperate function for them or just a switch to
-  // get around the difference
 }
 
 void ppu::scanline() {

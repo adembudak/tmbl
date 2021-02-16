@@ -49,7 +49,7 @@ public:
   static constexpr uint8 oamCycles = 20;
   static constexpr uint8 vramCycles = 43;
   static constexpr uint8 hblankCycles = 22;
-  static constexpr uint16 scanlineCycles = 114;
+  static constexpr uint8 scanlineCycles = 114;
 
   struct color {
     uint8 r, g, b, a;
