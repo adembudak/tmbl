@@ -35,29 +35,32 @@ class interrupts;
 //   |++tile [0,128)+++++++++tile [128,256)++|                   |,LCDC.6=0,|,LCDC.6=1,|
 //   |                   |~~~~~~~~~~~~~~~~LCDC.4=0~~~~~~~~~~~~~~~|          |          |
 //   |                   |~~tile [-128,0)~~~~~~tile [0,128)~~~~~~|          |          |
-//   |-------------------|-------------------|-------------------|----------|----------|
-// 0x8000             0x8800               0x9000             0x9800     0x9C00     0xA000
+//   [------------------)[------------------)[------------------)[---------)[----------)
+//   0x8000              0x8800              0x9000              0x9800     0x9C00     0xA000
+
+constexpr const uint8 screenWidth = 160;
+constexpr const uint8 screenHeight = 144;
+
+constexpr const uint8 screenVBlankHeight = 154; // n([0, 153]) = 154
+constexpr const uint8 oamCycles = 20;
+constexpr const uint8 vramCycles = 43;
+constexpr const uint8 hblankCycles = 22;
+constexpr const uint8 scanlineCycles = 114;
 
 class ppu {
 public:
-  ppu(registers &regs_, cartridge &cart_, interrupts &intr_);
-
-  static constexpr uint8 screenWidth = 160;
-  static constexpr uint8 screenHeight = 144;
-
-  static constexpr uint8 screenVBlankHeight = 154; // n([0, 153]) = 154
-  static constexpr uint8 oamCycles = 20;
-  static constexpr uint8 vramCycles = 43;
-  static constexpr uint8 hblankCycles = 22;
-  static constexpr uint8 scanlineCycles = 114;
-
-  struct color {
+  using color_t = struct color {
     uint8 r, g, b, a;
+    friend bool operator==(const color &left, const color &right) {
+      return left.r == right.r && left.g == right.g && left.b == right.b && left.a == right.a;
+    }
   };
-  using palette = std::array<color, 5>; // 5th color for idle screen, i.e. when in LCDC.bit7 is 0
-  using screenline = std::array<color, screenWidth>;
+  using palette_t = std::array<color_t, 5>; // 5th color for idle screen, i.e. LCDC.bit7 is 0
+
+  using screenline = std::array<color_t, screenWidth>;
   using frame = std::array<screenline, screenHeight>;
 
+  ppu(registers &regs_, cartridge &cart_, interrupts &intr_);
   void update();
 
   byte readVRAM(const std::size_t index);
@@ -126,7 +129,7 @@ private:
   bool oam_accessible = false;
 
   // clang-format off
-  inline static const palette default_palette{color{155, 188, 15, 0},  // light green
+  static constexpr palette_t default_palette{color{155, 188, 15, 0},  // light green
                                         color{139, 172, 15, 0},
                                         color{48, 98, 48, 0},
                                         color{15, 56, 15, 0},    // dark green
