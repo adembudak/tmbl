@@ -6,4 +6,5 @@
 - Implement DMA
 - write put pixel function
 - create a cmake-format configuration
+- create ARCHITECTURE.md
 
