@@ -2,15 +2,17 @@ cmake_minimum_required(VERSION 3.17)
 
 project(
   tombul
-  DESCRIPTION "A GameBoy emulator implementation."
-  HOMEPAGE_URL https://github.com/p1v0t/tombul
+  DESCRIPTION "A GameBoy emulator implementation"
+  HOMEPAGE_URL https://github.com/adembudak/tombul
   LANGUAGES CXX)
 
 option(ENABLE_INCLUDE_WHAT_YOU_USE "Apply iwyu to source" OFF)
 option(ENABLE_BUILD_CACHE "Cache build with ccache" OFF)
 option(ENABLE_ROM_TESTS "Run test ROMs" OFF)
 option(ENABLE_UNIT_TESTS "Build unit tests" OFF)
+
 include(CTest)
+include(ExternalProject)
 
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "")
 set(CMAKE_CXX_STANDARD_REQUIRED YES CACHE BOOL "")
@@ -43,8 +45,6 @@ if(ENABLE_INCLUDE_WHAT_YOU_USE)
   endif()
 endif()
 
-add_subdirectory(src)
-
 if(ENABLE_ROM_TESTS AND BUILD_TESTING)
   enable_testing()
   add_subdirectory(tests/rom)
@@ -54,4 +54,6 @@ if(ENABLE_UNIT_TESTS AND BUILD_TESTING)
   enable_testing()
   add_subdirectory(tests/unit)
 endif()
+
+add_subdirectory(src)
 
