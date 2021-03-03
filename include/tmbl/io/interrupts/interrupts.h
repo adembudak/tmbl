@@ -7,7 +7,7 @@
 namespace tmbl {
 
 // https://eldred.fr/gb-asm-tutorial/interrupts.html
-// https://archive.org/details/GameBoyProgManVer1.1/page/n25/mode/1up;w
+// https://archive.org/details/GameBoyProgManVer1.1/page/n25/mode/1up
 
 class interrupts {
 
