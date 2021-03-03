@@ -83,9 +83,9 @@ private:
   static constexpr std::size_t screenWidth = 160;
   static constexpr std::size_t screenHeight = 144;
 
-  SDL_Texture *sdl_texture;
-  SDL_Renderer *sdl_renderer;
-  SDL_Window *sdl_window;
+  SDL_Texture *sdl_texture = nullptr;
+  SDL_Renderer *sdl_renderer = nullptr;
+  SDL_Window *sdl_window = nullptr;
 
 private:
   tmbl::cartridge m_cart;
@@ -100,11 +100,11 @@ private:
 
 int main(int argc, const char *const argv[]) {
   if (argc > 1) {
-    gameboy myboy;
-    myboy.plugCart(std::filesystem::path{argv[1]});
-    myboy.run();
+    gameboy attaboy;
+    attaboy.plugCart(std::filesystem::path{argv[1]});
+    attaboy.run();
   } else {
-    std::cout << "Usage: tombul [ROM file]\n";
+    std::cerr << "Usage: tombul [ROM file]\n";
   }
 }
 
