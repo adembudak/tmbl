@@ -4,8 +4,7 @@
 #include <cstddef>
 // clang-format off
 
-namespace tmbl {
-namespace memory {
+namespace tmbl::memory {
 
 // GameBoy memory layout
 //                                              address |  size  |   located in
@@ -40,8 +39,6 @@ static constexpr std::size_t hram_end =         0xFFFE;
 static constexpr std::size_t IE =               0xFFFF; // 1B        Intterupts
 
                                                // Total:  32KB
-
- }
 }
 
 #endif
