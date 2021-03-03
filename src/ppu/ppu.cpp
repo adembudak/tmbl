@@ -10,31 +10,28 @@ namespace tmbl {
 
 class registers;
 
-// clang-format off
 ppu::ppu(registers &regs_, cartridge &cart_, interrupts &intr_)
     : m_regs(regs_), m_cart(cart_), m_intr(intr_), cgb_support(m_cart.CGB()),
-	STAT(m_regs.getAt(0xFF41), /*ly*/ m_regs.getAt(0xFF44), /*lyc*/m_regs.getAt(0xFF45)), 
-        LCDC(m_regs.getAt(0xFF40), m_cart.CGB()),
+      STAT(m_regs.getAt(0xFF41), /*ly*/ m_regs.getAt(0xFF44), /*lyc*/ m_regs.getAt(0xFF45)),
+      LCDC(m_regs.getAt(0xFF40), m_cart.CGB()),
 
-        SCY(m_regs.getAt(0xFF42)), SCX(m_regs.getAt(0xFF43)), 
+      SCY(m_regs.getAt(0xFF42)), SCX(m_regs.getAt(0xFF43)),
 
-        LY(m_regs.getAt(0xFF44)), LYC(m_regs.getAt(0xFF45)), 
+      LY(m_regs.getAt(0xFF44)), LYC(m_regs.getAt(0xFF45)),
 
-        DMA(m_regs.getAt(0xFF46)), 
+      DMA(m_regs.getAt(0xFF46)),
 
-        BGP(m_regs.getAt(0xFF47)), OBP0(m_regs.getAt(0xFF48)), OBP1(m_regs.getAt(0xFF49)), 
+      BGP(m_regs.getAt(0xFF47)), OBP0(m_regs.getAt(0xFF48)), OBP1(m_regs.getAt(0xFF49)),
 
-        WY(m_regs.getAt(0xFF4A)), WX(m_regs.getAt(0xFF4B)), 
+      WY(m_regs.getAt(0xFF4A)), WX(m_regs.getAt(0xFF4B)),
 
-        VBK(m_regs.getAt(0xFF4F)), 
+      VBK(m_regs.getAt(0xFF4F)),
 
-        HDMA1(m_regs.getAt(0xFF51)), HDMA2(m_regs.getAt(0xFF52)), HDMA3(m_regs.getAt(0xFF53)), 
-        HDMA4(m_regs.getAt(0xFF54)), HDMA5(m_regs.getAt(0xFF55)), 
+      HDMA1(m_regs.getAt(0xFF51)), HDMA2(m_regs.getAt(0xFF52)), HDMA3(m_regs.getAt(0xFF53)),
+      HDMA4(m_regs.getAt(0xFF54)), HDMA5(m_regs.getAt(0xFF55)),
 
-        BCPS(m_regs.getAt(0xFF68)), BCPD(m_regs.getAt(0xFF69)), 
-        OCPS(m_regs.getAt(0xFF6A)), OCPD(m_regs.getAt(0xFF6B))
-// clang-format on
-{}
+      BCPS(m_regs.getAt(0xFF68)), BCPD(m_regs.getAt(0xFF69)), OCPS(m_regs.getAt(0xFF6A)),
+      OCPD(m_regs.getAt(0xFF6B)) {}
 
 /*
 Mode 2  2_____2_____2_____2_____2_____2___________________2____
@@ -70,13 +67,21 @@ void ppu::update() {
 
       m_intr.LCDC_Status_IRQ = STAT.matchHblank();
 
-      ++LY; // increase ly
-
       m_clock.cycle(hblankCycles);
-      STAT.mode_flag(stat::mode::SEARCHING_OAM);
+      ++LY; // drawing scanline finished, now not if now vertical blanking scan other line
+
+      if (STAT.match_flag()) { // LY == LYC
+        m_intr.LCDC_Status_IRQ = STAT.matchCoincidence();
+      }
+
+      if (LY == screenHeight) {
+        STAT.mode_flag(stat::mode::VERTICAL_BLANKING);
+      } else {
+        STAT.mode_flag(stat::mode::SEARCHING_OAM);
+      }
     }
 
-    if (LY == screenHeight) { //// mode 1
+    if (STAT.mode_flag() == stat::mode::VERTICAL_BLANKING) { //// mode 1
       oam_accessible = true;
       vram_accessible = true;
 
@@ -92,10 +97,6 @@ void ppu::update() {
       }
 
       STAT.mode_flag(stat::mode::SEARCHING_OAM);
-    }
-
-    if (STAT.match_flag()) { // LY == LYC
-      m_intr.LCDC_Status_IRQ = STAT.matchCoincidence();
     }
 
   } else {
@@ -187,6 +188,8 @@ void ppu::fetchBG() {
     const std::size_t palette_index = BGP.bgPalette(color_id);
 
     framebuffer[dx][LY] = default_palette[palette_index];
+
+    m_clock.cycle(1);
   }
 }
 
