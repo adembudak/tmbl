@@ -52,7 +52,6 @@ uint8 interrupts::IF() const noexcept {
                 (Timer_Overflow_IRQ << 2) |
     (Serial_Transfer_Completion_IRQ << 1) | 
                       Button_Pressed_IRQ;
-;
 }
 
 uint8 interrupts::IE() const noexcept {

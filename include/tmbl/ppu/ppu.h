@@ -10,7 +10,7 @@
 // dmg palettes
 #include "internals/bgp.h"
 #include "internals/obp.h"
-// cgg palettes
+// cgb palettes
 #include "internals/bcps.h"
 #include "internals/bcpd.h"
 #include "internals/ocps.h"
@@ -49,12 +49,13 @@ constexpr const uint8 scanlineCycles = 114;
 
 class ppu {
 public:
-  using color_t = struct color {
+  struct color {
     uint8 r, g, b, a;
     friend bool operator==(const color &left, const color &right) {
       return left.r == right.r && left.g == right.g && left.b == right.b && left.a == right.a;
     }
   };
+  using color_t = color;
   using palette_t = std::array<color_t, 5>; // 5th color for idle screen, i.e. LCDC.bit7 is 0
 
   using screenline = std::array<color_t, screenWidth>;
