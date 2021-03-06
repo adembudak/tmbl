@@ -50,11 +50,18 @@ constexpr const uint8 scanlineCycles = 114;
 class ppu {
 public:
   struct color {
-    uint8 r, g, b, a;
+    using subpixel = uint8;
+
+    subpixel r{};
+    subpixel g{};
+    subpixel b{};
+    uint8 a{}; // alpha
+
     friend bool operator==(const color &left, const color &right) {
       return left.r == right.r && left.g == right.g && left.b == right.b && left.a == right.a;
     }
   };
+
   using color_t = color;
   using palette_t = std::array<color_t, 5>; // 5th color for idle screen, i.e. LCDC.bit7 is 0
 
