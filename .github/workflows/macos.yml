@@ -6,7 +6,7 @@ on:
     branches: main
 
 jobs:
-  build-msvc2019:
+  build:
     runs-on: macos-latest
     steps:
       - name: checkout code
