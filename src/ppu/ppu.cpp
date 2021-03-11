@@ -6,6 +6,8 @@
 #include <array>
 #include <cstddef>
 
+#include <iostream>
+
 namespace tmbl {
 
 class registers;
@@ -13,25 +15,29 @@ class registers;
 ppu::ppu(registers &regs_, cartridge &cart_, interrupts &intr_)
     : m_regs(regs_), m_cart(cart_), m_intr(intr_), cgb_support(m_cart.CGB()),
       STAT(m_regs.getAt(0xFF41), /*ly*/ m_regs.getAt(0xFF44), /*lyc*/ m_regs.getAt(0xFF45)),
-      LCDC(m_regs.getAt(0xFF40), m_cart.CGB()),
 
-      SCY(m_regs.getAt(0xFF42)), SCX(m_regs.getAt(0xFF43)),
+      LCDC(m_regs.getAt(0xFF40), m_cart.CGB()), // lcd controller
+
+      SCY(m_regs.getAt(0xFF42)), SCX(m_regs.getAt(0xFF43)), // screen (viewport) scroll
 
       LY(m_regs.getAt(0xFF44)), LYC(m_regs.getAt(0xFF45)),
 
-      DMA(m_regs.getAt(0xFF46)),
+      DMA(m_regs.getAt(0xFF46)), // direct memory access
 
-      BGP(m_regs.getAt(0xFF47)), OBP0(m_regs.getAt(0xFF48)), OBP1(m_regs.getAt(0xFF49)),
+      BGP(m_regs.getAt(0xFF47)), // background palette
 
-      WY(m_regs.getAt(0xFF4A)), WX(m_regs.getAt(0xFF4B)),
+      OBP0(m_regs.getAt(0xFF48)), OBP1(m_regs.getAt(0xFF49)), // object palettes
+
+      WY(m_regs.getAt(0xFF4A)), WX(m_regs.getAt(0xFF4B)), // window position
 
       VBK(m_regs.getAt(0xFF4F)),
 
       HDMA1(m_regs.getAt(0xFF51)), HDMA2(m_regs.getAt(0xFF52)), HDMA3(m_regs.getAt(0xFF53)),
       HDMA4(m_regs.getAt(0xFF54)), HDMA5(m_regs.getAt(0xFF55)),
 
-      BCPS(m_regs.getAt(0xFF68)), BCPD(m_regs.getAt(0xFF69)), OCPS(m_regs.getAt(0xFF6A)),
-      OCPD(m_regs.getAt(0xFF6B)) {}
+      BCPS(m_regs.getAt(0xFF68)), BCPD(m_regs.getAt(0xFF69)),
+
+      OCPS(m_regs.getAt(0xFF6A)), OCPD(m_regs.getAt(0xFF6B)) {}
 
 /*
 Mode 2  2_____2_____2_____2_____2_____2___________________2____
@@ -68,7 +74,7 @@ void ppu::update() {
       m_intr.LCDC_Status_IRQ = STAT.matchHblank();
 
       m_clock.cycle(hblankCycles);
-      ++LY; // drawing scanline finished, now not if now vertical blanking scan other line
+      ++LY; // drawing scanline finished, now if not vertical blanking, scan other line
 
       if (STAT.match_flag()) { // LY == LYC
         m_intr.LCDC_Status_IRQ = STAT.matchCoincidence();
@@ -130,8 +136,8 @@ void ppu::writeOAM(const std::size_t index, const byte val) {
 }
 
 void ppu::fetchCHR() {
-  const auto [dataBlock, is_signed] = LCDC.bgChrBlockSelect();
-  const auto [tile_map, _] = LCDC.chrMapAreaSelect();
+  const auto [dataBlock, is_signed] = LCDC.bgChrBlockSelect(); // LCDC.4, where to get tile?
+  const auto [tile_map, _] = LCDC.chrMapAreaSelect();          // LCDC.6, where to put tile?
   const uint8 y = LY - WY;
   const uint16 tile_row = y / tileHeight;
 
@@ -215,3 +221,16 @@ void ppu::scanline() {
 
 uint8 ppu::vbk() const noexcept { return cgb_support ? (VBK & 0b0000'0001) : 0; }
 }
+
+// VRAM structure
+//   |                  (each tile is 16 bytes)                  |  (1KB = 32x32 = [0,1024) indexes)
+//   | 2KB = 128 tiles   |  2KB = 128 tiles  |  2KB = 128 tiles  | 1KB      | 1KB      | = 8KB total
+//   |                   |                   |                   |          |          |
+//   |   Block 0         |    Block 1        |    Block 2        |*LCDC.3=0*|*LCDC.3=1*|
+//   |+++++++++++++++LCDC.4=1++++++++++++++++|                   |          |          |
+//   |++tile [0,128)+++++++++tile [128,256)++|                   |,LCDC.6=0,|,LCDC.6=1,|
+//   |                   |~~~~~~~~~~~~~~~~LCDC.4=0~~~~~~~~~~~~~~~|          |          |
+//   |                   |~~tile [-128,0)~~~~~~tile [0,128)~~~~~~|          |          |
+//   [------------------)[------------------)[------------------)[---------)[----------)
+//   0x8000              0x8800              0x9000              0x9800     0x9C00     0xA000
+
