@@ -1,9 +1,9 @@
 #ifndef PPU_H
 #define PPU_H
 
-#include "../config.h"
+#include "tmbl/config.h"
 #include "tmbl/clock/clock.h"
-#include "../io/registers.h"
+#include "tmbl/io/registers.h"
 #include "internals/stat.h"
 #include "internals/lcdc.h"
 
@@ -65,6 +65,8 @@ public:
 
   byte readOAM(const std::size_t index);
   void writeOAM(const std::size_t index, const byte val);
+
+  void writeDMA(const byte val);
 
 private:
   void scanline();

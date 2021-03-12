@@ -30,14 +30,15 @@ ppu::ppu(registers &regs_, cartridge &cart_, interrupts &intr_)
 
       WY(m_regs.getAt(0xFF4A)), WX(m_regs.getAt(0xFF4B)), // window position
 
-      VBK(m_regs.getAt(0xFF4F)),
+      VBK(m_regs.getAt(0xFF4F)), // color gameboy vram bank control
 
       HDMA1(m_regs.getAt(0xFF51)), HDMA2(m_regs.getAt(0xFF52)), HDMA3(m_regs.getAt(0xFF53)),
-      HDMA4(m_regs.getAt(0xFF54)), HDMA5(m_regs.getAt(0xFF55)),
+      HDMA4(m_regs.getAt(0xFF54)), HDMA5(m_regs.getAt(0xFF55)), // cgb DMAs
 
-      BCPS(m_regs.getAt(0xFF68)), BCPD(m_regs.getAt(0xFF69)),
+      BCPS(m_regs.getAt(0xFF68)), BCPD(m_regs.getAt(0xFF69)), // cgb background palettes
 
-      OCPS(m_regs.getAt(0xFF6A)), OCPD(m_regs.getAt(0xFF6B)) {}
+      OCPS(m_regs.getAt(0xFF6A)), OCPD(m_regs.getAt(0xFF6B)) // cgb object palettes
+{}
 
 /*
 Mode 2  2_____2_____2_____2_____2_____2___________________2____
@@ -133,6 +134,16 @@ void ppu::writeOAM(const std::size_t index, const byte val) {
   if (oam_accessible) {
     m_oam.at(index) = val;
   }
+}
+
+void ppu::writeDMA(const byte val) {
+  vram_accessible = false;
+  DMA = val;
+
+  std::size_t offset = 0x100 * val;
+  std::copy_n(m_vram.begin() + offset, 160_B, m_oam.begin());
+
+  m_clock.cycle(160);
 }
 
 void ppu::fetchCHR() {
