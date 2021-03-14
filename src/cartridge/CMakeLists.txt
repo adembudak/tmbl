@@ -8,6 +8,6 @@ target_link_libraries(cartridge PRIVATE mbc1 rom)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	target_link_libraries(cartridge PRIVATE pakInfo)
-	target_compile_definitions(cartridge PUBLIC PRINT_PAK_INFO=1)
+	target_compile_definitions(cartridge PUBLIC PRINT_PAK_INFO)
 endif()
 

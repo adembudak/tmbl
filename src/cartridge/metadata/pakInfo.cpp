@@ -5,7 +5,7 @@
 
 namespace tmbl::metadata {
 
-pakInfo::pakInfo(std::vector<byte> &&vec) : cartridge_header(std::move(vec)) {
+pakInfo::pakInfo(std::array<byte, 336_B> &&vec) : cartridge_header(std::move(vec)) {
 
   nintendo_logo_check = std::equal(begin(nintendo_logo), end(nintendo_logo),
                                    &cartridge_header[0x104], &cartridge_header[0x133 + 1]);
@@ -30,7 +30,6 @@ pakInfo::pakInfo(std::vector<byte> &&vec) : cartridge_header(std::move(vec)) {
 }
 
 std::ostream &operator<<(std::ostream &os, const pakInfo &pak) {
-
   os.setf(std::ios_base::hex, std::ios_base::basefield);
   os.setf(std::ios_base::boolalpha);
   os.setf(std::ios_base::showbase);
@@ -40,17 +39,13 @@ std::ostream &operator<<(std::ostream &os, const pakInfo &pak) {
   os << "title: " << pak.title << '\n';
   os << "manufacturer code: " << pak.manufacturer_code << '\n'; // for "newer" cartridges
   os << "CGB support [00h: no, 80h: compatible, C0h: exclusive]: " << pak.cgb_flag << '\n';
-
-  os << "new licensee code: " << pak.new_licensee_code << ':' << new_licensee[pak.new_licensee_code]
-     << '\n';
+  os << "new licensee code: " << new_licensee[pak.new_licensee_code] << '\n';
   os << "SGB support [00h: incompatible, 03h: uses sgb features]: " << pak.sgb_flag << '\n';
   os << "cartridge type: " << cartridge_types[pak.cartridge_type] << '\n';
   os << "rom size: " << rom_sizes[pak.rom_size] << '\n';
   os << "ram size: " << ram_sizes[pak.ram_size] << '\n';
   os << "destination code [0x00: JP, 0x01: all other]: " << pak.destination_code << '\n';
-  os << "old licensee code: " << pak.old_licensee_code << ':' << old_licensee[pak.old_licensee_code]
-     << '\n';
-
+  os << "old licensee code: " << old_licensee[pak.old_licensee_code] << '\n';
   os << "mask rom version number: " << pak.mask_rom_version_number << '\n';
   os << std::string(50, '~') << '\n';
 
@@ -58,3 +53,4 @@ std::ostream &operator<<(std::ostream &os, const pakInfo &pak) {
 }
 
 }
+
