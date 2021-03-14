@@ -576,4 +576,8 @@ MigrationBackup/
 # Externals 
 [Ee]xternal/
 
+# test roms
+tests/rom/test_roms/
+
 # End of https://www.gitignore.io/api/vim,c++,code,cmake,clion,emacs,visualstudio
+
