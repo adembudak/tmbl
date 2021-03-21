@@ -1,9 +1,9 @@
 #ifndef PPU_H
 #define PPU_H
 
-#include "../config.h"
+#include "tmbl/config.h"
 #include "tmbl/clock/clock.h"
-#include "../io/registers.h"
+#include "tmbl/io/registers.h"
 #include "internals/stat.h"
 #include "internals/lcdc.h"
 
@@ -27,17 +27,6 @@ namespace tmbl {
 class cartridge;
 class interrupts;
 
-// VRAM structure
-//   |                  (each tile is 16 bytes)                  |  (1KB = 32x32 = [0,1024) indexes)
-//   | 2KB = 128 tiles   |  2KB = 128 tiles  |  2KB = 128 tiles  | 1KB      | 1KB      | = 8KB total
-//   |   Block 0         |    Block 1        |    Block 2        |*LCDC.3=0*|*LCDC.3=1*|
-//   |+++++++++++++++LCDC.4=1++++++++++++++++|                   |          |          |
-//   |++tile [0,128)+++++++++tile [128,256)++|                   |,LCDC.6=0,|,LCDC.6=1,|
-//   |                   |~~~~~~~~~~~~~~~~LCDC.4=0~~~~~~~~~~~~~~~|          |          |
-//   |                   |~~tile [-128,0)~~~~~~tile [0,128)~~~~~~|          |          |
-//   [------------------)[------------------)[------------------)[---------)[----------)
-//   0x8000              0x8800              0x9000              0x9800     0x9C00     0xA000
-
 constexpr const uint8 screenWidth = 160;
 constexpr const uint8 screenHeight = 144;
 
@@ -50,11 +39,18 @@ constexpr const uint8 scanlineCycles = 114;
 class ppu {
 public:
   struct color {
-    uint8 r, g, b, a;
+    using subpixel = uint8;
+
+    subpixel r{};
+    subpixel g{};
+    subpixel b{};
+    uint8 a{}; // alpha
+
     friend bool operator==(const color &left, const color &right) {
       return left.r == right.r && left.g == right.g && left.b == right.b && left.a == right.a;
     }
   };
+
   using color_t = color;
   using palette_t = std::array<color_t, 5>; // 5th color for idle screen, i.e. LCDC.bit7 is 0
 
@@ -69,6 +65,8 @@ public:
 
   byte readOAM(const std::size_t index);
   void writeOAM(const std::size_t index, const byte val);
+
+  void writeDMA(const byte val);
 
 private:
   void scanline();

@@ -31,13 +31,14 @@ private:
   uint8 lower_rom_mask_countl_one = 5;
   uint8 upper_rom_mask = 0b0000'0011;
 
-  std::vector<byte> m_xram;
+  bool ram_available = false; // is it exist?
+  std::vector<byte> m_xram;   // external ram or (s)ave ram
   uint8 ram_bank;
   uint8 ram_mask = 0b0000'0011;
-  bool ram_available = false;
   bool ram_banking_available = false;
   bool ram_access_enabled = false;
 };
 }
 
 #endif
+

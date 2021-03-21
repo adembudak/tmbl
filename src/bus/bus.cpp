@@ -51,8 +51,8 @@ bus::bus(cartridge &pCart, registers &pRegs, interrupts &pIntr, builtin &pBuilti
 }
 
 byte bus::readBus(const std::size_t index) {
-  if (index >= memory::rom && index <= memory::rom_end) {
-    return m_cart.readROM(index - memory::rom);
+  if (index >= memory::rom0 && index <= memory::romx_end) {
+    return m_cart.readROM(index - memory::rom0);
   }
 
   else if (index >= memory::vram && index <= memory::vram_end) {
@@ -63,8 +63,8 @@ byte bus::readBus(const std::size_t index) {
     return m_cart.readXRAM(index - memory::xram);
   }
 
-  else if (index >= memory::wram && index <= memory::wram_end) {
-    return m_builtin.readWRAM(index - memory::wram);
+  else if (index >= memory::wram0 && index <= memory::wramx_end) {
+    return m_builtin.readWRAM(index - memory::wram0);
   }
 
   else if (index >= memory::echo && index <= memory::echo_end) {
@@ -100,8 +100,8 @@ byte bus::readBus(const std::size_t index) {
 }
 
 void bus::writeBus(const std::size_t index, const byte val) {
-  if (index >= memory::rom && index <= memory::rom_end) {
-    m_cart.writeROM(index - memory::rom, val);
+  if (index >= memory::rom0 && index <= memory::romx_end) {
+    m_cart.writeROM(index - memory::rom0, val);
   }
 
   else if (index >= memory::vram && index <= memory::vram_end) {
@@ -112,8 +112,8 @@ void bus::writeBus(const std::size_t index, const byte val) {
     m_cart.writeXRAM(index - memory::xram, val);
   }
 
-  else if (index >= memory::wram && index <= memory::wram_end) {
-    m_builtin.writeWRAM(index - memory::wram, val);
+  else if (index >= memory::wram0 && index <= memory::wramx_end) {
+    m_builtin.writeWRAM(index - memory::wram0, val);
   }
 
   else if (index >= memory::echo && index <= memory::echo_end) {
@@ -135,6 +135,8 @@ void bus::writeBus(const std::size_t index, const byte val) {
   else if (index >= memory::io && index <= memory::io_end) {
     if (index == 0xFF0F) {
       m_pintr.write(index, val);
+    } else if (index == 0xFF46) {
+      m_PPU.writeDMA(val);
     } else {
       m_regs.write(index - memory::io, val);
     }

@@ -9,8 +9,10 @@ namespace tmbl::memory {
 // GameBoy memory layout
 //                                              address |  size  |   located in
 // -----------------------------------------------------------------------------
-static constexpr std::size_t rom =              0x0000; // 32KB      Cartridge
-static constexpr std::size_t rom_end =          0x7FFF; 
+static constexpr std::size_t rom0 =             0x0000; // 32KB      Cartridge
+static constexpr std::size_t rom0_end =         0x3FFF;
+static constexpr std::size_t romx =             0x4000;
+static constexpr std::size_t romx_end =         0x7FFF; 
 
 static constexpr std::size_t vram =             0x8000; // 8KB       PPU
 static constexpr std::size_t vram_end =         0x9FFF; 
@@ -18,8 +20,10 @@ static constexpr std::size_t vram_end =         0x9FFF;
 static constexpr std::size_t xram =             0xA000; // 8KB       Cartridge
 static constexpr std::size_t xram_end =         0xBFFF;  
 
-static constexpr std::size_t wram =             0xC000; // 8KB       Built-in
-static constexpr std::size_t wram_end =         0xDFFF;
+static constexpr std::size_t wram0 =            0xC000; // 8KB       Built-in
+static constexpr std::size_t wram0_end =        0xCFFF;
+static constexpr std::size_t wramx =            0xD000;
+static constexpr std::size_t wramx_end =        0xDFFF;
 
 static constexpr std::size_t echo =             0xE000; // 7KB+512B  Built-in
 static constexpr std::size_t echo_end =         0xFDFF;

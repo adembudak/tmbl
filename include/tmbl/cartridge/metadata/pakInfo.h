@@ -4,32 +4,33 @@
 #include "tmbl/config.h"
 
 #include <string>
-#include <vector>
+#include <array>
 
 namespace tmbl::metadata {
 
 class pakInfo {
 public:
-  pakInfo(std::vector<byte> &&vec);
+  pakInfo(std::array<byte, 336_B> &&vec);
   friend std::ostream &operator<<(std::ostream &os, const pakInfo &pak);
 
 private:
   bool nintendo_logo_check = false;
   std::string title;
   std::string manufacturer_code;
-  byte cgb_flag;
-  byte new_licensee_code;
-  byte sgb_flag;
+  int cgb_flag;
+  int new_licensee_code;
+  int sgb_flag;
   byte cartridge_type;
   byte rom_size;
   byte ram_size;
-  byte destination_code;
-  byte old_licensee_code;
-  byte mask_rom_version_number;
+  int destination_code;
+  int old_licensee_code;
+  int mask_rom_version_number;
 
-  std::vector<byte> cartridge_header;
+  std::array<byte, 336_B> cartridge_header;
 };
 
 }
 
 #endif
+
