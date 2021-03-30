@@ -23,14 +23,13 @@ namespace tmbl {
 class clock {
 
 public:
-  using normal_speed = std::ratio<954>;
-  using double_speed = std::ratio<477>;
+  using normal_speed_frequency = std::ratio<1, 1048576>;
+  using double_speed_frequency = std::ratio<1, 2097153>;
 
-  using normal_speed_cycle_period =
-      std::chrono::duration<int, std::ratio_multiply<normal_speed, std::micro>>;
-  using double_speed_cycle_period =
-      std::chrono::duration<int, std::ratio_multiply<double_speed, std::micro>>;
+  using normal_speed_cycle_period = std::chrono::duration<double, normal_speed_frequency>;
+  using double_speed_cycle_period = std::chrono::duration<double, double_speed_frequency>;
 
+public:
   clock(const clock &other) noexcept = delete;
   clock &operator=(const clock &rhs) noexcept = delete;
 
