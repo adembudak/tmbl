@@ -579,5 +579,8 @@ MigrationBackup/
 # test roms
 tests/rom/test_roms/
 
+# user specific preset configure options
+CMakeUserPresets.json
+
 # End of https://www.gitignore.io/api/vim,c++,code,cmake,clion,emacs,visualstudio
 
