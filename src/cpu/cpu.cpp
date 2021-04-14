@@ -771,7 +771,7 @@ void cpu::run() {
       break;
 
     case 0xA3:
-      and_(DE.hi());
+      and_(DE.lo());
       break;
 
     case 0xA4:
