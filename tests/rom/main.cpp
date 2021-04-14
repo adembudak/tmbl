@@ -1,25 +1,26 @@
-#include "tmbl/bus/bus.h"
-#include "tmbl/ppu/ppu.h"
-#include "tmbl/cpu/cpu.h"
 #include "tmbl/cartridge/cartridge.h"
 #include "tmbl/io/registers.h"
-#include "tmbl/builtin/builtin.h"
 #include "tmbl/io/interrupts/interrupts.h"
+#include "tmbl/builtin/builtin.h"
+#include "tmbl/ppu/ppu.h"
+#include "tmbl/bus/bus.h"
+#include "tmbl/cpu/cpu.h"
 
 #include <SDL2/SDL.h>
 
-#include <iostream>
 #include <filesystem>
+#include <iostream>
 
 class gameboy final {
 public:
   gameboy() {
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
-    sdl_window = SDL_CreateWindow("", 50, 30, screenWidth, screenHeight, 0);
-    sdl_renderer =
-        SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
-    sdl_texture =
-        SDL_CreateTexture(sdl_renderer, 0, SDL_TEXTUREACCESS_STATIC, screenWidth, screenHeight);
+
+    constexpr int screenWidth = 160;
+    constexpr int screenHeight = 144;
+    sdl_window = SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, 0);
+    sdl_renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
+    sdl_texture = SDL_CreateTexture(sdl_renderer, 0, SDL_TEXTUREACCESS_STATIC, screenWidth, screenHeight);
   }
 
   ~gameboy() {
@@ -75,14 +76,11 @@ public:
     for (bool running = true; running; /**/) {
       running = processInput(event);
       m_cpu.run();
-      //      m_ppu.render(drawFunc);
+      // m_ppu.render(drawFunc);
     }
   }
 
 private:
-  static constexpr std::size_t screenWidth = 160;
-  static constexpr std::size_t screenHeight = 144;
-
   SDL_Texture *sdl_texture = nullptr;
   SDL_Renderer *sdl_renderer = nullptr;
   SDL_Window *sdl_window = nullptr;
@@ -107,4 +105,3 @@ int main(int argc, const char *const argv[]) {
     std::cerr << "Usage: tombul [ROM file]\n";
   }
 }
-
