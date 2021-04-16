@@ -1,10 +1,6 @@
 - Figure out how to make use of PPU registers for draw
-- Add setters to interrupt class
-- Write tests for cpu instructions
 - How to segregate gui from logic? model-view-controller
 - Implement timer functions, TMA, TAC and the frequency stuff
-- Implement DMA
-- write put pixel function
-- create a cmake-format configuration
+- Implement DMA for wram
 - create ARCHITECTURE.md
 
