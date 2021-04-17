@@ -14,13 +14,15 @@
 class gameboy final {
 public:
   gameboy() {
-    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
+    SDL_InitSubSystem(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
 
     constexpr int screenWidth = 160;
     constexpr int screenHeight = 144;
-    sdl_window = SDL_CreateWindow("", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, 0);
+
+    sdl_window = SDL_CreateWindow(
+        /*title=*/"", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, SDL_WINDOW_SHOWN);
     sdl_renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
-    sdl_texture = SDL_CreateTexture(sdl_renderer, 0, SDL_TEXTUREACCESS_STATIC, screenWidth, screenHeight);
+    sdl_texture = SDL_CreateTexture(sdl_renderer, 0, SDL_TEXTUREACCESS_STREAMING, screenWidth, screenHeight);
   }
 
   ~gameboy() {
@@ -30,46 +32,47 @@ public:
     SDL_QuitSubSystem(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
   }
 
+  void handleQuit(SDL_QuitEvent &e, bool &status) {
+    switch (e.type) {
+      case SDL_QUIT:
+        status = false;
+        break;
+    }
+  }
+
+  void handleKeyboard(SDL_KeyboardEvent &e) {
+    switch (e.type) {
+      case SDL_KEYDOWN:
+        switch (e.keysym.sym) {
+          case SDLK_j:
+            /*handle event*/
+            break;
+        }
+        break;
+
+      case SDL_KEYUP:
+        switch (e.keysym.sym) {
+          case SDLK_j:
+            /*handle event*/
+            break;
+        }
+        break;
+    }
+  }
+
   bool processInput(SDL_Event &event) {
     bool status = true;
-
     while (SDL_PollEvent(&event)) {
-
-      switch (event.quit.type) {
-        case SDL_QUIT:
-          status = false;
-          break;
-        default:
-          break;
-      }
-
-      switch (event.key.type) {
-        case SDL_KEYDOWN:
-          switch (event.key.keysym.sym) {
-            case SDLK_j:
-              /*handle event*/
-              break;
-            default:
-              break;
-          }
-          break;
-
-        case SDL_KEYUP:
-          switch (event.key.keysym.sym) {
-            case SDLK_j:
-              /*handle event*/
-              break;
-            default:
-              break;
-          }
-          break;
-      }
+      handleQuit(event.quit, status);
+      handleKeyboard(event.key);
     }
 
     return status;
   }
 
-  void plugCart(std::filesystem::path p) { m_cart.init(p); }
+  void plugCart(std::filesystem::path p) {
+    m_cart.init(p);
+  }
 
   void run() {
     SDL_Event event;
