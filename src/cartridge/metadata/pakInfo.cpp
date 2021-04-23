@@ -30,6 +30,7 @@ pakInfo::pakInfo(std::array<byte, 336_B> &&vec) : cartridge_header(std::move(vec
 }
 
 std::ostream &operator<<(std::ostream &os, const pakInfo &pak) {
+  os.sync_with_stdio(false);
   os.setf(std::ios_base::hex, std::ios_base::basefield);
   os.setf(std::ios_base::boolalpha);
   os.setf(std::ios_base::showbase);
@@ -53,4 +54,3 @@ std::ostream &operator<<(std::ostream &os, const pakInfo &pak) {
 }
 
 }
-
