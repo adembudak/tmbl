@@ -47,7 +47,7 @@ Mode 0  ___000___000___000___000___000___000________________000
 Mode 1  ____________________________________11111111111111_____
  */
 
-void ppu::update() {
+void ppu::update(std::function<void(const tmbl::ppu::frame framebuffer)> drawCallback) {
   if (LCDC.lcdControllerStatus() == on) {
 
     if (STAT.mode_flag() == stat::mode::SEARCHING_OAM) { //// mode 2
@@ -72,6 +72,7 @@ void ppu::update() {
       oam_accessible = true;
       vram_accessible = true;
 
+      scanline();
       m_intr.LCDC_Status_IRQ = STAT.matchHblank();
 
       m_clock.cycle(hblankCycles);
@@ -169,7 +170,7 @@ void ppu::fetchCHR() {
     const uint8 color_id = (lo_bit << 1) | hi_bit;
     const std::size_t palette_index = BGP.bgPalette(color_id);
 
-    framebuffer[dx][LY] = default_palette[palette_index];
+    framebuffer.at(LY).at(dx) = default_palette[palette_index];
 
     m_clock.cycle(1);
   }
@@ -204,7 +205,7 @@ void ppu::fetchBG() {
     const uint8 color_id = (lo_bit << 1) | hi_bit;
     const std::size_t palette_index = BGP.bgPalette(color_id);
 
-    framebuffer[dx][LY] = default_palette[palette_index];
+    framebuffer.at(LY).at(dx) = default_palette[palette_index];
 
     m_clock.cycle(1);
   }
@@ -244,4 +245,3 @@ uint8 ppu::vbk() const noexcept { return cgb_support ? (VBK & 0b0000'0001) : 0; 
 //   |                   |~~tile [-128,0)~~~~~~tile [0,128)~~~~~~|          |          |
 //   [------------------)[------------------)[------------------)[---------)[----------)
 //   0x8000              0x8800              0x9000              0x9800     0x9C00     0xA000
-

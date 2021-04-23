@@ -58,7 +58,7 @@ public:
   using frame = std::array<screenline, screenHeight>;
 
   ppu(registers &regs_, cartridge &cart_, interrupts &intr_);
-  void update();
+  void update(std::function<void(const tmbl::ppu::frame framebuffer)> drawCallback);
 
   byte readVRAM(const std::size_t index);
   void writeVRAM(const std::size_t index, const byte val);

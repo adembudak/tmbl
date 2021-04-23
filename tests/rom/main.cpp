@@ -10,19 +10,15 @@
 
 #include <filesystem>
 #include <iostream>
+#include <fstream>
 
 class gameboy final {
 public:
   gameboy() {
     SDL_InitSubSystem(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
-
-    constexpr int screenWidth = 160;
-    constexpr int screenHeight = 144;
-
-    sdl_window = SDL_CreateWindow(
-        /*title=*/"", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screenWidth, screenHeight, SDL_WINDOW_SHOWN);
+    sdl_window = SDL_CreateWindow(/*title=*/"", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, tmbl::screenWidth, tmbl::screenHeight, SDL_WINDOW_SHOWN);
     sdl_renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
-    sdl_texture = SDL_CreateTexture(sdl_renderer, 0, SDL_TEXTUREACCESS_STREAMING, screenWidth, screenHeight);
+    sdl_texture = SDL_CreateTexture(sdl_renderer, 0, SDL_TEXTUREACCESS_STREAMING, tmbl::screenWidth, tmbl::screenHeight);
   }
 
   ~gameboy() {
@@ -79,11 +75,34 @@ public:
     for (bool running = true; running; /**/) {
       running = processInput(event);
       m_cpu.run();
-      // m_ppu.render(drawFunc);
+      m_ppu.update([&](const tmbl::ppu::frame &framebuffer) {
+        // static_assert(sizeof(tmbl::ppu::frame) == (sizeof(tmbl::ppu::color_t::subpixel) * 4 /*rgba*/) * tmbl::screenWidth * tmbl::screenHeight);
+        //
+        for (int dy = 0; dy < framebuffer.size(); ++dy) {
+          for (int dx = 0; dx < framebuffer[0].size(); ++dx) {
+            for (int pixels = 0; pixels < 4; ++pixels) {
+              std::cout << "running";
+              tmbl::uint8 r = framebuffer.at(dy).at(dx).r;
+              tmbl::uint8 g = framebuffer.at(dy).at(dx).g;
+              tmbl::uint8 b = framebuffer.at(dy).at(dx).b;
+              tmbl::uint8 a = framebuffer.at(dy).at(dx).a;
+
+              dumpPixels << int(r) << ' ' << int(g) << ' ' << int(b) << ' ' << int(a);
+            }
+          }
+        }
+
+        SDL_UpdateTexture(sdl_texture, nullptr, framebuffer.data(), framebuffer.at(0).size());
+      });
+
+      SDL_RenderCopy(sdl_renderer, sdl_texture, /*srcrect=*/nullptr, /*dstrect=*/nullptr);
+      SDL_RenderPresent(sdl_renderer);
     }
   }
 
 private:
+  std::ofstream dumpPixels{"dumpedPixels.ppm"};
+
   SDL_Texture *sdl_texture = nullptr;
   SDL_Renderer *sdl_renderer = nullptr;
   SDL_Window *sdl_window = nullptr;
