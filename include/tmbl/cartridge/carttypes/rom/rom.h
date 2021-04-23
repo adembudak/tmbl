@@ -1,9 +1,8 @@
 #ifndef ROM_H
 #define ROM_H
 
-#include "../../../config.h"
+#include "tmbl/config.h"
 #include <cstddef>
-#include <array>
 #include <vector>
 
 namespace tmbl {
