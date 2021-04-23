@@ -1,8 +1,10 @@
 ---
 Language:        Cpp
 # BasedOnStyle:  InheritParentConfig 
-ColumnLimit:     120
+ColumnLimit:     180
 SortIncludes:    false
 IndentCaseLabels: true
+AllowShortFunctionsOnASingleLine: None
+BinPackArguments: false
 ...
 
