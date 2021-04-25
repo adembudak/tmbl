@@ -15,13 +15,13 @@ jobs:
           fetch-depth: 5
 
       - name: configure-release-build_x64
-        run: cmake --preset Win32-x64
+        run: cmake --preset win32-x64
 
       - name: build-release-build_x64
         run: cmake --build build/win32x64_build --parallel 4
 
       - name: configure-debug-build_x64
-        run: cmake --preset Win32-x64-debug
+        run: cmake --preset win32-x64-debug
 
       - name: build-debug-build_x64
         run: cmake --build build/win32x64_debug_build --parallel 4
