@@ -1,5 +1,5 @@
 ---
-name: Ubuntu 
+name: Ubuntu
 
 on:
   push:
@@ -14,14 +14,15 @@ jobs:
         with:
           fetch-depth: 5
 
-      - name: cmake
-        run: |
-            cmake \
-            -DCMAKE_CXX_COMPILER=/usr/bin/g++-9 \
-            -DCMAKE_BUILD_TYPE=Release \
-            -S . \
-            -B build
+      - name: configure-release-build
+        run: cmake --preset Linux
 
-      - name: build
-        run: cmake --build build --parallel 4
+      - name: build-release-build
+        run: cmake --build build/Linux_build --parallel 4
+
+      - name: configure-debug-build
+        run: cmake --preset Linux-debug
+
+      - name: build-debug-build
+        run: cmake --build build/Linux_debug_build --parallel 4
 ...

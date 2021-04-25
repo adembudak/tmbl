@@ -14,9 +14,28 @@ jobs:
         with:
           fetch-depth: 5
 
-      - name: cmake
-        run: cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_BUILD_TYPE=Release -S . -B build
+      - name: configure-release-build_x64
+        run: cmake --preset Win32-x64
 
-      - name: build
-        run: cmake --build build --parallel 4
+      - name: build-release-build_x64
+        run: cmake --build build/win32x64_build --parallel 4
+
+      - name: configure-debug-build_x64
+        run: cmake --preset Win32-x64-debug
+
+      - name: build-debug-build_x64
+        run: cmake --build build/win32x64_debug_build --parallel 4
+
+      - name: configure-release-build_x86
+        run: cmake --preset win32-x86
+
+      - name: build-release-build_x86
+        run: cmake --build build/win32x86_build --parallel 4
+
+      - name: configure-debug-build_x86
+        run: cmake --preset win32-x86-debug
+
+      - name: build-release-build_x86
+        run: cmake --build build/win32x86_debug_build --parallel 4
+
 ...
