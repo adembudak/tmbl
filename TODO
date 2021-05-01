@@ -1,8 +1,6 @@
 - Figure out how to make use of PPU registers for draw
-- How to segregate gui from logic? model-view-controller
 - Implement timer functions, TMA, TAC and the frequency stuff
 - Implement DMA for wram
 - create ARCHITECTURE.md
-- Figure out how to use CMake ExternalData module to fetch roms
 - Intagrate running rom-tests into CTest
 
