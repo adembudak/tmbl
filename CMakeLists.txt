@@ -3,19 +3,35 @@ cmake_minimum_required(VERSION 3.17)
 project(
   tombul
   DESCRIPTION "A GameBoy emulator implementation"
-  HOMEPAGE_URL https://github.com/adembudak/tombul
+  HOMEPAGE_URL "https://github.com/adembudak/tombul"
   LANGUAGES CXX)
+
+include(CTest)
+include(ExternalData)
+include(CMakeDependentOption)
 
 option(ENABLE_INCLUDE_WHAT_YOU_USE "Run iwyu on source" OFF)
 option(ENABLE_CLANG_TIDY "Run clang-tidy on source" OFF)
 option(ENABLE_CPPCHECK "Run cppcheck on source" OFF)
 option(ENABLE_CCACHE "Cache build with ccache" OFF)
 
-option(ENABLE_ROM_TESTS "Run test ROMs" OFF)
 option(ENABLE_UNIT_TESTS "Build unit tests" OFF)
 
-include(CTest)
-include(ExternalProject)
+option(ENABLE_ROM_TESTS "Run test ROMs" OFF)
+option(BLARGG_TEST_ROMs "Blargg test ROMs" OFF)
+option(CGB_ACID2_TEST_ROM "CGB Acid2 test ROM" OFF)
+option(DMG_ACID2_TEST_ROM "DMG Acid2 test ROM" OFF)
+option(GAMBATTE_TEST_ROMs "Gambette test ROM" OFF)
+option(MEALYBUG_TEAROOM_TEST_ROMs "Mealybug teardown test ROMs" OFF)
+option(MOONEYE_GB_TEST_ROMs "Mooneye GB ROMs" OFF)
+
+cmake_dependent_option(ENABLE_ROM_TESTS "" ON BUILD_TESTING OFF)
+cmake_dependent_option(BLARGG_TEST_ROMs "" ON ENABLE_ROM_TESTS OFF)
+cmake_dependent_option(CGB_ACID2_TEST_ROMs "" ON ENABLE_ROM_TESTS OFF)
+cmake_dependent_option(DMG_ACID2_TEST_ROMs "" ON ENABLE_ROM_TESTS OFF)
+cmake_dependent_option(GAMBATTE_TEST_ROMs "" ON ENABLE_ROM_TESTS OFF)
+cmake_dependent_option(MEALYBUG_TEAROOM_TEST_ROMs "" ON ENABLE_ROM_TESTS OFF)
+cmake_dependent_option(MOONEYE_GB_TEST_ROMs "" ON ENABLE_ROM_TESTS OFF)
 
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "")
 set(CMAKE_CXX_STANDARD_REQUIRED YES CACHE BOOL "")
@@ -52,7 +68,7 @@ if(ENABLE_CCACHE)
   set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${CCACHE})
 endif()
 
-if(ENABLE_ROM_TESTS AND BUILD_TESTING)
+if(ENABLE_ROM_TESTS)
   enable_testing()
   add_subdirectory(tests/rom)
 endif()

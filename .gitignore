@@ -576,9 +576,6 @@ MigrationBackup/
 # Externals 
 [Ee]xternal/
 
-# test roms
-tests/rom/test_roms/
-
 # user specific preset configure options
 CMakeUserPresets.json
 
