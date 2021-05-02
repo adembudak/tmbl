@@ -1,10 +1,10 @@
 #ifndef CARTRIDGE_H
 #define CARTRIDGE_H
 
-#include "../config.h" // for byte type
+#include "tmbl/config.h" // for byte type
 
-#include "carttypes/rom/rom.h"
-#include "carttypes/mbc1/mbc1.h"
+#include "type/rom.h"
+#include "type/mbc1.h"
 /*
 #include "mbc2/mbc2.h"
 #include "mbc3/mbc3.h"
