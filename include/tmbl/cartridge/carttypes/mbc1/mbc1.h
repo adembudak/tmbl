@@ -1,44 +1,40 @@
 #ifndef MBC1_H
 #define MBC1_H
 
-#include "../../../config.h"
+#include "tmbl/config.h"
 #include <vector>
 
 namespace tmbl {
 
+// Based on: https://gekkio.fi/files/gb-docs/gbctr.pdf
+// and: https://retrocomputing.stackexchange.com/a/11735
+
 class mbc1 final {
 public:
-  mbc1() = default;
   mbc1(std::vector<byte> &&rom, std::size_t xram_size = 0);
 
-  void write(const std::size_t index, const byte b);
-  byte read(const std::size_t index);
+  byte read(const std::size_t index) noexcept;
+  void write(const std::size_t index, const byte val) noexcept;
 
-  enum class mode { rom_banking, ram_banking };
+  std::size_t rom_size() const noexcept;
+  std::size_t rom_banks() const noexcept;
+
+  std::size_t xram_size() const noexcept;
+  std::size_t xram_banks() const noexcept;
+
+  [[nodiscard]] bool has_xram() const noexcept;
 
 private:
-  mode banking_mode = mode::rom_banking;
+  std::vector<byte> m_xram; // external ram or s(ave)ram
+  bool m_has_xram = false;  // initial assumption, no xram
 
-  std::size_t ram_bank_width = 8_KB;
-  std::size_t rom_bank_width = 16_KB;
+  byte bank1;                       // mbc1 bank register 1
+  byte bank2;                       // mbc1 bank register 2
+  byte mode;                        // mbc1 mode register
+  flag xram_access_enabled = false; // ramg, ram gate reg. disabled by defauilt
 
   std::vector<byte> m_rom;
-  uint8 lower_rom_bank = 1;
-  uint8 upper_rom_bank = 0;
-  bool rom_banking_available = false;
-  uint8 effective_rom_bank = 0;
-  uint8 lower_rom_mask = 0b0001'1111;
-  uint8 lower_rom_mask_countl_one = 5;
-  uint8 upper_rom_mask = 0b0000'0011;
-
-  bool ram_available = false; // is it exist?
-  std::vector<byte> m_xram;   // external ram or (s)ave ram
-  uint8 ram_bank;
-  uint8 ram_mask = 0b0000'0011;
-  bool ram_banking_available = false;
-  bool ram_access_enabled = false;
 };
 }
 
 #endif
-
