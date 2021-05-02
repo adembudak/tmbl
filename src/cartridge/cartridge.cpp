@@ -1,8 +1,8 @@
 #include "tmbl/config.h"
 #include "tmbl/memory_map.h"
 #include "tmbl/cartridge/cartridge.h"
-#include "tmbl/cartridge/carttypes/mbc1/mbc1.h"
-#include "tmbl/cartridge/carttypes/rom/rom.h"
+#include "tmbl/cartridge/type/mbc1.h"
+#include "tmbl/cartridge/type/rom.h"
 
 #include <filesystem>
 #include <fstream>

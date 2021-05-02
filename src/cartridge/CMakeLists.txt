@@ -1,4 +1,4 @@
-add_subdirectory(carttypes)
+add_subdirectory(type)
 add_subdirectory(metadata)
 
 add_library(cartridge cartridge.cpp)
