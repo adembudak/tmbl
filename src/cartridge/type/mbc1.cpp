@@ -2,6 +2,7 @@
 #include "tmbl/cartridge/type/mbc1.h"
 
 #include <cstddef>
+#include <cstdlib> // for std::rand();
 
 namespace tmbl {
 mbc1::mbc1(std::vector<byte> &&rom, const std::size_t xram_size) {
@@ -35,7 +36,7 @@ byte mbc1::read(const std::size_t index) noexcept {
           (effective_xram_bank_number << 13) | (index & 0b1'1111'1111'1111);
       return m_xram.at(effective_index);
     } else {
-      return 0xFF; // return an undefined value
+      return std::rand(); // return an undefined value, std::rand() is good enough
     }
   }
 
@@ -78,10 +79,23 @@ void mbc1::write(const std::size_t index, const byte val) noexcept {
 }
 
 std::size_t mbc1::rom_size() const noexcept { return m_rom.size(); }
-std::size_t mbc1::rom_banks() const noexcept { return m_rom.size() / 0x4000; }
+
+std::size_t mbc1::rom_banks() const noexcept {
+  const std::size_t rom_bank_size = 16_KB; // size of each bank 16KB == 0x4000
+  const std::size_t rom_bank_number = m_rom.size() / rom_bank_size;
+
+  return (m_rom.size() > (1_MB + 512_KB))
+             ? rom_bank_number - 3 // banks 0x20, 0x40, 0x60 are not usable so -3
+             : rom_bank_number;
+}
 
 std::size_t mbc1::xram_size() const noexcept { return m_xram.size(); }
-std::size_t mbc1::xram_banks() const noexcept { return m_xram.size() / 0x2000; }
+
+std::size_t mbc1::xram_banks() const noexcept {
+  const std::size_t xram_bank_size = 8_KB; // size of each xram_bank 8KB == 0x2000
+
+  return m_xram.size() / xram_bank_size;
+}
 
 bool mbc1::has_xram() const noexcept { return m_has_xram; }
 }
