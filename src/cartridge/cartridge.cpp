@@ -40,11 +40,8 @@ bool cartridge::init(const std::filesystem::path p) {
 
     // whether the cart support for color gameboy
     const std::size_t CGB_support_code = 0x0143;
-    if (dumpedGamePak[CGB_support_code] == 0x0080 || dumpedGamePak[CGB_support_code] == 0x00C0) {
-      m_cgb_support = true;
-    } else {
-      m_cgb_support = false;
-    }
+    m_cgb_support =
+        (dumpedGamePak[CGB_support_code] == 0x0080 || dumpedGamePak[CGB_support_code] == 0x00C0);
 
     // decide to mbc type
     const std::size_t pak_type = 0x0147;
