@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17)
+cmake_minimum_required(VERSION 3.20)
 
 project(
   tombul
@@ -27,8 +27,8 @@ option(MOONEYE_GB_TEST_ROMs "Mooneye GB ROMs" OFF)
 
 cmake_dependent_option(ENABLE_ROM_TESTS "" ON BUILD_TESTING OFF)
 cmake_dependent_option(BLARGG_TEST_ROMs "" ON ENABLE_ROM_TESTS OFF)
-cmake_dependent_option(CGB_ACID2_TEST_ROMs "" ON ENABLE_ROM_TESTS OFF)
-cmake_dependent_option(DMG_ACID2_TEST_ROMs "" ON ENABLE_ROM_TESTS OFF)
+cmake_dependent_option(CGB_ACID2_TEST_ROM "" ON ENABLE_ROM_TESTS OFF)
+cmake_dependent_option(DMG_ACID2_TEST_ROM "" ON ENABLE_ROM_TESTS OFF)
 cmake_dependent_option(GAMBATTE_TEST_ROMs "" ON ENABLE_ROM_TESTS OFF)
 cmake_dependent_option(MEALYBUG_TEAROOM_TEST_ROMs "" ON ENABLE_ROM_TESTS OFF)
 cmake_dependent_option(MOONEYE_GB_TEST_ROMs "" ON ENABLE_ROM_TESTS OFF)
