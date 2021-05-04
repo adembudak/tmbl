@@ -1,6 +1,5 @@
-- Figure out how to make use of PPU registers for draw
-- Implement timer functions, TMA, TAC and the frequency stuff
-- Implement DMA for wram
+- figure out how to make use of PPU registers for draw
+- implement timer functions, TMA, TAC and the frequency stuff
+- implement DMA functionality for wram
 - create ARCHITECTURE.md
-- Intagrate running rom-tests into CTest
-
+- move functions in CMakeLists.txt files into cmake/ folder
