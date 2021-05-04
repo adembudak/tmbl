@@ -10,7 +10,6 @@
 
 #include <filesystem>
 #include <iostream>
-#include <fstream>
 
 class gameboy final {
 public:
@@ -75,34 +74,13 @@ public:
     for (bool running = true; running; /**/) {
       running = processInput(event);
       m_cpu.run();
-      m_ppu.update([&](const tmbl::ppu::frame &framebuffer) {
-        // static_assert(sizeof(tmbl::ppu::frame) == (sizeof(tmbl::ppu::color_t::subpixel) * 4 /*rgba*/) * tmbl::screenWidth * tmbl::screenHeight);
-        //
-        for (int dy = 0; dy < framebuffer.size(); ++dy) {
-          for (int dx = 0; dx < framebuffer[0].size(); ++dx) {
-            for (int pixels = 0; pixels < 4; ++pixels) {
-              std::cout << "running";
-              tmbl::uint8 r = framebuffer.at(dy).at(dx).r;
-              tmbl::uint8 g = framebuffer.at(dy).at(dx).g;
-              tmbl::uint8 b = framebuffer.at(dy).at(dx).b;
-              tmbl::uint8 a = framebuffer.at(dy).at(dx).a;
-
-              dumpPixels << int(r) << ' ' << int(g) << ' ' << int(b) << ' ' << int(a);
-            }
-          }
-        }
-
-        SDL_UpdateTexture(sdl_texture, nullptr, framebuffer.data(), framebuffer.at(0).size());
-      });
-
+      m_ppu.update([&](const tmbl::ppu::frame &framebuffer) { SDL_UpdateTexture(sdl_texture, /*rect=*/nullptr, framebuffer.data(), sizeof(tmbl::ppu::frame)); });
       SDL_RenderCopy(sdl_renderer, sdl_texture, /*srcrect=*/nullptr, /*dstrect=*/nullptr);
       SDL_RenderPresent(sdl_renderer);
     }
   }
 
 private:
-  std::ofstream dumpPixels{"dumpedPixels.ppm"};
-
   SDL_Texture *sdl_texture = nullptr;
   SDL_Renderer *sdl_renderer = nullptr;
   SDL_Window *sdl_window = nullptr;
