@@ -30,3 +30,5 @@ add_tmbl_test(e8_test)
 add_tmbl_executable(flags_test cpu_internals)
 add_tmbl_test(flags_test)
 
+add_tmbl_executable(mbc1_test mbc1)
+add_tmbl_test(mbc1_test)
