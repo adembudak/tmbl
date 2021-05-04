@@ -4,6 +4,8 @@
 #include "tmbl/config.h"
 #include <vector>
 
+#include <type_traits>
+
 namespace tmbl {
 
 // Based on: https://gekkio.fi/files/gb-docs/gbctr.pdf
@@ -11,6 +13,7 @@ namespace tmbl {
 
 class mbc1 final {
 public:
+  mbc1() = default;
   mbc1(std::vector<byte> &&rom, std::size_t xram_size = 0);
 
   byte read(const std::size_t index) noexcept;
@@ -35,6 +38,14 @@ private:
 
   std::vector<byte> m_rom;
 };
+
+static_assert(std::is_default_constructible_v<mbc1>);
+static_assert(std::is_copy_constructible_v<mbc1>);
+static_assert(std::is_copy_assignable_v<mbc1>);
+static_assert(std::is_move_constructible_v<mbc1>);
+static_assert(std::is_move_assignable_v<mbc1>);
+static_assert(std::is_destructible_v<mbc1>);
+
 }
 
 #endif
