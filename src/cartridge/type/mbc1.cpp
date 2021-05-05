@@ -51,7 +51,7 @@ void mbc1::write(const std::size_t index, const byte val) noexcept {
   }
 
   else if (index >= 0x2000 && index <= 0x3FFF) { // ROM Bank Number (Write Only), BANK1 register
-    bank1 = ((val & 0b0001'1111) == 0b00000) ? (val + 1) : (val & 0b0001'1111);
+    bank1 = ((val & 0b0001'1111) == 0b00000) ? 1 : (val & 0b0001'1111);
   }
 
   else if (index >= 0x4000 && index <= 0x5FFF) { // RAM Bank Num. or Upper Bits of ROM Bank Nu.(WO)
