@@ -1,4 +1,4 @@
-find_package(GTest)
+find_package(GTest QUIET REQUIRED)
 
 function(add_tmbl_executable name)
     add_executable(${name} ${name}.cpp)
@@ -32,3 +32,6 @@ add_tmbl_test(flags_test)
 
 add_tmbl_executable(mbc1_test mbc1)
 add_tmbl_test(mbc1_test)
+
+add_tmbl_executable(mbc2_test mbc2)
+add_tmbl_test(mbc2_test)
