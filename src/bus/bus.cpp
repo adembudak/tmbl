@@ -120,10 +120,6 @@ void bus::writeBus(const std::size_t index, const byte val) {
     m_builtin.writeEcho(index - memory::echo, val);
   }
 
-  else if (index >= memory::vram && index <= memory::vram_end) {
-    m_PPU.writeVRAM(index - memory::vram, val);
-  }
-
   else if (index >= memory::oam && index <= memory::oam_end) {
     m_PPU.writeOAM(index - memory::oam, val);
   }
