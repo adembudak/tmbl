@@ -33,7 +33,7 @@ private:
 
   byte bank1;                       // mbc1 bank register 1
   byte bank2;                       // mbc1 bank register 2
-  byte mode;                        // mbc1 mode register
+  byte mode = 0b0;                  // mbc1 mode register
   flag xram_access_enabled = false; // ramg, ram gate reg. disabled by defauilt
 
   std::vector<byte> m_rom;
