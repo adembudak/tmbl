@@ -9,7 +9,7 @@ namespace tmbl {
 class rom {
 public:
   rom() = default;
-  explicit rom(std::vector<byte> &&rom_, int xram_size = 0);
+  explicit rom(std::vector<byte> &&rom_, std::size_t xram_size = 0);
 
   byte read(const std::size_t index) noexcept;
   void write(const std::size_t index, const byte val) noexcept;
