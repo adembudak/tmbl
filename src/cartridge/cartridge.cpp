@@ -65,7 +65,7 @@ bool cartridge::init(const std::filesystem::path p) noexcept {
 
     assert((dumpedGamePak[checksum_result] == checksum) && "ROM Checksum failed\n");
 
-    auto recognize_xram_size = [](const std::size_t i) {
+    auto recognize_xram_size = [](const std::size_t i) -> std::size_t {
       // clang-format off
         switch (i) {
           case 0: return 0_KB;
