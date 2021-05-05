@@ -9,17 +9,19 @@ namespace tmbl {
 class rom {
 public:
   rom() = default;
-  explicit rom(std::vector<byte> &&rom_, int xram_size);
+  explicit rom(std::vector<byte> &&rom_, int xram_size = 0);
 
-  byte read_rom(const std::size_t index);
-  void write_rom(const std::size_t index, const byte val);
+  byte read(const std::size_t index) noexcept;
+  void write(const std::size_t index, const byte val) noexcept;
 
-  byte read_xram(const std::size_t index);
-  void write_xram(const std::size_t index, const byte val);
+  byte read_xram(const std::size_t index) noexcept;
+  void write_xram(const std::size_t index, const byte val) noexcept;
 
 private:
-  std::vector<byte> m_rom;
   std::vector<byte> m_xram{};
+  bool has_xram = false;
+
+  std::vector<byte> m_rom;
 };
 }
 
