@@ -15,14 +15,20 @@
 #include <iostream>
 #include <cassert>
 
-#if defined PRINT_PAK_INFO
+#if PRINT_PAK_INFO
 #include <algorithm> // for std::copy_n
 #include "tmbl/cartridge/metadata/pakInfo.h"
 #endif
 
 namespace tmbl {
 
-bool cartridge::init(const std::filesystem::path p) {
+// The section between bytes 0x0100-0x014F of the cartridge provides metadata about the game.
+// Game title, cartridge type, manufacturer code, color gameboy support, super gameboy
+// support and some other informations holded by some byte meaning.
+// see: https://archive.org/details/GameBoyProgManVer1.1/page/n126/mode/1up
+// see: https://archive.org/details/GameBoyProgManVer1.1/page/n294/mode/1up
+
+bool cartridge::init(const std::filesystem::path p) noexcept {
   if (std::filesystem::exists(p)) {
 
     std::fstream f(p, std::ios::in | std::ios::binary);
@@ -75,7 +81,7 @@ bool cartridge::init(const std::filesystem::path p) {
 
     switch (dumpedGamePak.at(pak_type)) { // decide pak type
       case 0x00:
-        pak = rom(std::move(dumpedGamePak), 0);
+        pak = rom(std::move(dumpedGamePak));
         break;
 
       case 0x01:
@@ -138,7 +144,7 @@ void cartridge::writeXRAM(const std::size_t index, const byte val) {
 
 byte cartridge::readROM(const std::size_t index) {
   if (auto pRom = std::get_if<rom>(&pak)) {
-    return pRom->read_rom(index);
+    return pRom->read(index);
   } else if (auto pMbc1 = std::get_if<mbc1>(&pak)) {
     return pMbc1->read(index);
   } else if (auto pMbc2 = std::get_if<mbc2>(&pak)) {
@@ -150,7 +156,7 @@ byte cartridge::readROM(const std::size_t index) {
 
 void cartridge::writeROM(const std::size_t index, const byte val) {
   if (auto pRom = std::get_if<rom>(&pak)) {
-    pRom->write_rom(index, val);
+    pRom->write(index, val);
   } else if (auto pMbc1 = std::get_if<mbc1>(&pak)) {
     pMbc1->write(index, val);
   } else if (auto pMbc2 = std::get_if<mbc2>(&pak)) {

@@ -23,14 +23,7 @@ namespace tmbl {
 
 class cartridge {
 public:
-  // The section between bytes 0x0100-0x014F of the cartridge provides metadata about the game.
-  // Game title, cartridge type, manufacturer code, color gameboy support, super gameboy
-  // support and some other informations holded by some byte meaning.
-  // see: https://archive.org/details/GameBoyProgManVer1.1/page/n126/mode/1up
-  // see: https://archive.org/details/GameBoyProgManVer1.1/page/n294/mode/1up
-
-  bool init(const std::filesystem::path p);
-
+  bool init(const std::filesystem::path p) noexcept;
   bool CGB() const noexcept;
 
   byte readXRAM(const std::size_t index);
