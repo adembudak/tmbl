@@ -27,7 +27,7 @@ public:
     SDL_QuitSubSystem(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
   }
 
-  void handleQuit(SDL_QuitEvent &e, bool &status) {
+  void handleQuit(const SDL_QuitEvent &e, bool &status) {
     switch (e.type) {
       case SDL_QUIT:
         status = false;
@@ -35,7 +35,7 @@ public:
     }
   }
 
-  void handleKeyboard(SDL_KeyboardEvent &e) {
+  void handleKeyboard(const SDL_KeyboardEvent &e) {
     switch (e.type) {
       case SDL_KEYDOWN:
         switch (e.keysym.sym) {
@@ -74,7 +74,8 @@ public:
     for (bool running = true; running; /**/) {
       running = processInput(event);
       m_cpu.run();
-      m_ppu.update([&](const tmbl::ppu::frame &framebuffer) { SDL_UpdateTexture(sdl_texture, /*rect=*/nullptr, framebuffer.data(), sizeof(tmbl::ppu::frame)); });
+      m_ppu.update(
+          [&](const tmbl::ppu::frame &framebuffer) { SDL_UpdateTexture(sdl_texture, /*rect=*/nullptr, framebuffer.data(), tmbl::screenWidth * sizeof(tmbl::ppu::color)); });
       SDL_RenderCopy(sdl_renderer, sdl_texture, /*srcrect=*/nullptr, /*dstrect=*/nullptr);
       SDL_RenderPresent(sdl_renderer);
     }
