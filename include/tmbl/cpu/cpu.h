@@ -129,8 +129,8 @@ private:
   void ldio(const uint16 nn, const r8 r);
   void ldio(r8 &r, const uint16 nn);
 
-  void call(n16 n);
-  void call(cc c, n16 n);
+  void call(n16 nn);
+  void call(cc c, n16 nn);
 
   void jp();
   void jp(const n16 nn);

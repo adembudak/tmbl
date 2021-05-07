@@ -2489,7 +2489,7 @@ void cpu::xor_(const n8 n) {
 void cpu::bit(const uint8 pos, const r8 r) {
   uint8 test_bit_mask = 0b1 << pos;
 
-  test_bit_mask &r.value() ? F.z(set) : F.z(reset);
+  (test_bit_mask & r.value()) ? F.z(set) : F.z(reset);
   F.n(reset);
   F.h(set);
 
@@ -2499,7 +2499,7 @@ void cpu::bit(const uint8 pos, const r8 r) {
 void cpu::bit(const uint8 pos, const byte b) {
   uint8 test_bit_mask = 0b1 << pos;
 
-  test_bit_mask &b ? F.z(set) : F.z(reset);
+  (test_bit_mask & b) ? F.z(set) : F.z(reset);
   F.n(reset);
   F.h(set);
 
@@ -2905,7 +2905,7 @@ void cpu::ldio(r8 &r, const uint16 nn) {
 // come back to here
 void cpu::call(n16 nn) {
 
-  m_bus.writeBus(SP - 1, PC & r16::reset_lower >> 8);
+  m_bus.writeBus(SP - 1, (PC & r16::reset_lower) >> 8);
   m_bus.writeBus(SP - 2, PC & r16::reset_upper);
 
   PC = nn.value();
@@ -2915,14 +2915,14 @@ void cpu::call(n16 nn) {
   m_clock.cycle(6);
 }
 // clang-format off
-void cpu::call(cc c, n16 n) {
+void cpu::call(cc c, n16 nn) {
   if (c == cc::Z && F.z() == set    || 
       c == cc::NZ && F.z() == reset || 
       c == cc::C && F.c() == set    ||
       c == cc::NC && F.c() == reset) {
     // clang-format on
 
-    call(n);
+    call(nn);
 
     m_clock.cycle(6);
   } else {
@@ -2979,7 +2979,7 @@ void cpu::jr(const cc c, const e8 e) {
 void cpu::ret() {
     byte lo = m_bus.readBus(SP);
     byte hi = m_bus.readBus(SP+1);
-    PC = hi << 8 | lo;
+    PC = (hi << 8U) | lo;
 
     SP += 2;
 
