@@ -14,7 +14,7 @@ option(ENABLE_INCLUDE_WHAT_YOU_USE "Run iwyu on source" OFF)
 option(ENABLE_CLANG_TIDY "Run clang-tidy on source" OFF)
 option(ENABLE_CPPCHECK "Run cppcheck on source" OFF)
 option(ENABLE_CCACHE "Cache build with ccache" OFF)
-
+option(LOG_PAK_METADATA "Interpret and print out cartridge header" OFF)
 option(ENABLE_UNIT_TESTS "Build unit tests" OFF)
 
 option(ENABLE_ROM_TESTS "Run test ROMs" OFF)
