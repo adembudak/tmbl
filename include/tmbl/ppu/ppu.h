@@ -127,16 +127,14 @@ private:
   bool vram_accessible = false;
   bool oam_accessible = false;
 
-  // clang-format off
-  static constexpr palette_t default_palette{color{155, 188, 15, 0},  // light green
-                                        color{139, 172, 15, 0},
-                                        color{48, 98, 48, 0},
-                                        color{15, 56, 15, 0},    // dark green
-                                        color{161, 193, 19, 0}}; // idle screen color
+  static constexpr palette_t default_palette{color{155, 188, 15, 255},  // light green
+                                             color{139, 172, 15, 255},  //
+                                             color{48, 98, 48, 255},    //
+                                             color{15, 56, 15, 255},    // dark green
+                                             color{161, 193, 19, 255}}; // idle screen color
 
   clock &m_clock = clock::instance(m_regs);
 };
 }
 
 #endif
-
