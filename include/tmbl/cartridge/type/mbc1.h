@@ -14,7 +14,7 @@ namespace tmbl {
 class mbc1 final {
 public:
   mbc1() = default;
-  mbc1(std::vector<byte> &&rom, std::size_t xram_size = 0);
+  explicit mbc1(std::vector<byte> &&rom, std::size_t xram_size = 0);
 
   byte read(const std::size_t index) noexcept;
   void write(const std::size_t index, const byte val) noexcept;

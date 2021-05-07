@@ -10,7 +10,7 @@ namespace tmbl::metadata {
 
 class pakInfo {
 public:
-  pakInfo(std::array<byte, 336_B> &&vec);
+  explicit pakInfo(std::array<byte, 336_B> &&vec);
   friend std::ostream &operator<<(std::ostream &os, const pakInfo &pak);
 
 private:
@@ -33,4 +33,3 @@ private:
 }
 
 #endif
-
