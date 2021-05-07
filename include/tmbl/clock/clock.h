@@ -1,8 +1,8 @@
 #ifndef CLOCK_H
 #define CLOCK_H
 
-#include "../config.h"
-#include "../io/registers.h"
+#include "tmbl/config.h"
+#include "tmbl/io/registers.h"
 
 #include <chrono>
 #include <ratio>
@@ -63,7 +63,7 @@ private:
 
   registers &m_reg;
   bool m_double_speed_mode = false;
-  uint16 m_base_freq = 4194304; /* in Hertz */
+  int m_base_freq = 4194304; /* in Hertz */
 
   uint64 global_counter = 0;
   uint8 div_counter = 0;
@@ -77,4 +77,3 @@ private:
 }
 
 #endif
-
