@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.20)
 
 project(
   tombul
-  DESCRIPTION "A GameBoy emulator implementation"
+  VERSION 0.0.1
+  DESCRIPTION "A very WIP GameBoy emulator implementation"
   HOMEPAGE_URL "https://github.com/adembudak/tombul"
   LANGUAGES CXX)
 
@@ -25,6 +26,7 @@ option(GAMBATTE_TEST_ROMs "Gambette test ROM" OFF)
 option(MEALYBUG_TEAROOM_TEST_ROMs "Mealybug teardown test ROMs" OFF)
 option(MOONEYE_GB_TEST_ROMs "Mooneye GB ROMs" OFF)
 
+cmake_dependent_option(ENABLE_UNIT_TESTS "" ON BUILD_TESTING OFF)
 cmake_dependent_option(ENABLE_ROM_TESTS "" ON BUILD_TESTING OFF)
 cmake_dependent_option(BLARGG_TEST_ROMs "" ON ENABLE_ROM_TESTS OFF)
 cmake_dependent_option(CGB_ACID2_TEST_ROM "" ON ENABLE_ROM_TESTS OFF)
@@ -73,7 +75,7 @@ if(ENABLE_ROM_TESTS)
   add_subdirectory(tests/rom)
 endif()
 
-if(ENABLE_UNIT_TESTS AND BUILD_TESTING)
+if(ENABLE_UNIT_TESTS)
   enable_testing()
   add_subdirectory(tests/unit)
 endif()
