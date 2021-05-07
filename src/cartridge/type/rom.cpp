@@ -2,7 +2,8 @@
 #include "tmbl/cartridge/type/rom.h"
 
 #include <utility>
-#include <cstddef>
+#include <cstddef> // for std::size_t
+#include <cstdlib> // for std::rand()
 
 namespace tmbl {
 
