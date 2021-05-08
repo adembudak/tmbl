@@ -2545,7 +2545,7 @@ void cpu::set_(const uint8 pos, const uint16 uu) {
 void cpu::swap(r8 &r) {
   // swap lower and upper nibble
 
-  r = (r.loNibble() << 4) | r.hiNibble() >> 4;
+  r = (r.loNibble() << 4) | (r.hiNibble() >> 4);
 
   r == r8::zero ? F.z(set) : F.z(reset);
   F.n(reset);
@@ -2557,7 +2557,7 @@ void cpu::swap(r8 &r) {
 
 void cpu::swap(const uint16 uu) {
   byte val = m_bus.readBus(uu);
-  val = (val & 0b0000'1111) << 4 | (val & 0b1111'0000) >> 4;
+  val = ((val & 0b0000'1111) << 4) | ((val & 0b1111'0000) >> 4);
   m_bus.writeBus(uu, val);
 
   val == 0 ? F.z(set) : F.z(reset);
@@ -2580,6 +2580,7 @@ void cpu::rl(r8 &r) {
 
   m_clock.cycle(2);
 }
+
 void cpu::rl(const uint16 uu) {
   uint8 old_carry = F.c() == set ? 1 : 0;
 
@@ -2902,29 +2903,30 @@ void cpu::ldio(r8 &r, const uint16 nn) {
   m_clock.cycle(3);
 }
 
-// come back to here
 void cpu::call(n16 nn) {
-
-  m_bus.writeBus(SP - 1, (PC & r16::reset_lower) >> 8);
-  m_bus.writeBus(SP - 2, PC & r16::reset_upper);
+  m_bus.writeBus(--SP, (PC & r16::reset_lower) >> 8);
+  m_bus.writeBus(--SP, PC & r16::reset_upper);
 
   PC = nn.value();
-
-  SP = SP - 2;
 
   m_clock.cycle(6);
 }
 // clang-format off
 void cpu::call(cc c, n16 nn) {
+
   if (c == cc::Z && F.z() == set    || 
       c == cc::NZ && F.z() == reset || 
       c == cc::C && F.c() == set    ||
       c == cc::NC && F.c() == reset) {
     // clang-format on
 
-    call(nn);
+    m_bus.writeBus(--SP, (PC & r16::reset_lower) >> 8);
+    m_bus.writeBus(--SP, PC & r16::reset_upper);
+
+    PC = nn.value();
 
     m_clock.cycle(6);
+
   } else {
     m_clock.cycle(3);
   }
@@ -2948,7 +2950,8 @@ void cpu::jp(const cc c, const n16 nn) {
       c == cc::C && F.c() == set    ||
       c == cc::NC && F.c() == reset) {
     // clang-format on
-    jp(nn);
+
+    PC = nn.value();
 
     m_clock.cycle(4);
   } else {
@@ -2967,8 +2970,8 @@ void cpu::jr(const cc c, const e8 e) {
       c == cc::NZ && F.z() == reset || 
       c == cc::C && F.c() == set    ||
       c == cc::NC && F.c() == reset) {
-    // clang-format on]
-   jr(e);
+    // clang-format on
+    PC = PC + e.value();
 
     m_clock.cycle(3);
   } else {
@@ -2977,23 +2980,27 @@ void cpu::jr(const cc c, const e8 e) {
 }
 
 void cpu::ret() {
-    byte lo = m_bus.readBus(SP);
-    byte hi = m_bus.readBus(SP+1);
-    PC = (hi << 8U) | lo;
+  byte lo = m_bus.readBus(SP);
+  byte hi = m_bus.readBus(SP + 1);
+  PC = (hi << 8U) | lo;
 
-    SP += 2;
+  SP += 2;
 
-    m_clock.cycle(4);
-  }
+  m_clock.cycle(4);
+}
 
 void cpu::ret(cc c) {
-      // clang-format off
+  // clang-format off
   if (c == cc::Z && F.z() == set    || 
       c == cc::NZ && F.z() == reset || 
       c == cc::C && F.c() == set    ||
       c == cc::NC && F.c() == reset) {
     // clang-format on
-    ret();
+
+    byte lo = m_bus.readBus(SP);
+    byte hi = m_bus.readBus(SP + 1);
+    PC = (hi << 8U) | lo;
+
     m_clock.cycle(5);
   } else {
     m_clock.cycle(2);
@@ -3004,7 +3011,7 @@ void cpu::reti() {
   IME = set;
   byte lo = m_bus.readBus(SP);
   byte hi = m_bus.readBus(SP + 1);
-  PC = hi << 8 | lo;
+  PC = (hi << 8U) | lo;
 
   SP += 2;
 
@@ -3012,9 +3019,8 @@ void cpu::reti() {
 }
 
 void cpu::rst(const uint8 u) {
-  m_bus.writeBus(SP - 1, (PC & r16::reset_lower) >> 8);
-  m_bus.writeBus(SP - 2, PC & r16::reset_upper);
-  SP -= 2;
+  m_bus.writeBus(--SP, (PC & r16::reset_lower) >> 8);
+  m_bus.writeBus(--SP, PC & r16::reset_upper);
 
   PC = rst_vec.at(u);
 
@@ -3038,17 +3044,15 @@ void cpu::pop(r16 &rr) {
 }
 
 void cpu::push() {
-  m_bus.writeBus(SP - 1, A.value());
-  m_bus.writeBus(SP - 2, F.value());
-  SP -= 2;
+  m_bus.writeBus(--SP, A.value());
+  m_bus.writeBus(--SP, F.value());
 
   m_clock.cycle(4);
 }
 
 void cpu::push(r16 &rr) {
-  m_bus.writeBus(SP - 1, rr.hi().value());
-  m_bus.writeBus(SP - 2, rr.lo().value());
-  SP -= 2;
+  m_bus.writeBus(--SP, rr.hi().value());
+  m_bus.writeBus(--SP, rr.lo().value());
 
   m_clock.cycle(4);
 }
