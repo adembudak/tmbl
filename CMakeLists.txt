@@ -7,7 +7,7 @@ project(
   HOMEPAGE_URL "https://github.com/adembudak/tombul"
   LANGUAGES CXX)
 
-if(PROJECT_SOURCE_DIR)
+if(PROJECT_IS_TOP_LEVEL)
   include(CTest)
   include(ExternalData)
 endif()
