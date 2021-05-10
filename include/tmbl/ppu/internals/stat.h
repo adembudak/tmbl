@@ -1,8 +1,8 @@
 #ifndef STAT_H
 #define STAT_H
 
-#include "../../io/registers.h"
-#include "../../config.h"
+#include "tmbl/io/registers.h"
+#include "tmbl/config.h"
 
 namespace tmbl {
 // https://gbdev.io/pandocs/#ff41-stat-lcdc-status-r-w

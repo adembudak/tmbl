@@ -1,7 +1,7 @@
 #ifndef N16_H
 #define N16_H
 
-#include "../../config.h"
+#include "tmbl/config.h"
 
 namespace tmbl {
 

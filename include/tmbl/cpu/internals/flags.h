@@ -1,7 +1,7 @@
 #ifndef FLAGS_H
 #define FLAGS_H
 
-#include "../../config.h"
+#include "tmbl/config.h"
 
 namespace tmbl {
 

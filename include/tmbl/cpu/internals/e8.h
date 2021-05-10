@@ -1,7 +1,7 @@
 #ifndef E8_H
 #define E8_H
 
-#include "../../config.h"
+#include "tmbl/config.h"
 
 namespace tmbl {
 
@@ -20,4 +20,3 @@ private:
 }
 
 #endif
-

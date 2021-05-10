@@ -1,6 +1,6 @@
 #ifndef N8_H
 #define N8_H
-#include "../../config.h"
+#include "tmbl/config.h"
 
 namespace tmbl {
 
@@ -29,4 +29,3 @@ bool operator>=(const n8 left, const n8 right);
 }
 
 #endif
-

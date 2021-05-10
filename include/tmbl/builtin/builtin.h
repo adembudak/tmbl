@@ -1,7 +1,7 @@
 #ifndef BUILTIN_H
 #define BUILTIN_H
 
-#include "../config.h"
+#include "tmbl/config.h"
 
 #include <cstddef>
 #include <array>
@@ -27,4 +27,3 @@ private:
 }
 
 #endif
-

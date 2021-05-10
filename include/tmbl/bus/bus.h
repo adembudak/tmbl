@@ -1,7 +1,7 @@
 #ifndef BUS_H
 #define BUS_H
 
-#include "../config.h"
+#include "tmbl/config.h"
 #include <cstddef>
 
 namespace tmbl {
@@ -30,4 +30,3 @@ private:
 }
 
 #endif
-

@@ -1,7 +1,7 @@
 #ifndef REGISTERS_H
 #define REGISTERS_H
 
-#include "../config.h"
+#include "tmbl/config.h"
 #include <array>
 
 namespace tmbl {
@@ -23,4 +23,3 @@ private:
 }
 
 #endif
-

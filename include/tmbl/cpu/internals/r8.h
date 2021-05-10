@@ -1,7 +1,7 @@
 #ifndef R8_H
 #define R8_H
 
-#include "../../config.h"
+#include "tmbl/config.h"
 
 namespace tmbl {
 class n8;
@@ -54,4 +54,3 @@ bool operator<(const r8 left, const r8 right);
 }
 
 #endif
-

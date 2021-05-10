@@ -1,7 +1,7 @@
 #ifndef INTERRUPTS_H
 #define INTERRUPTS_H
 
-#include "../../config.h"
+#include "tmbl/config.h"
 #include <cstddef>
 
 namespace tmbl {
@@ -34,4 +34,3 @@ public:
 }
 
 #endif
-

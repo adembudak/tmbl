@@ -1,7 +1,7 @@
 #ifndef R16_H
 #define R16_H
 
-#include "../../config.h"
+#include "tmbl/config.h"
 #include "r8.h"
 #include "n16.h"
 
