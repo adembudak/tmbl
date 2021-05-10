@@ -2,7 +2,7 @@ add_subdirectory(type)
 add_subdirectory(metadata)
 
 add_library(cartridge cartridge.cpp)
-target_include_directories(cartridge PUBLIC ../../include)
+target_include_directories(cartridge PUBLIC ${tmbl_SOURCE_DIR}/include)
 
 target_link_libraries(cartridge PRIVATE mbc1 mbc2 rom)
 

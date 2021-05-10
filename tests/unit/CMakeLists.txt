@@ -2,8 +2,8 @@ find_package(GTest QUIET REQUIRED)
 
 function(add_tmbl_executable name)
     add_executable(${name} ${name}.cpp)
-    target_include_directories(${name} PUBLIC ../../include)
-    target_link_directories(${name} PUBLIC ../../src)
+    target_include_directories(${name} PUBLIC ${tmbl_SOURCE_DIR}/include)
+    target_link_directories(${name} PUBLIC ${tmbl_SOURCE_DIR}/src)
     target_link_libraries(${name} PRIVATE ${ARGN})
 endfunction()
 

@@ -17,9 +17,9 @@ find_package(SDL2 REQUIRED)
 
 set(test_executable test_runner)
 add_executable(${test_executable} main.cpp)
-target_link_directories(${test_executable} PUBLIC ${CMAKE_SOURCE_DIR}/src)
+target_link_directories(${test_executable} PUBLIC $${tmbl_SOURCE_DIR}/src)
 target_link_libraries(${test_executable} PUBLIC tmbl::tmbl SDL2::SDL2 SDL2::SDL2main)
-target_include_directories(${test_executable} PUBLIC ${CMAKE_SOURCE_DIR}/include ${SDL2_INCLUDE_DIRS})
+target_include_directories(${test_executable} PUBLIC ${tmbl_SOURCE_DIR}/include ${SDL2_INCLUDE_DIRS})
 
 function(register_test rom_dir)
   file(GLOB_RECURSE test_sha256_list LIST_DIRECTORIES TRUE ${rom_dir} ${rom_dir}/*.sha256)
