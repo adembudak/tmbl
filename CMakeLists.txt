@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.20.1)
 
 project(
   tombul
@@ -7,8 +7,10 @@ project(
   HOMEPAGE_URL "https://github.com/adembudak/tombul"
   LANGUAGES CXX)
 
-include(CTest)
-include(ExternalData)
+if(PROJECT_SOURCE_DIR)
+  include(CTest)
+  include(ExternalData)
+endif()
 include(CMakeDependentOption)
 
 option(ENABLE_INCLUDE_WHAT_YOU_USE "Run iwyu on source" OFF)
