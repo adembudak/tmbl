@@ -13,8 +13,8 @@ class registers {
 public:
   byte &getAt(const std::size_t index);
 
-  byte read(const std::size_t index);
-  void write(const std::size_t index, const byte val);
+  byte read(const std::size_t index) const noexcept;
+  void write(const std::size_t index, const byte val) noexcept;
 
 private:
   std::array<byte, 160_B> m_regs{};

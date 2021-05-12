@@ -10,7 +10,7 @@ public:
   mbc2() = default;
   explicit mbc2(std::vector<byte> &&rom);
 
-  byte read(const std::size_t index) noexcept;
+  byte read(const std::size_t index) const noexcept;
   void write(const std::size_t index, const byte val) noexcept;
 
 private:

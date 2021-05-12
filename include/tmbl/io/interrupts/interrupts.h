@@ -12,7 +12,7 @@ namespace tmbl {
 class interrupts {
 
 public:
-  byte read(const std::size_t index) noexcept;
+  byte read(const std::size_t index) const noexcept;
   void write(const std::size_t index, const byte val) noexcept;
 
   uint8 IF() const noexcept; // 0xFF0F, interrupt flag

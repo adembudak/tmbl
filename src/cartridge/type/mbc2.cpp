@@ -31,8 +31,8 @@ void mbc2::write(const std::size_t index, const byte val) noexcept {
   }
 }
 
-byte mbc2::read(const std::size_t index) noexcept { // ROM Bank 0 (Read only)
-  if (index >= 0x0000 && index <= 0x3FFF) {         // bank 0
+byte mbc2::read(const std::size_t index) const noexcept { // ROM Bank 0 (Read only)
+  if (index >= 0x0000 && index <= 0x3FFF) {               // bank 0
     return m_rom.at(index);
   }
 

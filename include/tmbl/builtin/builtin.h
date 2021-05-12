@@ -10,14 +10,14 @@ namespace tmbl {
 
 class builtin {
 public:
-  byte readWRAM(const std::size_t index);
-  void writeWRAM(const std::size_t index, const byte val);
+  byte readWRAM(const std::size_t index) const noexcept;
+  void writeWRAM(const std::size_t index, const byte val) noexcept;
 
-  byte readHRAM(const std::size_t index);
-  void writeHRAM(const std::size_t index, const byte val);
+  byte readHRAM(const std::size_t index) const noexcept;
+  void writeHRAM(const std::size_t index, const byte val) noexcept;
 
-  byte readEcho(const std::size_t index);
-  void writeEcho(const std::size_t index, const byte val);
+  byte readEcho(const std::size_t index) const noexcept;
+  void writeEcho(const std::size_t index, const byte val) noexcept;
 
 private:
   std::array<byte, 8_KB> m_wram{};

@@ -4,7 +4,7 @@
 
 namespace tmbl {
 
-byte interrupts::read(const std::size_t index) noexcept {
+byte interrupts::read(const std::size_t index) const noexcept {
   switch (index) {
     case 0xFF0F: // IF, interrupt request address
              return (VBlank_IRQ << 4) | 

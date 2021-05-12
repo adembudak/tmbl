@@ -16,7 +16,7 @@ public:
   mbc1() = default;
   explicit mbc1(std::vector<byte> &&rom, std::size_t xram_size = 0);
 
-  byte read(const std::size_t index) noexcept;
+  byte read(const std::size_t index) const noexcept;
   void write(const std::size_t index, const byte val) noexcept;
 
   std::size_t rom_size() const noexcept;

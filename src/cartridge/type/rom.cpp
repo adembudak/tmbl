@@ -14,14 +14,14 @@ rom::rom(std::vector<byte> &&rom_, std::size_t xram_size) : m_rom(std::move(rom_
   }
 }
 
-byte rom::read(const std::size_t index) noexcept { return m_rom.at(index); }
+byte rom::read(const std::size_t index) const noexcept { return m_rom.at(index); }
 
 void rom::write(const std::size_t index, const byte val) noexcept {
   (void)index;
   (void)val;
 }
 
-byte rom::read_xram(const std::size_t index) noexcept {
+byte rom::read_xram(const std::size_t index) const noexcept {
   return has_xram ? m_xram.at(index) : std::rand();
 }
 

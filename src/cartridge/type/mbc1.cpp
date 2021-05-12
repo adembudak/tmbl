@@ -14,7 +14,7 @@ mbc1::mbc1(std::vector<byte> &&rom, const std::size_t xram_size) {
   }
 }
 
-byte mbc1::read(const std::size_t index) noexcept {
+byte mbc1::read(const std::size_t index) const noexcept {
   if (index >= 0x0000 && index <= 0x3FFF) { // ROM Bank $00 (Read Only)
     byte effective_rom_bank_number = (mode == 0b0) ? 0 : (bank2 << 5);
     std::size_t effective_index = (effective_rom_bank_number << 14) | (index & 0b11'1111'1111'1111);
