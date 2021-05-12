@@ -16,8 +16,8 @@ class bus {
 public:
   bus(cartridge &pCart, registers &pRegs, interrupts &pIntr, builtin &pBuiltin, ppu &pPPU);
 
-  byte readBus(const std::size_t index);
-  void writeBus(const std::size_t index, const byte val);
+  byte readBus(const std::size_t index) const noexcept;
+  void writeBus(const std::size_t index, const byte val) noexcept;
 
 private:
   cartridge &m_cart;
