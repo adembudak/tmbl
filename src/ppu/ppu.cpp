@@ -13,10 +13,10 @@ namespace tmbl {
 class registers;
 
 ppu::ppu(registers &regs_, cartridge &cart_, interrupts &intr_)
-    : m_regs(regs_), m_cart(cart_), m_intr(intr_), cgb_support(m_cart.CGB()),
+    : m_regs(regs_), m_cart(cart_), m_intr(intr_), cgb_support(m_cart.cgbSupport()),
       STAT(m_regs.getAt(0xFF41), /*ly*/ m_regs.getAt(0xFF44), /*lyc*/ m_regs.getAt(0xFF45)),
 
-      LCDC(m_regs.getAt(0xFF40), m_cart.CGB()), // lcd controller
+      LCDC(m_regs.getAt(0xFF40), m_cart.cgbSupport()), // lcd controller
 
       SCY(m_regs.getAt(0xFF42)), SCX(m_regs.getAt(0xFF43)), // screen (viewport) scroll
 
@@ -113,25 +113,25 @@ void ppu::update(std::function<void(const tmbl::ppu::frame framebuffer)> drawCal
   }
 }
 
-byte ppu::readVRAM(const std::size_t index) {
+byte ppu::readVRAM(const std::size_t index) const noexcept {
   if (vram_accessible) {
     return m_vram.at(index);
   }
 }
 
-void ppu::writeVRAM(const std::size_t index, const byte val) {
+void ppu::writeVRAM(const std::size_t index, const byte val) noexcept {
   if (vram_accessible) {
     m_vram.at(index) = val;
   }
 }
 
-byte ppu::readOAM(const std::size_t index) {
+byte ppu::readOAM(const std::size_t index) const noexcept {
   if (oam_accessible) {
     return m_oam.at(index);
   }
 }
 
-void ppu::writeOAM(const std::size_t index, const byte val) {
+void ppu::writeOAM(const std::size_t index, const byte val) noexcept {
   if (oam_accessible) {
     m_oam.at(index) = val;
   }

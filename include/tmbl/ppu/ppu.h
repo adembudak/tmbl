@@ -60,11 +60,11 @@ public:
   ppu(registers &regs_, cartridge &cart_, interrupts &intr_);
   void update(std::function<void(const tmbl::ppu::frame framebuffer)> drawCallback);
 
-  byte readVRAM(const std::size_t index);
-  void writeVRAM(const std::size_t index, const byte val);
+  byte readVRAM(const std::size_t index) const noexcept;
+  void writeVRAM(const std::size_t index, const byte val) noexcept;
 
-  byte readOAM(const std::size_t index);
-  void writeOAM(const std::size_t index, const byte val);
+  byte readOAM(const std::size_t index) const noexcept;
+  void writeOAM(const std::size_t index, const byte val) noexcept;
 
   void writeDMA(const byte val);
 

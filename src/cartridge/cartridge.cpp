@@ -45,15 +45,12 @@ bool cartridge::init(const std::filesystem::path p) noexcept {
     std::cerr << metadata::pakInfo(std::move(cartridge_header));
 #endif
 
-    // whether the cart support for color gameboy
+    // whether the cart support color gameboy functionalities
     const std::size_t CGB_support_code = 0x0143;
-    m_cgb_support =
-        (dumpedGamePak[CGB_support_code] == 0x0080 || dumpedGamePak[CGB_support_code] == 0x00C0);
 
-    // decide to mbc type
-    const std::size_t pak_type = 0x0147;
-    const std::size_t pak_rom_size = 0x0148; // equals to dumpedGamePak size, so no need to check
-    const std::size_t pak_xram_size = 0x0149;
+    m_type = dumpedGamePak[CGB_support_code] == 0xC0   ? console::cgb_only
+             : dumpedGamePak[CGB_support_code] == 0x80 ? console::cgb_compatible
+                                                       : console::dmg;
 
     // header checksum:  https://gbdev.io/pandocs/#_014d-header-checksum
     const std::size_t checksum_begin = 0x0134;
@@ -63,11 +60,16 @@ bool cartridge::init(const std::filesystem::path p) noexcept {
     int checksum = std::accumulate(&dumpedGamePak[checksum_begin], &dumpedGamePak[checksum_end], 0,
                                    [this](const byte x, const byte y) { return x - y - 1; });
 
-    assert((dumpedGamePak[checksum_result] == checksum) && "ROM Checksum failed\n");
+    assert((dumpedGamePak.at(checksum_result) == checksum) && "ROM Checksum failed\n");
 
-    auto recognize_xram_size = [](const std::size_t i) -> std::size_t {
+    // decide to mbc type
+    const std::size_t pak_type = 0x0147;
+    const std::size_t pak_rom_size = 0x0148; // equals to dumpedGamePak size, so no need to check
+    const std::size_t pak_xram_size = 0x0149;
+
+    auto recognize_xram_size = [&]() noexcept -> std::size_t {
       // clang-format off
-        switch (i) {
+       switch (const size_t i = dumpedGamePak.at(pak_xram_size); i) {
           case 0: return 0_KB;
           case 1: return 2_KB;
           case 2: return 8_KB;
@@ -91,7 +93,7 @@ bool cartridge::init(const std::filesystem::path p) noexcept {
       case 0x02:
         [[fallthrough]];
       case 0x03:
-        pak = mbc1(std::move(dumpedGamePak), recognize_xram_size(dumpedGamePak.at(pak_xram_size)));
+        pak = mbc1(std::move(dumpedGamePak), recognize_xram_size());
         break;
 
       case 0x05:
@@ -103,7 +105,7 @@ bool cartridge::init(const std::filesystem::path p) noexcept {
       case 0x08:
         [[fallthrough]];
       case 0x09:
-        pak = rom(std::move(dumpedGamePak), recognize_xram_size(dumpedGamePak.at(pak_xram_size)));
+        pak = rom(std::move(dumpedGamePak), recognize_xram_size());
         break;
 
       default:
@@ -116,9 +118,13 @@ bool cartridge::init(const std::filesystem::path p) noexcept {
   }
 }
 
-bool cartridge::CGB() const noexcept { return m_cgb_support; }
+bool cartridge::cgbSupport() const noexcept {
+  return m_type == console::cgb_compatible || m_type == console::cgb_only;
+}
 
-byte cartridge::readXRAM(const std::size_t index) {
+console cartridge::type() const noexcept { return m_type; }
+
+byte cartridge::readXRAM(const std::size_t index) const noexcept {
   if (auto pRom = std::get_if<rom>(&pak)) {
     return pRom->read_xram(index);
   } else if (auto pMbc1 = std::get_if<mbc1>(&pak)) {
@@ -130,7 +136,7 @@ byte cartridge::readXRAM(const std::size_t index) {
   }
 }
 
-void cartridge::writeXRAM(const std::size_t index, const byte val) {
+void cartridge::writeXRAM(const std::size_t index, const byte val) noexcept {
   if (auto pRom = std::get_if<rom>(&pak)) {
     pRom->write_xram(index, val);
   } else if (auto pMbc1 = std::get_if<mbc1>(&pak)) {
@@ -142,7 +148,7 @@ void cartridge::writeXRAM(const std::size_t index, const byte val) {
   }
 }
 
-byte cartridge::readROM(const std::size_t index) {
+byte cartridge::readROM(const std::size_t index) const noexcept {
   if (auto pRom = std::get_if<rom>(&pak)) {
     return pRom->read(index);
   } else if (auto pMbc1 = std::get_if<mbc1>(&pak)) {
@@ -154,7 +160,7 @@ byte cartridge::readROM(const std::size_t index) {
   }
 }
 
-void cartridge::writeROM(const std::size_t index, const byte val) {
+void cartridge::writeROM(const std::size_t index, const byte val) noexcept {
   if (auto pRom = std::get_if<rom>(&pak)) {
     pRom->write(index, val);
   } else if (auto pMbc1 = std::get_if<mbc1>(&pak)) {
