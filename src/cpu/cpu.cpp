@@ -12,26 +12,7 @@
 
 namespace tmbl {
 cpu::cpu(bus &bus_, registers &reg_, interrupts &intr_)
-    : m_bus(bus_), m_regs(reg_), m_intr(intr_), KEY1(m_regs.getAt(0xFF4D)) {
-
-  // Put initial values of the registers
-  // see: https://gbdev.io/pandocs/#power-up-sequence
-
-  A = 0x01;
-  F = 0xB0;
-
-  BC.hi() = 0x00;
-  BC.lo() = 0x13;
-
-  DE.hi() = 0x00;
-  DE.lo() = 0xD8;
-
-  HL.hi() = 0x01;
-  HL.lo() = 0x4D;
-
-  SP = 0xFFFE;
-  PC = 0x0100;
-}
+    : m_bus(bus_), m_regs(reg_), m_intr(intr_), KEY1(m_regs.getAt(0xFF4D)) {}
 
 // see: double speed mode switch procedure
 // https://archive.org/details/GameBoyProgManVer1.1/page/n35/mode/1up
