@@ -20,6 +20,7 @@
 
 #include <cstddef>
 #include <array>
+#include <vector>
 #include <functional>
 
 namespace tmbl {
@@ -115,7 +116,7 @@ private:
   byte &OCPS;
   byte &OCPD;
 
-  std::array<byte, 16_KB> m_vram{}; // it's 8KB on DMG
+  std::vector<byte> m_vram{};
   std::array<byte, 160_B> m_oam{};
   frame framebuffer{};
 

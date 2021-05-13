@@ -38,7 +38,14 @@ ppu::ppu(registers &regs_, cartridge &cart_, interrupts &intr_)
       BCPS(m_regs.getAt(0xFF68)), BCPD(m_regs.getAt(0xFF69)), // cgb background palettes
 
       OCPS(m_regs.getAt(0xFF6A)), OCPD(m_regs.getAt(0xFF6B)) // cgb object palettes
-{}
+{
+
+  if (m_cart.cgbSupport()) {
+    m_vram.resize(16_KB);
+  } else {
+    m_vram.resize(8_KB);
+  }
+}
 
 /*
 Mode 2  2_____2_____2_____2_____2_____2___________________2____
