@@ -5,8 +5,7 @@
 #include <cstdlib> // for std::rand();
 
 namespace tmbl {
-mbc1::mbc1(std::vector<byte> &&rom, const std::size_t xram_size) {
-  m_rom = std::move(rom);
+mbc1::mbc1(std::vector<byte> &&rom, const std::size_t xram_size) : m_rom(std::move(rom)) {
 
   if (xram_size > 0) {
     m_has_xram = true;

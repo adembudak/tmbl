@@ -4,8 +4,7 @@
 
 namespace tmbl {
 
-mbc2::mbc2(std::vector<byte> &&rom) {
-  m_rom = std::move(rom);
+mbc2::mbc2(std::vector<byte> &&rom) : m_rom(std::move(rom)) {
   m_xram.resize(512_B); // mbc2 type cartridges has only 512x4 bit of xram
 }
 
