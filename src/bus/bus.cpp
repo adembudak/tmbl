@@ -54,7 +54,7 @@ byte bus::readBus(const std::size_t index) const noexcept {
     return m_builtin.readHRAM(index - memory::hram);
   }
 
-  else if (index == 0xFFFF) {
+  else if (index == memory::IE) {
     return m_pintr.read(index);
   }
 
@@ -90,6 +90,7 @@ void bus::writeBus(const std::size_t index, const byte val) noexcept {
 
   else if (index >= memory::noUsable && index <= memory::noUsable_end) {
     std::cerr << "write to no usable area\n";
+    (void)val;
   }
 
   else if (index >= memory::io && index <= memory::io_end) {
@@ -106,7 +107,7 @@ void bus::writeBus(const std::size_t index, const byte val) noexcept {
     m_builtin.writeHRAM(index - memory::hram, val);
   }
 
-  else if (index == 0xFFFF) {
+  else if (index == memory::IE) {
     m_pintr.write(index, val);
   }
 
