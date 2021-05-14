@@ -38,3 +38,7 @@ add_tmbl_test(mbc1_test)
 
 add_tmbl_executable(mbc2_test mbc2)
 add_tmbl_test(mbc2_test)
+
+add_tmbl_executable(intr_test interrupts)
+add_tmbl_test(intr_test)
+
