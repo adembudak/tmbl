@@ -21,8 +21,8 @@ byte mbc5::read(const std::size_t index) const noexcept {
   }
 
   else if (index >= 0x4000 && index <= 0x7FFF) { // rom bank 0-511
-    const uint16 rom_bank = (rom_bank_high << 9) | rom_bank_low;
-    const std::size_t effective_index = 0x4000 * rom_bank + (index - 0x4000);
+    const uint16 effective_rom_bank = (rom_bank_high << 8) | rom_bank_low;
+    const std::size_t effective_index = 0x4000 * effective_rom_bank + (index - 0x4000);
     return m_rom.at(effective_index);
   }
 
