@@ -7,6 +7,12 @@ project(
   HOMEPAGE_URL "https://github.com/adembudak/tombul"
   LANGUAGES CXX)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+
+if(${CMAKE_VERSION} VERSION_LESS 3.21)
+  include(project-is-top-level)
+endif()
+
 if(PROJECT_IS_TOP_LEVEL)
   include(CTest)
   include(ExternalData)
