@@ -136,12 +136,6 @@ bool cartridge::init(const std::filesystem::path p) noexcept {
   }
 }
 
-bool cartridge::cgbSupport() const noexcept {
-  return m_type == console::cgb_compatible || m_type == console::cgb_only;
-}
-
-console cartridge::type() const noexcept { return m_type; }
-
 byte cartridge::readXRAM(const std::size_t index) const noexcept {
   if (auto pRom = std::get_if<rom>(&pak)) {
     return pRom->read_xram(index);
@@ -189,5 +183,11 @@ void cartridge::writeROM(const std::size_t index, const byte val) noexcept {
     // other mbc types
   }
 }
+
+bool cartridge::cgbSupport() const noexcept {
+  return m_type == console::cgb_compatible || m_type == console::cgb_only;
+}
+
+console cartridge::type() const noexcept { return m_type; }
 
 }

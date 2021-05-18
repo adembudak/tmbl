@@ -22,16 +22,16 @@ namespace tmbl {
 enum class console : uint8 { dmg, cgb_compatible, cgb_only };
 class cartridge {
 public:
-  console type() const noexcept;
-
   bool init(const std::filesystem::path p) noexcept;
-  bool cgbSupport() const noexcept;
 
   byte readXRAM(const std::size_t index) const noexcept;
   void writeXRAM(const std::size_t index, const byte val) noexcept;
 
   byte readROM(const std::size_t index) const noexcept;
   void writeROM(const std::size_t index, const byte val) noexcept;
+
+  bool cgbSupport() const noexcept;
+  console type() const noexcept;
 
 private:
   console m_type;
