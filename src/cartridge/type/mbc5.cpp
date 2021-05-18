@@ -73,10 +73,10 @@ void mbc5::write(const std::size_t index, const byte val) noexcept {
 }
 
 std::size_t mbc5::rom_size() const noexcept { return m_rom.size(); }
-std::size_t mbc5::rom_banks() const noexcept { return m_rom.size() / 0x4000; }
+std::size_t mbc5::rom_banks() const noexcept { return m_rom.size() / 16_KB; } // 16KB, rom bank size
 
 std::size_t mbc5::xram_size() const noexcept { return m_xram.size(); }
-std::size_t mbc5::xram_banks() const noexcept { return m_xram.size() / 0x2000; }
+std::size_t mbc5::xram_banks() const noexcept { return m_xram.size() / 8_KB; } // 8KB, ram bank size
 
 bool mbc5::has_xram() const noexcept { return m_has_xram; }
 bool mbc5::has_rumble() const noexcept { return m_has_rumble; }
