@@ -4,6 +4,7 @@
 #include "tmbl/cartridge/type/rom.h"
 #include "tmbl/cartridge/type/mbc1.h"
 #include "tmbl/cartridge/type/mbc2.h"
+#include "tmbl/cartridge/type/mbc5.h"
 
 #include <filesystem>
 #include <fstream>
@@ -108,6 +109,23 @@ bool cartridge::init(const std::filesystem::path p) noexcept {
         pak = rom(std::move(dumpedGamePak), recognize_xram_size());
         break;
 
+      case 0x19:
+        pak = mbc5(std::move(dumpedGamePak));
+        break;
+      case 0x1A:
+        [[fallthrough]];
+      case 0x1B:
+        pak = mbc5(std::move(dumpedGamePak), recognize_xram_size());
+        break;
+      case 0x1C:
+        pak = mbc5(std::move(dumpedGamePak), /*xram_size*/ 0, /*has_rumble*/ true);
+        break;
+      case 0x1D:
+        [[fallthrough]];
+      case 0x1E:
+        pak = mbc5(std::move(dumpedGamePak), recognize_xram_size(), /*has_rumble*/ true);
+        break;
+
       default:
         break;
     }
@@ -117,12 +135,6 @@ bool cartridge::init(const std::filesystem::path p) noexcept {
     return false;
   }
 }
-
-bool cartridge::cgbSupport() const noexcept {
-  return m_type == console::cgb_compatible || m_type == console::cgb_only;
-}
-
-console cartridge::type() const noexcept { return m_type; }
 
 byte cartridge::readXRAM(const std::size_t index) const noexcept {
   if (auto pRom = std::get_if<rom>(&pak)) {
@@ -171,5 +183,11 @@ void cartridge::writeROM(const std::size_t index, const byte val) noexcept {
     // other mbc types
   }
 }
+
+bool cartridge::cgbSupport() const noexcept {
+  return m_type == console::cgb_compatible || m_type == console::cgb_only;
+}
+
+console cartridge::type() const noexcept { return m_type; }
 
 }

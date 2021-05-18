@@ -14,8 +14,7 @@ using namespace tmbl;
 class MBC1Test : public ::testing::Test {
 public:
   void SetUp() override {
-    const std::size_t rom_bank_size = 0x4000;
-    std::vector<byte> fake_rom(2_MB);
+    std::vector<byte> fake_rom(fake_rom_size);
 
     std::iota(fake_rom.begin(), fake_rom.end(), 0);
     fake_rom.at(0x4000) = 99;                    // used at test ReadFromROMX
@@ -30,7 +29,12 @@ public:
     mbc = mbc1(std::move(fake_rom), fake_xram_size);
   }
 
+  const size_t xram_bank_size = 8_KB; // 0x2000
+  const size_t rom_bank_size = 16_KB; // 0x4000
+
   const std::size_t fake_xram_size = 32_KB;
+  const std::size_t fake_rom_size = 2_MB;
+
   mbc1 mbc;
 };
 
