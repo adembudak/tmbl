@@ -6,17 +6,15 @@
 #include "type/rom.h"
 #include "type/mbc1.h"
 #include "type/mbc2.h"
+#include "type/mbc5.h"
 /*
 #include "type/mbc3.h"
-#include "type/mbc5.h"
 #include "type/mbc6.h"
 #include "type/mbc7.h"
 */
 
 #include <cstddef>
 #include <filesystem>
-#include <vector>
-#include <string>
 #include <variant>
 
 namespace tmbl {
@@ -37,7 +35,7 @@ public:
 
 private:
   console m_type;
-  std::variant<std::monostate, rom, mbc1, mbc2 /*, mbc3, mbc5, mbc6, mbc7*/> pak;
+  std::variant<std::monostate, rom, mbc1, mbc2, mbc5 /*, mbc3, mbc6, mbc7*/> pak;
 };
 }
 
