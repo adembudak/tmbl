@@ -26,9 +26,9 @@ byte mbc5::read(const std::size_t index) const noexcept {
     return m_rom.at(effective_index);
   }
 
-  else if (index >= 0xA000 && index <= 0xBFFF) { // xram read
+  else if (index >= 0xA000 && index <= 0xBFFF) { // read xram
     if (xram_access_enabled) {
-      const size_t effective_index = 0x2000 * ram_bank + (index - 0xA000);
+      const std::size_t effective_index = 0x2000 * ram_bank + (index - 0xA000);
       return m_xram.at(effective_index);
     } else {
       return 0xFF;
@@ -49,7 +49,7 @@ void mbc5::write(const std::size_t index, const byte val) noexcept {
     rom_bank_high = val & 0b1;
   }
 
-  else if (index >= 0x4000 && index <= 0x5FFF) { // ram bank
+  else if (index >= 0x4000 && index <= 0x5FFF) { // select ram bank or rumble motor
     if (m_has_rumble) {
       bool rumble_motor_activated = val & 0b0000'1000;
       /*
@@ -65,7 +65,7 @@ void mbc5::write(const std::size_t index, const byte val) noexcept {
   else if (index >= 0xA000 && index <= 0xBFFF) { // write xram
     if (xram_access_enabled) {
       const std::size_t effective_index = 0x2000 * ram_bank + (index - 0xA000);
-      m_xram.at(index) = val;
+      m_xram.at(effective_index) = val;
     } else {
       (void)val; // if xram not enabled, ignore write
     }
