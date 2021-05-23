@@ -1,6 +1,7 @@
 #include "tmbl/config.h"
 #include "tmbl/clock/clock.h"
 
+#include <cstdio>
 #include <thread>
 
 /*
@@ -63,6 +64,7 @@ void clock::cycle(const uint8 n) noexcept {
       sleep_for(normal_speed_cycle_period{1}); // wait one cycle before assign TMA to TIMA
       TIMA = TMA;
       m_intr.Timer_Overflow_IRQ = set;
+      std::puts("m_intr.Timer_Overflow_IRQ = set;");
     } else {
       ++TIMA;
     }
