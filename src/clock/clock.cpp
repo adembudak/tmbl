@@ -40,14 +40,17 @@ clock::clock(registers &reg_, interrupts &intr):
 void clock::cycle(const uint8 n) noexcept {
   using namespace std::this_thread;
 
-  div_counter += n;
-  if (div_counter >= timerControllerAt(3)) {
+  div_software_interface += n;
+  general_counter_for_div += n;
+
+  if (general_counter_for_div >= timerControllerAt(3)) {
+    general_counter_for_div = 0;
     ++DIV;
   }
 
   uint16 position = 0;
   // clang-format off
-  switch (const uint16 div_counter2 = ((div_counter & 0xff) | (DIV << 8)); TAC & 0b11) {
+  switch (const uint16 div_counter2 = ((div_software_interface & 0xff) | (DIV << 8)); TAC & 0b11) {
     case 0b00: position = div_counter2 & 0b0000'0001'0000'0000; break;
     case 0b01: position = div_counter2 & 0b0000'0000'0000'1000; break;
     case 0b10: position = div_counter2 & 0b0000'0000'0010'0000; break;
@@ -74,7 +77,7 @@ void clock::cycle(const uint8 n) noexcept {
 
 void clock::resetDIV() noexcept {
   DIV = 0;
-  div_counter = 0;
+  div_software_interface = 0;
 }
 
 void clock::enableDoubleSpeedMode(const bool b) noexcept {

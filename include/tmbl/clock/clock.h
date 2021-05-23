@@ -50,7 +50,8 @@ private:
   bool m_double_speed_mode = false;
   int m_base_freq = 1'048'576; /* in Hertz */
 
-  uint16 div_counter = 0;
+  int general_counter_for_div = 0;
+  uint16 div_software_interface = 0;
   bool is_freq_changed = false;
 
   byte &DIV;
