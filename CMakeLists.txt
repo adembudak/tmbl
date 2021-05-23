@@ -92,4 +92,3 @@ if(ENABLE_UNIT_TESTS)
 endif()
 
 add_subdirectory(src)
-add_subdirectory(bootrom)
