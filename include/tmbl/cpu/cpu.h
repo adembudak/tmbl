@@ -183,7 +183,7 @@ private:
   const std::array<int, 8> rst_vec{0x00, 0x08, 0x10, 0x18, 0x20, 0x28, 0x30, 0x38};
   const std::array<int, 5> intr_vec{0x40, 0x48, 0x50, 0x58, 0x60};
 
-  clock &m_clock = clock::instance(m_regs);
+  clock &m_clock = clock::instance(m_regs, m_intr);
   flag IME = reset; // interrupt master enable
   byte &KEY1;
 };

@@ -134,7 +134,7 @@ private:
                                              color{15, 56, 15, 255},    // dark green
                                              color{161, 193, 19, 255}}; // idle screen color
 
-  clock &m_clock = clock::instance(m_regs);
+  clock &m_clock = clock::instance(m_regs, m_intr);
 };
 }
 
