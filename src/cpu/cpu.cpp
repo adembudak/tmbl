@@ -38,8 +38,8 @@ enum class cpu::cc {
 // opcode table adapted from: https://izik1.github.io/gbops/
 void cpu::run() {
 
-  auto fetch_byte = [&] { return m_bus.readBus(PC++); };
-  auto fetch_word = [&] { return fetch_byte() | (fetch_byte() << 8); };
+  auto fetch_byte = [&]() -> uint8 { return m_bus.readBus(PC++); };
+  auto fetch_word = [&]() -> uint16 { return fetch_byte() | (fetch_byte() << 8); };
 
   if (IME) {
     if (m_intr.IE() && m_intr.IF() && 0b0001'1111) {
