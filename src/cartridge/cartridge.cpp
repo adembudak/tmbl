@@ -5,6 +5,7 @@
 #include "tmbl/cartridge/type/mbc1.h"
 #include "tmbl/cartridge/type/mbc2.h"
 #include "tmbl/cartridge/type/mbc5.h"
+#include "tmbl/cartridge/bootrom/bootrom.h"
 
 #include <filesystem>
 #include <fstream>
@@ -143,6 +144,8 @@ byte cartridge::readXRAM(const std::size_t index) const noexcept {
     return pMbc1->read(index);
   } else if (auto pMbc2 = std::get_if<mbc2>(&pak)) {
     return pMbc2->read(index);
+  } else if (auto pMbc5 = std::get_if<mbc5>(&pak)) {
+    return pMbc5->read(index);
   } else /*if*/ {
     // other mbc types
   }
@@ -155,20 +158,28 @@ void cartridge::writeXRAM(const std::size_t index, const byte val) noexcept {
     pMbc1->write(index, val);
   } else if (auto pMbc2 = std::get_if<mbc2>(&pak)) {
     pMbc2->write(index, val);
+  } else if (auto pMbc5 = std::get_if<mbc5>(&pak)) {
+    pMbc5->write(index, val);
   } else /*if*/ {
     // other mbc types
   }
 }
 
 byte cartridge::readROM(const std::size_t index) const noexcept {
-  if (auto pRom = std::get_if<rom>(&pak)) {
-    return pRom->read(index);
-  } else if (auto pMbc1 = std::get_if<mbc1>(&pak)) {
-    return pMbc1->read(index);
-  } else if (auto pMbc2 = std::get_if<mbc2>(&pak)) {
-    return pMbc2->read(index);
-  } else /*if*/ {
-    // other mbc types
+  if (running_bootrom) {
+    return (cgbSupport()) ? bootrom::cgb.at(index) : bootrom::dmg.at(index);
+  } else {
+    if (auto pRom = std::get_if<rom>(&pak)) {
+      return pRom->read(index);
+    } else if (auto pMbc1 = std::get_if<mbc1>(&pak)) {
+      return pMbc1->read(index);
+    } else if (auto pMbc2 = std::get_if<mbc2>(&pak)) {
+      return pMbc2->read(index);
+    } else if (auto pMbc5 = std::get_if<mbc5>(&pak)) {
+      return pMbc5->read(index);
+    } else /*if*/ {
+      // other mbc types
+    }
   }
 }
 
@@ -179,6 +190,8 @@ void cartridge::writeROM(const std::size_t index, const byte val) noexcept {
     pMbc1->write(index, val);
   } else if (auto pMbc2 = std::get_if<mbc2>(&pak)) {
     pMbc2->write(index, val);
+  } else if (auto pMbc5 = std::get_if<mbc5>(&pak)) {
+    pMbc5->write(index, val);
   } else /*if*/ {
     // other mbc types
   }
@@ -189,5 +202,7 @@ bool cartridge::cgbSupport() const noexcept {
 }
 
 console cartridge::type() const noexcept { return m_type; }
+
+void cartridge::disableBootROM() noexcept { running_bootrom = false; }
 
 }

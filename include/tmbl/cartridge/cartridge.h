@@ -33,7 +33,10 @@ public:
   bool cgbSupport() const noexcept;
   console type() const noexcept;
 
+  void disableBootROM() noexcept;
+
 private:
+  bool running_bootrom = true;
   console m_type;
   std::variant<std::monostate, rom, mbc1, mbc2, mbc5 /*, mbc3, mbc6, mbc7*/> pak;
 };
