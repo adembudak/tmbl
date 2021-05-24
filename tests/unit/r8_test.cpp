@@ -124,6 +124,25 @@ TEST(r8, Comparision) {
   EXPECT_TRUE(y == val);
 }
 
+TEST(r8, CompareWithUint8) {
+  tmbl::r8 r;
+  tmbl::uint8 u;
+
+  r = 1;
+  u = 1;
+
+  EXPECT_TRUE(r == u);
+  EXPECT_TRUE(r <= u);
+  EXPECT_TRUE(r >= u);
+
+  u = 2;
+  EXPECT_TRUE(r != u);
+  EXPECT_TRUE(r < u);
+
+  r = 3;
+  EXPECT_TRUE(r > u);
+}
+
 TEST(r8, NibbleGetters) {
   tmbl::r8 x;
   x = 0xFA;
@@ -133,4 +152,3 @@ TEST(r8, NibbleGetters) {
 }
 
 }
-
