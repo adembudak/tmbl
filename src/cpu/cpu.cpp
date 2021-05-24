@@ -176,7 +176,6 @@ void cpu::run() {
       break;
 
     case 0x18:
-      PC += 1;
       jr(e8(m_bus.readBus(PC++)));
       break;
 
@@ -209,7 +208,6 @@ void cpu::run() {
       break;
 
     case 0x20:
-      PC += 1;
       jr(cc::NZ, e8(m_bus.readBus(PC++)));
       break;
 
@@ -242,7 +240,6 @@ void cpu::run() {
       break;
 
     case 0x28:
-      PC += 1;
       jr(cc::Z, e8(m_bus.readBus(PC++)));
       break;
 
@@ -275,7 +272,6 @@ void cpu::run() {
       break;
 
     case 0x30:
-      PC += 1;
       jr(cc::NC, e8(m_bus.readBus(PC++)));
       break;
 
@@ -312,7 +308,6 @@ void cpu::run() {
       break;
 
     case 0x38:
-      PC += 1;
       jr(cc::C, e8(m_bus.readBus(PC++)));
       break;
 
@@ -892,7 +887,6 @@ void cpu::run() {
       break;
 
     case 0xC6:
-      PC += 1;
       add(m_bus.readBus(PC++));
       break;
 
@@ -2037,7 +2031,6 @@ void cpu::run() {
       break;
 
     case 0xE8:
-      PC += 1;
       add(e8(m_bus.readBus(PC++)));
       break;
 
@@ -2086,7 +2079,6 @@ void cpu::run() {
       break;
 
     case 0xF8:
-      PC += 1;
       HL = SP + e8(m_bus.readBus(PC++)).value();
       m_clock.cycle(3);
       break;
