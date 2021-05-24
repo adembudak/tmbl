@@ -22,24 +22,40 @@ TEST(r16, AssignmentOperator) {
   EXPECT_EQ(HL.value(), 0xF00D);
 }
 
-TEST(r16, IncrementDecrement) {
+TEST(r16, Value) {
   r16 HL;
 
-  HL++;
-  EXPECT_EQ(1, HL.value());
-
-  HL--;
-  EXPECT_EQ(0, HL.value());
-
   HL = 0xFFFF;
-  EXPECT_EQ(HL.value(), r16::max);
-  HL++;
-  EXPECT_EQ(HL.value(), r16::min);
+
+  EXPECT_EQ(HL.value(), 0xFFFF);
+}
+
+TEST(r16, Increment) {
+  r16 HL;
 
   HL = 0;
-  EXPECT_EQ(HL.value(), r16::min);
+  for (int i = 0; i < 0xFFFF; ++i) {
+    EXPECT_EQ(HL, i);
+    HL++;
+  }
+
+  HL = 0xFFFF;
+  HL++;
+  EXPECT_EQ(HL, r16::min);
+}
+
+TEST(r16, Decrement) {
+  r16 HL;
+
+  HL = 0xFFFF;
+  for (int i = 0xFFFF; i > 0; --i) {
+    EXPECT_EQ(HL, i);
+    HL--;
+  }
+
+  HL = 0;
   HL--;
-  EXPECT_EQ(HL.value(), r16::max);
+  EXPECT_EQ(HL, 0xFFFF);
 }
 
 TEST(r16, NonmemberOperatorPlus) {
