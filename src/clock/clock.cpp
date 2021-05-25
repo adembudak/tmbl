@@ -1,7 +1,6 @@
 #include "tmbl/config.h"
 #include "tmbl/clock/clock.h"
 
-#include <cstdio>
 #include <thread>
 
 /*
@@ -41,32 +40,27 @@ clock::clock(registers &reg_, interrupts &intr):
 void clock::cycle(const uint8 n) noexcept {
   using namespace std::this_thread;
 
-  div_software_interface += n;
-  general_counter_for_div += n;
+  for (int i = 0; i < n; ++i) {
+    div_software_interface += 1;
+    DIV = (div_software_interface >> 8);
 
-  if (general_counter_for_div >= timerControllerAt(3)) {
-    general_counter_for_div = 0;
-    ++DIV;
-  }
+    bool position = false;
+    // clang-format off
+    switch (TAC & 0b11) {
+      case 0b00: position = div_software_interface & 0b0000'0010'0000'0000; break;
+      case 0b01: position = div_software_interface & 0b0000'0000'0000'1000; break;
+      case 0b10: position = div_software_interface & 0b0000'0000'0010'0000; break;
+      case 0b11: position = div_software_interface & 0b0000'0000'1000'0000; break;
+    }
 
-  uint16 position = 0;
-  // clang-format off
-  switch (const uint16 div_counter2 = ((div_software_interface & 0xff) | (DIV << 8)); TAC & 0b11) {
-    case 0b00: position = div_counter2 & 0b0000'0001'0000'0000; break;
-    case 0b01: position = div_counter2 & 0b0000'0000'0000'1000; break;
-    case 0b10: position = div_counter2 & 0b0000'0000'0010'0000; break;
-    case 0b11: position = div_counter2 & 0b0000'0000'1000'0000; break;
-  }
-  // clang-format on
-
-  if (const bool isOnRisingEdge = position & isTimerEnabled(); !isOnRisingEdge) {
-    if (TIMA == std::numeric_limits<byte>::max()) {
-      sleep_for(normal_speed_cycle_period{1}); // wait one cycle before assign TMA to TIMA
-      TIMA = TMA;
-      m_intr.Timer_Overflow_IRQ = set;
-      std::puts("m_intr.Timer_Overflow_IRQ = set;");
-    } else {
-      ++TIMA;
+    if (const auto edge = static_cast<edge_t>(position & isTimerEnabled()); edge == edge_t::falling) {
+      if (TIMA == std::numeric_limits<byte>::max()) {
+        sleep_for(normal_speed_cycle_period{1}); // wait one cycle before assign TMA to TIMA
+        TIMA = TMA;
+        m_intr.Timer_Overflow_IRQ = set;
+      } else {
+        ++TIMA;
+      }
     }
   }
 
