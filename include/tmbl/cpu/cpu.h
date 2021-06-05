@@ -126,8 +126,11 @@ private:
   void ld(const n16 nn, tag dummy);
   void ld(tag dummy, const n16 nn);
 
-  void ldio(const uint16 nn, const r8 r);
-  void ldio(r8 &r, const uint16 nn);
+  void ldio(const n8 n, const r8 &r);
+  void ldio(r8 &r, const n8 n);
+
+  void ldio(const n8 n, const r8 &r, tag);
+  void ldio(r8 &r, const n8 n, tag);
 
   void call(n16 nn);
   void call(cc c, n16 nn);
@@ -177,8 +180,8 @@ private:
   r16 DE;
   r16 HL;
 
-  uint16 PC{};
-  uint16 SP{};
+  uint16 PC;
+  uint16 SP;
 
   const std::array<int, 8> rst_vec{0x00, 0x08, 0x10, 0x18, 0x20, 0x28, 0x30, 0x38};
   const std::array<int, 5> intr_vec{0x40, 0x48, 0x50, 0x58, 0x60};

@@ -12,7 +12,13 @@
 
 namespace tmbl {
 cpu::cpu(bus &bus_, registers &reg_, interrupts &intr_)
-    : m_bus(bus_), m_regs(reg_), m_intr(intr_), KEY1(m_regs.getAt(0xFF4D)) {}
+    : m_bus(bus_), m_regs(reg_), m_intr(intr_), KEY1(m_regs.getAt(0xFF4D)), SP(0xFFFE), PC(0x0100) {
+  A = 0x01;
+  F = 0xB0;
+  BC = 0x0013;
+  DE = 0x00D8;
+  HL = 0x014D;
+}
 
 // see: double speed mode switch procedure
 // https://archive.org/details/GameBoyProgManVer1.1/page/n35/mode/1up
@@ -2007,7 +2013,7 @@ void cpu::run() {
       break;
 
     case 0xE0:
-      ldio(0xFF00 + n8(fetch_byte()).value(), A);
+      ldio(n8(fetch_byte()), A);
       break;
 
     case 0xE1:
@@ -2015,7 +2021,7 @@ void cpu::run() {
       break;
 
     case 0xE2:
-      ldio(0xFF00 + BC.lo().value(), A);
+      ldio(n8(BC.lo().value()), A, tag{});
       break;
 
     case 0xE5:
@@ -2051,7 +2057,7 @@ void cpu::run() {
       break;
 
     case 0xF0:
-      ldio(A, 0xFF00 + n8(fetch_byte()).value());
+      ldio(A, n8(fetch_byte()));
       break;
 
     case 0xF1:
@@ -2059,7 +2065,7 @@ void cpu::run() {
       break;
 
     case 0xF2:
-      ldio(A, 0xFF00 + BC.lo().value());
+      ldio(A, n8(BC.lo().value()), tag{});
       break;
 
     case 0xF3:
@@ -2518,7 +2524,7 @@ void cpu::set_(const uint8 pos, const uint16 uu) {
 void cpu::swap(r8 &r) {
   // swap lower and upper nibble
 
-  r = (r.loNibble() << 4) | (r.hiNibble() >> 4);
+  r = r.loNibble() | r.hiNibble();
 
   r == r8::zero ? F.z(set) : F.z(reset);
   F.n(reset);
@@ -2862,18 +2868,32 @@ void cpu::ld(tag dummy, const n16 nn) {
   m_clock.cycle(4);
 }
 
-void cpu::ldio(const uint16 nn, const r8 r) {
-  m_bus.writeBus(nn, r.value());
+void cpu::ldio(const n8 n, const r8 &r) {
+  const std::size_t index = 0xFF00 + n.value();
+  m_bus.writeBus(index, r.value());
 
-  // Fix: if nn is 0xFF00 + C, then cycle 2 times
   m_clock.cycle(3);
 }
 
-void cpu::ldio(r8 &r, const uint16 nn) {
-  r = m_bus.readBus(nn);
+void cpu::ldio(r8 &r, const n8 n) {
+  const std::size_t index = 0xFF00 + n.value();
+  r = m_bus.readBus(index);
 
-  // Fix: if nn is 0xFF00 + C, then cycle 2 times
   m_clock.cycle(3);
+}
+
+void cpu::ldio(const n8 n, const r8 &r, tag /*dummy*/) {
+  const std::size_t index = 0xFF00 + n.value();
+  m_bus.writeBus(index, r.value());
+
+  m_clock.cycle(2);
+}
+
+void cpu::ldio(r8 &r, const n8 n, tag /*dummy*/) {
+  const std::size_t index = 0xFF00 + n.value();
+  r = m_bus.readBus(index);
+
+  m_clock.cycle(2);
 }
 
 void cpu::call(n16 nn) {
