@@ -3,7 +3,6 @@
 
 #include <utility>
 #include <cstddef> // for std::size_t
-#include <cstdlib> // for std::rand()
 
 namespace tmbl {
 
@@ -22,7 +21,11 @@ void rom::write(const std::size_t index, const byte val) noexcept {
 }
 
 byte rom::read_xram(const std::size_t index) const noexcept {
-  return has_xram ? m_xram.at(index) : std::rand();
+  if (has_xram) {
+    return m_xram.at(index);
+  } else {
+    return randomByte();
+  }
 }
 
 void rom::write_xram(const std::size_t index, const byte val) noexcept {

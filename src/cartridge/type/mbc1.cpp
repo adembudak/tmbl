@@ -2,7 +2,6 @@
 #include "tmbl/cartridge/type/mbc1.h"
 
 #include <cstddef>
-#include <cstdlib> // for std::rand();
 
 namespace tmbl {
 mbc1::mbc1(std::vector<byte> &&rom, const std::size_t xram_size) : m_rom(std::move(rom)) {
@@ -35,7 +34,7 @@ byte mbc1::read(const std::size_t index) const noexcept {
           (effective_xram_bank_number << 13) | (index & 0b1'1111'1111'1111);
       return m_xram.at(effective_index);
     } else {
-      return std::rand(); // return an undefined value, std::rand() is good enough
+      return randomByte();
     }
   }
 
