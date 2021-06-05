@@ -13,6 +13,19 @@ TEST(r16, LoAndHi) {
   EXPECT_TRUE(HL.lo() == 0xAD);
 }
 
+TEST(r16, Value) {
+  r16 HL;
+
+  HL = 0;
+  for (int i = 0; i < 0xFFFF; ++i) {
+    EXPECT_EQ(HL, HL.value());
+    HL++;
+  }
+
+  HL++;
+  EXPECT_EQ(HL.value(), 0x0000);
+}
+
 TEST(r16, AssignmentOperator) {
   r16 HL;
 
@@ -20,14 +33,6 @@ TEST(r16, AssignmentOperator) {
 
   HL = nn;
   EXPECT_EQ(HL.value(), 0xF00D);
-}
-
-TEST(r16, Value) {
-  r16 HL;
-
-  HL = 0xFFFF;
-
-  EXPECT_EQ(HL.value(), 0xFFFF);
 }
 
 TEST(r16, Increment) {
