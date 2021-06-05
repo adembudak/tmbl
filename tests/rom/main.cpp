@@ -9,7 +9,7 @@
 #include <SDL2/SDL.h>
 
 #include <filesystem>
-#include <iostream>
+#include <cstdio>
 
 class gameboy final {
 public:
@@ -17,7 +17,7 @@ public:
     SDL_InitSubSystem(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
     sdl_window = SDL_CreateWindow(/*title=*/"", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, tmbl::screenWidth, tmbl::screenHeight, SDL_WINDOW_SHOWN);
     sdl_renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
-    sdl_texture = SDL_CreateTexture(sdl_renderer, 0, SDL_TEXTUREACCESS_STREAMING, tmbl::screenWidth, tmbl::screenHeight);
+    sdl_texture = SDL_CreateTexture(sdl_renderer, SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STREAMING, tmbl::screenWidth, tmbl::screenHeight);
   }
 
   ~gameboy() {
@@ -74,8 +74,26 @@ public:
     for (bool running = true; running; /**/) {
       running = processInput(event);
       m_cpu.run();
-      m_ppu.update(
-          [&](const tmbl::ppu::frame &framebuffer) { SDL_UpdateTexture(sdl_texture, /*rect=*/nullptr, framebuffer.data(), tmbl::screenWidth * sizeof(tmbl::ppu::color)); });
+      m_ppu.update([&](const tmbl::ppu::frame &framebuffer) {
+        /*
+                for (const tmbl::ppu::screenline &line : framebuffer) {
+                  for (const tmbl::ppu::color &color : line) {
+                    if (color.r == 155) {
+                      std::putchar('a');
+                    } else if (color.r == 139) {
+                      std::putchar('o');
+                    } else if (color.r == 48) {
+                      std::putchar('i');
+                    } else if (color.r == 15) {
+                      std::putchar('i');
+                    }
+                  }
+                  std::putchar('\n');
+                }
+        */
+
+        SDL_UpdateTexture(sdl_texture, /*rect=*/nullptr, framebuffer.data(), tmbl::screenWidth * sizeof(tmbl::ppu::color));
+      });
       SDL_RenderCopy(sdl_renderer, sdl_texture, /*srcrect=*/nullptr, /*dstrect=*/nullptr);
       SDL_RenderPresent(sdl_renderer);
     }
@@ -103,6 +121,6 @@ int main(int argc, const char *const argv[]) {
     attaboy.plugCart(std::filesystem::path{argv[1]});
     attaboy.run();
   } else {
-    std::cerr << "Usage: tombul [ROM file]\n";
+    std::puts("Usage: tombul [ROM file]");
   }
 }
