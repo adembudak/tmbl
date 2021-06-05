@@ -7,7 +7,7 @@ namespace tmbl {
 
 class n16 final {
 public:
-  n16(const uint16 n);
+  n16(const uint16 nn);
 
   const uint8 hi() const noexcept;
   const uint8 lo() const noexcept;
