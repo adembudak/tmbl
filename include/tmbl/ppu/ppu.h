@@ -62,18 +62,18 @@ public:
   void update(std::function<void(const tmbl::ppu::frame framebuffer)> drawCallback);
 
   byte readVRAM(const std::size_t index) const noexcept;
-  void writeVRAM(const std::size_t index, const byte val) noexcept;
+  void writeVRAM(const std::size_t index, [[maybe_unused]] const byte val) noexcept;
 
   byte readOAM(const std::size_t index) const noexcept;
-  void writeOAM(const std::size_t index, const byte val) noexcept;
+  void writeOAM(const std::size_t index, [[maybe_unused]] const byte val) noexcept;
 
   void writeDMA(const byte val);
 
 private:
-  void scanline();
-  void fetchCHR();
-  void fetchBG();
-  void fetchOBJ();
+  void fetchBackground() noexcept; // on bottom
+  void fetchWindow() noexcept;
+  void fetchSprite() noexcept; // on top
+  void scanline() noexcept;
 
   uint8 vbk() const noexcept;
 

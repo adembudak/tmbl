@@ -6,8 +6,6 @@
 #include <array>
 #include <cstddef>
 
-#include <iostream>
-
 namespace tmbl {
 
 class registers;
@@ -76,6 +74,8 @@ void ppu::update(std::function<void(const tmbl::ppu::frame framebuffer)> drawCal
     }
 
     if (STAT.mode_flag() == stat::mode::HORIZONTAL_BLANKING) { //// mode 0
+      drawCallback(framebuffer);
+
       oam_accessible = true;
       vram_accessible = true;
 
@@ -115,15 +115,14 @@ void ppu::update(std::function<void(const tmbl::ppu::frame framebuffer)> drawCal
     }
 
   } else {
+    vram_accessible = true;
     LY = 0;
     STAT.mode_flag(stat::mode::VERTICAL_BLANKING);
   }
 }
 
 byte ppu::readVRAM(const std::size_t index) const noexcept {
-  if (vram_accessible) {
-    return m_vram.at(index);
-  }
+  return vram_accessible ? m_vram.at(index) : 0xFF;
 }
 
 void ppu::writeVRAM(const std::size_t index, const byte val) noexcept {
@@ -154,9 +153,46 @@ void ppu::writeDMA(const byte val) {
   m_clock.cycle(160);
 }
 
-void ppu::fetchCHR() {
-  const auto [dataBlock, is_signed] = LCDC.bgChrBlockSelect(); // LCDC.4, where to get tile?
-  const auto [tile_map, _] = LCDC.chrMapAreaSelect();          // LCDC.6, where to put tile?
+void ppu::fetchBackground() noexcept {
+  const uint8 currentScreenLine = SCY + LY;
+  const uint16 tileRow = currentScreenLine / tileHeight;
+
+  const auto [dataBlock, is_signed] = LCDC.bgBlockSelect(); // LCDC.4, where to get tile?
+  const auto [tileMap, _] = LCDC.bgTileMapSelect();         // LCDC.3, where to put tile
+
+  for (uint8 dx = 0; dx < screenWidth; ++dx) {
+    const uint8 x = SCX + dx;
+    const uint16 tileColumn = x / tileWidth;
+
+    const uint16 address = tileMap + (tileRow * 32) + tileColumn;
+    const uint16 tile_number = is_signed ? int8(readVRAM(address)) : readVRAM(address);
+
+    const uint16 tile_address = is_signed ? dataBlock + (tile_number * tileSize)
+                                          : dataBlock + ((tile_number + 128) * tileSize);
+
+    uint8 line_number = currentScreenLine % tileHeight;
+    line_number *= 2;
+    const byte lo = readVRAM(tile_address + line_number);
+    const byte hi = readVRAM(tile_address + line_number + 1);
+
+    // lo |7|6|5|4|3|2|1|0|
+    // hi |7|6|5|4|3|2|1|0|
+    const uint8 bit_check_mask = 7 - (x % 8);
+    const uint8 lo_bit = (lo >> bit_check_mask) & 0b1;
+    const uint8 hi_bit = (hi >> bit_check_mask) & 0b1;
+    const uint8 color_id = (hi_bit << 1) | lo_bit;
+    const std::size_t palette_index = BGP.bgPalette(color_id);
+
+    framebuffer.at(LY).at(dx) = default_palette.at(palette_index);
+
+    m_clock.cycle(1);
+  }
+}
+
+void ppu::fetchWindow() noexcept {
+  const auto [dataBlock, is_signed] = LCDC.winBlockSelect(); // LCDC.4, where to get tile?
+  const auto [tile_map, _] = LCDC.winTileMapSelect();        // LCDC.6, where to put tile?
+
   const uint8 y = LY - WY;
   const uint16 tile_row = y / tileHeight;
 
@@ -171,84 +207,35 @@ void ppu::fetchCHR() {
     line_number *= 2;
     const byte lo = readVRAM(tile_address + line_number);
     const byte hi = readVRAM(tile_address + line_number + 1);
+
     const uint8 bit_check_mask = 7 - (x % 8); // start from left most bit and check
     const uint8 lo_bit = (lo >> bit_check_mask) & 0b1;
     const uint8 hi_bit = (hi >> bit_check_mask) & 0b1;
-    const uint8 color_id = (lo_bit << 1) | hi_bit;
+    const uint8 color_id = (hi_bit << 1) | lo_bit;
     const std::size_t palette_index = BGP.bgPalette(color_id);
-
     framebuffer.at(LY).at(dx) = default_palette[palette_index];
 
     m_clock.cycle(1);
   }
 }
 
-void ppu::fetchBG() {
-  const auto [dataBlock, is_signed] = LCDC.bgChrBlockSelect();
-  const auto [tile_map, _] = LCDC.bgMapAreaSelect();
-  const uint8 y = SCY + LY;
-  const uint16 tile_row = y / tileHeight;
-
-  for (uint8 dx = 0; dx < screenWidth; ++dx) {
-    const uint8 x = SCX + dx;
-
-    const uint16 tile_column = x / tileWidth;
-    const uint16 address = tile_map + (tile_row * 32) + tile_column;
-    const uint16 tile_number = is_signed ? int8(readVRAM(address)) : readVRAM(address);
-
-    const uint16 tile_address = is_signed ? dataBlock + (tile_number * tileSize)
-                                          : dataBlock + ((tile_number + 128) * tileSize);
-
-    uint8 line_number = y % tileHeight;
-    line_number *= 2;
-    const byte lo = readVRAM(tile_address + line_number);
-    const byte hi = readVRAM(tile_address + line_number + 1);
-
-    // lo |7|6|5|4|3|2|1|0|
-    // hi |7|6|5|4|3|2|1|0|
-    const uint8 bit_check_mask = 7 - (x % 8); // start from left most bit and check
-    const uint8 lo_bit = (lo >> bit_check_mask) & 0b1;
-    const uint8 hi_bit = (hi >> bit_check_mask) & 0b1;
-    const uint8 color_id = (lo_bit << 1) | hi_bit;
-    const std::size_t palette_index = BGP.bgPalette(color_id);
-
-    framebuffer.at(LY).at(dx) = default_palette[palette_index];
-
-    m_clock.cycle(1);
-  }
+void ppu::fetchSprite() noexcept {
+  //
 }
 
-void ppu::fetchOBJ() {
-  // implement this
-}
-
-void ppu::scanline() {
-
-  if (LCDC.windowStatus() == on) {
-    // (LY >= WY);
-    fetchCHR();
-  }
-
+void ppu::scanline() noexcept {
   if (LCDC.bgDisplayStatus() == on) {
-    fetchBG();
+    fetchBackground();
   }
 
-  if (LCDC.objDisplayStatus() == on) {
-    fetchOBJ();
+  else if (LY >= WY && LCDC.winDisplayStatus() == on) {
+    fetchWindow();
+  }
+
+  else if (LCDC.objDisplayStatus() == on) {
+    fetchSprite();
   }
 }
 
 uint8 ppu::vbk() const noexcept { return cgb_support ? (VBK & 0b0000'0001) : 0; }
 }
-
-// VRAM structure
-//   |                  (each tile is 16 bytes)                  |  (1KB = 32x32 = [0,1024) indexes)
-//   | 2KB = 128 tiles   |  2KB = 128 tiles  |  2KB = 128 tiles  | 1KB      | 1KB      | = 8KB total
-//   |                   |                   |                   |          |          |
-//   |   Block 0         |    Block 1        |    Block 2        |*LCDC.3=0*|*LCDC.3=1*|
-//   |+++++++++++++++LCDC.4=1++++++++++++++++|                   |          |          |
-//   |++tile [0,128)+++++++++tile [128,256)++|                   |,LCDC.6=0,|,LCDC.6=1,|
-//   |                   |~~~~~~~~~~~~~~~~LCDC.4=0~~~~~~~~~~~~~~~|          |          |
-//   |                   |~~tile [-128,0)~~~~~~tile [0,128)~~~~~~|          |          |
-//   [------------------)[------------------)[------------------)[---------)[----------)
-//   0x8000              0x8800              0x9000              0x9800     0x9C00     0xA000
