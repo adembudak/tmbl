@@ -45,75 +45,71 @@ ppu::ppu(registers &regs_, cartridge &cart_, interrupts &intr_)
   }
 }
 
-/*
-Mode 2  2_____2_____2_____2_____2_____2___________________2____
-Mode 3  _33____33____33____33____33____33__________________3___
-Mode 0  ___000___000___000___000___000___000________________000
-Mode 1  ____________________________________11111111111111_____
- */
-
 void ppu::update(std::function<void(const tmbl::ppu::frame framebuffer)> drawCallback) {
   if (LCDC.lcdControllerStatus() == on) {
 
-    if (STAT.mode_flag() == stat::mode::SEARCHING_OAM) { //// mode 2
-      oam_accessible = false;
-      vram_accessible = true;
+    switch (STAT.mode_flag()) {
+      case stat::mode::SEARCHING_OAM: //////////////////////////////////////// mode 2
+        oam_accessible = false;
+        vram_accessible = true;
 
-      m_intr.LCDC_Status_IRQ = STAT.matchSearchOAM();
+        m_intr.LCDC_Status_IRQ = STAT.matchSearchOAM();
 
-      m_clock.cycle(oamCycles);
-      STAT.mode_flag(stat::mode::TRANSFERING_DATA_TO_LCD);
-    }
+        m_clock.cycle(oamCycles);
+        STAT.mode_flag(stat::mode::TRANSFERING_DATA_TO_LCD);
+        break;
 
-    if (STAT.mode_flag() == stat::mode::TRANSFERING_DATA_TO_LCD) { //// mode 3
-      oam_accessible = false;
-      vram_accessible = false;
+      case stat::mode::TRANSFERING_DATA_TO_LCD: ////////////////////////////// mode 3
+        oam_accessible = false;
+        vram_accessible = false;
 
-      m_clock.cycle(vramCycles);
-      STAT.mode_flag(stat::mode::HORIZONTAL_BLANKING);
-    }
+        drawCallback(framebuffer);
 
-    if (STAT.mode_flag() == stat::mode::HORIZONTAL_BLANKING) { //// mode 0
-      drawCallback(framebuffer);
+        m_clock.cycle(vramCycles);
+        STAT.mode_flag(stat::mode::HORIZONTAL_BLANKING);
+        break;
 
-      oam_accessible = true;
-      vram_accessible = true;
+      case stat::mode::HORIZONTAL_BLANKING: ////////////////////////////////// mode 0
+        oam_accessible = true;
+        vram_accessible = true;
 
-      scanline();
-      m_intr.LCDC_Status_IRQ = STAT.matchHblank();
-
-      m_clock.cycle(hblankCycles);
-      ++LY; // drawing scanline finished, now if not vertical blanking, scan other line
-
-      if (STAT.match_flag()) { // LY == LYC
-        m_intr.LCDC_Status_IRQ = STAT.matchCoincidence();
-      }
-
-      if (LY == screenHeight) {
-        STAT.mode_flag(stat::mode::VERTICAL_BLANKING);
-      } else {
-        STAT.mode_flag(stat::mode::SEARCHING_OAM);
-      }
-    }
-
-    if (STAT.mode_flag() == stat::mode::VERTICAL_BLANKING) { //// mode 1
-      oam_accessible = true;
-      vram_accessible = true;
-
-      m_intr.VBlank_IRQ = STAT.matchVblank();
-
-      for (uint8 i = 0; i < 10; ++i) { // 10 scanlines of vertical blank
+        scanline();
         ++LY;
-        m_clock.cycle(scanlineCycles);
-      }
+        m_intr.LCDC_Status_IRQ = STAT.matchHblank();
 
-      if (LY == screenVBlankHeight) {
-        LY = 0;
-      }
+        m_clock.cycle(hblankCycles);
+        // drawing scanline has finished, now if not vertical blanking, scan other line
 
-      STAT.mode_flag(stat::mode::SEARCHING_OAM);
+        if (STAT.match_flag()) { // LY == LYC
+          m_intr.LCDC_Status_IRQ = STAT.matchCoincidence();
+        }
+
+        if (LY == screenHeight) {
+          STAT.mode_flag(stat::mode::VERTICAL_BLANKING);
+        } else {
+          STAT.mode_flag(stat::mode::SEARCHING_OAM);
+        }
+        break;
+
+      case stat::mode::VERTICAL_BLANKING: //////////////////////////////////// mode 1
+
+        oam_accessible = true;
+        vram_accessible = true;
+
+        m_intr.VBlank_IRQ = STAT.matchVblank();
+
+        for (uint8 i = 0; i < 10; ++i) { // 10 scanlines of vertical blank
+          ++LY;
+          m_clock.cycle(scanlineCycles);
+        }
+
+        if (LY == screenVBlankHeight) {
+          LY = 0;
+        }
+
+        STAT.mode_flag(stat::mode::SEARCHING_OAM);
+        break;
     }
-
   } else {
     vram_accessible = true;
     LY = 0;
