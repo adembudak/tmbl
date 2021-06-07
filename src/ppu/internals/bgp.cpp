@@ -5,9 +5,9 @@ class registers;
 
 bgp::bgp(byte &val_) : m_value(val_) {}
 
-std::size_t bgp::bgPalette(const uint8 val) const noexcept {
+std::size_t bgp::operator[](const std::size_t val) const noexcept {
+  // clang-format off
   switch (val) {
-      // clang-format off
     case 0: return m_value & 0b0000'0011;
     case 1: return (m_value & 0b0000'1100) >> 2;
     case 2: return (m_value & 0b0011'0000) >> 4;
@@ -15,12 +15,4 @@ std::size_t bgp::bgPalette(const uint8 val) const noexcept {
     default: break;
   }
 }
-
-std::array<int, 4> bgp::bgPalette() const noexcept {
-  // clang-format off
-  return { (m_value & 0b0000'0011),
-           (m_value & 0b0000'1100) >> 2, 
-           (m_value & 0b0011'0000) >> 4, 
-           (m_value & 0b1100'0000) >> 6 };
-  }
 }
