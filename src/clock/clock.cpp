@@ -38,24 +38,25 @@ clock::clock(registers &reg_, interrupts &intr):
 // clang-format on
 
 void clock::cycle(const uint8 n) noexcept {
-  using namespace std::this_thread;
 
   for (int i = 0; i < n; ++i) {
-    div_software_interface += 1;
-    DIV = (div_software_interface >> 8);
+    ++div_software_interface;
+    DIV = div_software_interface >> 8;
 
     bool position = false;
     // clang-format off
-    switch (TAC & 0b11) {
-      case 0b00: position = div_software_interface & 0b0000'0010'0000'0000; break;
-      case 0b01: position = div_software_interface & 0b0000'0000'0000'1000; break;
-      case 0b10: position = div_software_interface & 0b0000'0000'0010'0000; break;
-      case 0b11: position = div_software_interface & 0b0000'0000'1000'0000; break;
+      switch (TAC & 0b11) { // frequency
+        case 0b00: position = div_software_interface & 0b0000'0010'0000'0000; break;
+        case 0b01: position = div_software_interface & 0b0000'0000'0000'1000; break;
+        case 0b10: position = div_software_interface & 0b0000'0000'0010'0000; break;
+        case 0b11: position = div_software_interface & 0b0000'0000'1000'0000; break;
+        // clang-format on
     }
 
-    if (const auto edge = static_cast<edge_t>(position & isTimerEnabled()); edge == edge_t::falling) {
+    if (const auto edge = static_cast<edge_t>(position & isTimerEnabled());
+        edge == edge_t::falling) {
       if (TIMA == std::numeric_limits<byte>::max()) {
-        sleep_for(normal_speed_cycle_period{1}); // wait one cycle before assign TMA to TIMA
+        wait(1); // wait one cycle before assign TMA to TIMA
         TIMA = TMA;
         m_intr.Timer_Overflow_IRQ = set;
       } else {
@@ -64,6 +65,11 @@ void clock::cycle(const uint8 n) noexcept {
     }
   }
 
+  wait(n);
+}
+
+void clock::wait(const uint8 n) noexcept {
+  using namespace std::this_thread;
   if (m_double_speed_mode) {
     sleep_for(double_speed_cycle_period{n});
   } else {
@@ -71,10 +77,7 @@ void clock::cycle(const uint8 n) noexcept {
   }
 }
 
-void clock::resetDIV() noexcept {
-  DIV = 0;
-  div_software_interface = 0;
-}
+void clock::resetDIV() noexcept { DIV = div_software_interface = 0; }
 
 void clock::enableDoubleSpeedMode(const bool b) noexcept {
   m_double_speed_mode = b;
@@ -83,28 +86,4 @@ void clock::enableDoubleSpeedMode(const bool b) noexcept {
 
 bool clock::isTimerEnabled() const noexcept { return TAC & 0b0000'0100; }
 
-uint16 clock::timerControllerAt(const uint8 val) const noexcept {
-  // clang-format off
-  switch (const uint16 current_freq = m_double_speed_mode ? (2 * m_base_freq) : m_base_freq; val) {
-    case 0b00: return current_freq / 4'096;
-    case 0b01: return current_freq / 263'144;
-    case 0b10: return current_freq / 65'536;
-    case 0b11: return current_freq / 16'384;
-  }
-
 }
-
-uint16 clock::timerController() const noexcept {
-  switch (const uint16 current_freq = m_double_speed_mode ? (2 * m_base_freq) : m_base_freq; TAC & 0b11 ) {
-  // clang-format off
-    case 0b00: return current_freq / 256;
-    case 0b01: return current_freq / 4;
-    case 0b10: return current_freq / 16;
-    case 0b11: return current_freq / 64;
-  }
-
-}
-
-
-}
-

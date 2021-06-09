@@ -19,35 +19,21 @@ public:
   using double_speed_cycle_period = std::chrono::duration<double, double_speed_frequency>;
 
 public:
-  clock(const clock &other) noexcept = delete;
-  clock &operator=(const clock &rhs) noexcept = delete;
-
-  clock(clock &&other) noexcept = delete;
-  clock &operator=(clock &&rhs) noexcept = delete;
-
-  // singleton
-  static clock &instance(registers &reg, interrupts &intr) {
-    static clock c(reg, intr);
-    return c;
-  }
+  clock(registers &reg_, interrupts &intr);
 
   void cycle(const uint8 n) noexcept;
+  void wait(const uint8 n) noexcept;
   void resetDIV() noexcept;
   void enableDoubleSpeedMode(const bool b) noexcept;
 
-  enum class edge_t { falling = 0, rising = 1 };
-
 private:
-  explicit clock(registers &reg_, interrupts &intr);
-  ~clock() = default;
-
   [[nodiscard]] bool isTimerEnabled() const noexcept;
-  uint16 timerControllerAt(const uint8 val) const noexcept;
-  uint16 timerController() const noexcept;
 
 private:
   registers &m_reg;
   interrupts &m_intr;
+
+  enum class edge_t : uint8 { falling = 0, rising = 1 };
 
   uint16 div_software_interface = 0;
   bool m_double_speed_mode = false;
