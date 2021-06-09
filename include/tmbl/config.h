@@ -28,7 +28,7 @@ inline constexpr cflag off = reset;
 // random byte generator
 inline std::random_device randDevice;
 inline std::mt19937 gen(randDevice());
-inline auto distrib = std::uniform_int_distribution<byte>(0, 255);
+inline auto distrib = std::uniform_int_distribution<>(0, 255);
 inline byte randomByte() noexcept { return distrib(gen); }
 
 // mostly used as container size to increase readability
