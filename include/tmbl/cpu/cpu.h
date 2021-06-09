@@ -152,7 +152,7 @@ private:
   void pop(r16 &rr);
 
   void push();
-  void push(r16 &rr);
+  void push(const r16 &rr);
 
   void ccf();
   void cpl();

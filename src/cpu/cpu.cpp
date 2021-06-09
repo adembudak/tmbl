@@ -2116,47 +2116,49 @@ void cpu::run() {
 }
 
 void cpu::adc(const r8 r) {
-  uint8 c = (F.c() == set) ? 1 : 0;
-  (A.loNibble() + r.loNibble() + 1 > 0b0000'1111) ? F.h(set) : F.h(reset);
+  const uint8 carry = (F.c() == set) ? 1 : 0;
+  (A.loNibble() + r.loNibble() + carry > 0b0000'1111) ? F.h(set) : F.h(reset);
 
-  A = A + r + c;
+  A = A + r + carry;
+
   A == r8::zero ? F.z(set) : F.z(reset);
   F.n(reset);
-  (A.value() < r.value() + c) ? F.c(set) : F.c(reset);
+  (A.value() < r.value() + carry) ? F.c(set) : F.c(reset);
 
   m_clock.cycle(1);
 }
 
 void cpu::adc(const byte b) {
-  uint8 c = F.c() == set ? 1 : 0;
-  (A.loNibble() + (b & 0b0000'1111) + 1 > 0b0000'1111) ? F.h(set) : F.h(reset);
-  A = A + b + c;
+  const uint8 carry = (F.c() == set) ? 1 : 0;
+  (A.loNibble() + (b & 0b0000'1111) + carry > 0b0000'1111) ? F.h(set) : F.h(reset);
+
+  A = A + b + carry;
 
   A == r8::zero ? F.z(set) : F.z(reset);
   F.n(reset);
-  (A.value() < b + c) ? F.c(set) : F.c(reset);
+  (A.value() < b + carry) ? F.c(set) : F.c(reset);
 
   m_clock.cycle(2);
 }
 
 void cpu::adc(const n8 n) {
-  uint8 c = F.c() == set ? 1 : 0;
-  (A.loNibble() + (n.value() & 0b0000'1111) + 1 > 0b0000'1111) ? F.h(set) : F.h(reset);
+  const uint8 carry = (F.c() == set) ? 1 : 0;
+  (A.loNibble() + n.loNibble() + carry > 0b0000'1111) ? F.h(set) : F.h(reset);
 
-  A = A + n.value() + c;
+  A = A + n.value() + carry;
 
   A == r8::zero ? F.z(set) : F.z(reset);
   F.n(reset);
-
-  (A.value() < n.value() + c) ? F.c(set) : F.c(reset);
+  (A.value() < n.value() + carry) ? F.c(set) : F.c(reset);
 
   m_clock.cycle(2);
 }
 
 void cpu::add(const r8 r) {
-  (A.loNibble() + r.loNibble() + 1 > 0b0000'1111) ? F.h(set) : F.h(reset);
+  (A.loNibble() + r.loNibble() > 0b0000'1111) ? F.h(set) : F.h(reset);
 
   A = A + r;
+
   A == r8::zero ? F.z(set) : F.z(reset);
   F.n(reset);
   A.value() < r.value() ? F.c(set) : F.c(reset);
@@ -2165,7 +2167,7 @@ void cpu::add(const r8 r) {
 }
 
 void cpu::add(const byte b) {
-  (A.loNibble() + (b & 0b0000'1111) + 1 > 0b0000'1111) ? F.h(set) : F.h(reset);
+  (A.loNibble() + (b & 0b0000'1111) > 0b0000'1111) ? F.h(set) : F.h(reset);
   A = A + b;
 
   A == r8::zero ? F.z(set) : F.z(reset);
@@ -2176,14 +2178,12 @@ void cpu::add(const byte b) {
 }
 
 void cpu::add(const n8 n) {
-  (A.loNibble() + (n.value() & 0b0000'1111) + 1 > 0b0000'1111) ? F.h(set) : F.h(reset);
+  (A.loNibble() + n.loNibble() > 0b0000'1111) ? F.h(set) : F.h(reset);
 
   A = A + n.value();
 
   A == r8::zero ? F.z(set) : F.z(reset);
-
   F.n(reset);
-
   A.value() < n.value() ? F.c(set) : F.c(reset);
 
   m_clock.cycle(2);
@@ -2295,7 +2295,7 @@ void cpu::dec(const uint16 uu) {
 }
 
 void cpu::dec(r16 &rr) {
-  rr.lo()--;
+  rr--;
 
   m_clock.cycle(2);
 }
@@ -2325,7 +2325,7 @@ void cpu::inc(const uint16 uu) {
 }
 
 void cpu::inc(r16 &rr) {
-  rr.hi()++;
+  rr++;
 
   m_clock.cycle(2);
 }
@@ -2352,7 +2352,7 @@ void cpu::or_(const n8 n) {
 }
 
 void cpu::sbc(const r8 r) {
-  uint8 carry = F.c() == set ? 1 : 0;
+  const uint8 carry = F.c() == set ? 1 : 0;
 
   (r + carry) > A.value() ? F.c(set) : F.c(reset);
   A.loNibble() < ((r + carry) & r8::reset_upper) ? F.h(set) : F.h(reset);
@@ -2366,7 +2366,7 @@ void cpu::sbc(const r8 r) {
 }
 
 void cpu::sbc(const byte b) {
-  uint8 carry = F.c() == set ? 1 : 0;
+  const uint8 carry = F.c() == set ? 1 : 0;
 
   (b + carry) > A.value() ? F.c(set) : F.c(reset);
   A.loNibble() < ((b + carry) & 0b0000'1111) ? F.h(set) : F.h(reset);
@@ -2380,21 +2380,20 @@ void cpu::sbc(const byte b) {
 }
 
 void cpu::sbc(const n8 n) {
-  uint8 carry = F.c() == set ? 1 : 0;
-  n.value() + carry > A.value() ? F.z(set) : F.z(reset);
+  const uint8 carry = F.c() == set ? 1 : 0;
 
-  // can i make make this more expressive?
+  n.value() + carry > A.value() ? F.z(set) : F.z(reset);
   ((n.value() + carry) & 0b0000'1111) > A.loNibble() ? F.h(set) : F.h(reset);
   F.n(set);
 
   A = A - (n.value() + 1);
 
   A == r8::zero ? F.z(set) : F.z(reset);
+
   m_clock.cycle(2);
 }
 
 void cpu::sub(const r8 r) {
-
   r > A ? F.c(set) : F.c(reset);
 
   A.loNibble() < r.loNibble() ? F.h(set) : F.h(reset);
@@ -2408,7 +2407,6 @@ void cpu::sub(const r8 r) {
 }
 
 void cpu::sub(const byte b) {
-
   b > A.value() ? F.c(set) : F.c(reset);
   A.loNibble() < (b & 0b0000'1111) ? F.h(set) : F.h(reset);
   F.n(set);
@@ -2952,7 +2950,7 @@ void cpu::jp(const cc c, const n16 nn) {
   }
 }
 void cpu::jr(const e8 e) {
-  PC = PC + e.value();
+  PC = PC + e.value() + 2;
 
   m_clock.cycle(3);
 }
@@ -2964,7 +2962,7 @@ void cpu::jr(const cc c, const e8 e) {
       c == cc::C && F.c() == set    ||
       c == cc::NC && F.c() == reset) {
     // clang-format on
-    PC = PC + e.value();
+    PC = PC + e.value() + 2;
 
     m_clock.cycle(3);
   } else {
@@ -2993,6 +2991,8 @@ void cpu::ret(cc c) {
     byte lo = m_bus.readBus(SP);
     byte hi = m_bus.readBus(SP + 1);
     PC = (hi << 8U) | lo;
+
+    SP += 2;
 
     m_clock.cycle(5);
   } else {
@@ -3043,7 +3043,7 @@ void cpu::push() {
   m_clock.cycle(4);
 }
 
-void cpu::push(r16 &rr) {
+void cpu::push(const r16 &rr) {
   m_bus.writeBus(--SP, rr.hi().value());
   m_bus.writeBus(--SP, rr.lo().value());
 
