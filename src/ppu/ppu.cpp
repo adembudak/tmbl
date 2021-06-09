@@ -50,34 +50,25 @@ void ppu::update(std::function<void(const tmbl::ppu::frame framebuffer)> drawCal
 
     switch (STAT.mode_flag()) {
       case stat::mode::SEARCHING_OAM: //////////////////////////////////////// mode 2
-        oam_accessible = false;
-        vram_accessible = true;
-
         m_intr.LCDC_Status_IRQ = STAT.matchSearchOAM();
 
-        m_clock.cycle(oamCycles);
+        m_clock.wait(oamCycles);
         STAT.mode_flag(stat::mode::TRANSFERING_DATA_TO_LCD);
         break;
 
       case stat::mode::TRANSFERING_DATA_TO_LCD: ////////////////////////////// mode 3
-        oam_accessible = false;
-        vram_accessible = false;
-
         drawCallback(framebuffer);
 
-        m_clock.cycle(vramCycles);
+        m_clock.wait(vramCycles);
         STAT.mode_flag(stat::mode::HORIZONTAL_BLANKING);
         break;
 
       case stat::mode::HORIZONTAL_BLANKING: ////////////////////////////////// mode 0
-        oam_accessible = true;
-        vram_accessible = true;
-
         scanline();
         ++LY;
         m_intr.LCDC_Status_IRQ = STAT.matchHblank();
 
-        m_clock.cycle(hblankCycles);
+        m_clock.wait(hblankCycles);
         // drawing scanline has finished, now if not vertical blanking, scan other line
 
         if (STAT.match_flag()) { // LY == LYC
@@ -92,15 +83,11 @@ void ppu::update(std::function<void(const tmbl::ppu::frame framebuffer)> drawCal
         break;
 
       case stat::mode::VERTICAL_BLANKING: //////////////////////////////////// mode 1
-
-        oam_accessible = true;
-        vram_accessible = true;
-
         m_intr.VBlank_IRQ = STAT.matchVblank();
 
         for (uint8 i = 0; i < 10; ++i) { // 10 scanlines of vertical blank
           ++LY;
-          m_clock.cycle(scanlineCycles);
+          m_clock.wait(scanlineCycles);
         }
 
         if (LY == screenVBlankHeight) {
@@ -111,65 +98,46 @@ void ppu::update(std::function<void(const tmbl::ppu::frame framebuffer)> drawCal
         break;
     }
   } else {
-    vram_accessible = true;
     LY = 0;
     STAT.mode_flag(stat::mode::VERTICAL_BLANKING);
   }
 }
 
-byte ppu::readVRAM(const std::size_t index) const noexcept {
-  return vram_accessible ? m_vram.at(index) : 0xFF;
-}
+byte ppu::readVRAM(const std::size_t index) const noexcept { return m_vram.at(index); }
+void ppu::writeVRAM(const std::size_t index, const byte val) noexcept { m_vram.at(index) = val; }
 
-void ppu::writeVRAM(const std::size_t index, const byte val) noexcept {
-  if (vram_accessible) {
-    m_vram.at(index) = val;
-  }
-}
-
-byte ppu::readOAM(const std::size_t index) const noexcept {
-  if (oam_accessible) {
-    return m_oam.at(index);
-  }
-}
-
-void ppu::writeOAM(const std::size_t index, const byte val) noexcept {
-  if (oam_accessible) {
-    m_oam.at(index) = val;
-  }
-}
+byte ppu::readOAM(const std::size_t index) const noexcept { return m_oam.at(index); }
+void ppu::writeOAM(const std::size_t index, const byte val) noexcept { m_oam.at(index) = val; }
 
 void ppu::writeDMA(const byte val) {
-  vram_accessible = false;
   DMA = val;
 
   std::size_t offset = 0x100 * val;
   std::copy_n(m_vram.begin() + offset, 160_B, m_oam.begin());
 
-  m_clock.cycle(160);
+  m_clock.wait(160);
 }
 
 void ppu::fetchBackground() noexcept {
   const uint8 currentScreenLine = SCY + LY;
   const uint16 tileRow = currentScreenLine / tileHeight;
-
-  const auto [dataBlock, is_signed] = LCDC.bgBlockSelect(); // LCDC.4, where to get tile?
-  const auto [tileMap, _] = LCDC.bgTileMapSelect();         // LCDC.3, where to put tile
+  const auto [tileSet, is_signed] = LCDC.bgBlockSelect(); // LCDC.4, where to get tile?
+  const auto [tileMap, _] = LCDC.bgTileMapSelect();       // LCDC.3, where to put tile
 
   for (uint8 dx = 0; dx < screenWidth; ++dx) {
     const uint8 x = SCX + dx;
     const uint16 tileColumn = x / tileWidth;
 
     const uint16 address = tileMap + (tileRow * 32) + tileColumn;
-    const uint16 tile_number = is_signed ? int8(readVRAM(address)) : readVRAM(address);
+    const uint16 tile_number = is_signed ? int8(m_vram.at(address)) : m_vram.at(address);
 
-    const uint16 tile_address = is_signed ? dataBlock + (tile_number * tileSize)
-                                          : dataBlock + ((tile_number + 128) * tileSize);
+    const uint16 tile_address =
+        is_signed ? tileSet + (tile_number * tileSize) : tileSet + ((tile_number + 128) * tileSize);
 
     uint8 line_number = currentScreenLine % tileHeight;
     line_number *= 2;
-    const byte lo = readVRAM(tile_address + line_number);
-    const byte hi = readVRAM(tile_address + line_number + 1);
+    const byte lo = m_vram.at(tile_address + line_number);
+    const byte hi = m_vram.at(tile_address + line_number + 1);
 
     // lo |7|6|5|4|3|2|1|0|
     // hi |7|6|5|4|3|2|1|0|
@@ -177,41 +145,42 @@ void ppu::fetchBackground() noexcept {
     const uint8 lo_bit = (lo >> bit_check_mask) & 0b1;
     const uint8 hi_bit = (hi >> bit_check_mask) & 0b1;
     const uint8 color_id = (hi_bit << 1) | lo_bit;
-    const std::size_t palette_index = BGP.bgPalette(color_id);
+    const std::size_t palette_index = BGP[color_id];
 
     framebuffer.at(LY).at(dx) = default_palette.at(palette_index);
 
-    m_clock.cycle(1);
+    m_clock.wait(1);
   }
 }
 
 void ppu::fetchWindow() noexcept {
   const auto [dataBlock, is_signed] = LCDC.winBlockSelect(); // LCDC.4, where to get tile?
   const auto [tile_map, _] = LCDC.winTileMapSelect();        // LCDC.6, where to put tile?
-
   const uint8 y = LY - WY;
   const uint16 tile_row = y / tileHeight;
 
   for (uint8 dx = 0; dx < screenWidth; ++dx) {
+
     const uint8 x = (dx >= WX) ? dx - WX : dx + WX;
     const uint16 tile_column = x / tileWidth;
     const uint16 address = tile_map + (tile_row * 32) + tile_column;
-    const uint16 tile_number = is_signed ? int8(readVRAM(address)) : readVRAM(address);
+    const uint16 tile_number = is_signed ? int8(m_vram.at(address)) : m_vram.at(address);
     const uint16 tile_address = is_signed ? dataBlock + (tile_number * tileSize)
                                           : dataBlock + ((tile_number + 128) * tileSize);
     uint8 line_number = y % tileHeight;
     line_number *= 2;
-    const byte lo = readVRAM(tile_address + line_number);
-    const byte hi = readVRAM(tile_address + line_number + 1);
+    const byte lo = m_vram.at(tile_address + line_number);
+    const byte hi = m_vram.at(tile_address + line_number + 1);
 
     const uint8 bit_check_mask = 7 - (x % 8); // start from left most bit and check
     const uint8 lo_bit = (lo >> bit_check_mask) & 0b1;
     const uint8 hi_bit = (hi >> bit_check_mask) & 0b1;
     const uint8 color_id = (hi_bit << 1) | lo_bit;
-    const std::size_t palette_index = BGP.bgPalette(color_id);
+    const std::size_t palette_index = BGP[color_id];
+
     framebuffer.at(LY).at(dx) = default_palette[palette_index];
 
-    m_clock.cycle(1);
+    m_clock.wait(1);
   }
 }
 
