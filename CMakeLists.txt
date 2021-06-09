@@ -16,6 +16,7 @@ endif()
 if(PROJECT_IS_TOP_LEVEL)
   include(CTest)
   include(ExternalData)
+  include(FetchContent)
 endif()
 include(CMakeDependentOption)
 
@@ -88,6 +89,13 @@ endif()
 
 if(ENABLE_UNIT_TESTS)
   enable_testing()
+  set(FETCHCONTENT_BASE_DIR ${tmbl_SOURCE_DIR}/external)
+  set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+
+  fetchcontent_declare(googletest
+    URL https://github.com/google/googletest/archive/609281088cfefc76f9d0ce82e1ff6c30cc3591e5.zip)
+  fetchcontent_makeavailable(googletest)
+
   add_subdirectory(tests/unit)
 endif()
 
