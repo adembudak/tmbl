@@ -48,7 +48,7 @@ void cpu::run() {
   auto fetch_word = [&]() -> uint16 { return fetch_byte() | (fetch_byte() << 8); };
 
   if (IME) {
-    if (m_intr.IE() && m_intr.IF() && 0b0001'1111) {
+    if (m_intr.IE() & m_intr.IF() & 0b0001'1111) {
 
       r16 pc;
       pc = PC;
