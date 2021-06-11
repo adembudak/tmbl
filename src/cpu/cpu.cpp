@@ -318,9 +318,8 @@ void cpu::run() {
       break;
 
     case 0x39: {
-
-      uint8 t_old_lo_reg_val = HL.lo().value();
-      uint16 t_old_reg_val = HL.value();
+      const uint8 t_old_lo_reg_val = HL.lo().value();
+      const uint16 t_old_reg_val = HL.value();
 
       HL.lo() = SP & 0x00FF;
       HL.hi() = (SP & 0xFF00) >> 8;
@@ -2196,6 +2195,8 @@ void cpu::add(const e8 e) {
   F.n(reset);
 
   SP += e.value();
+
+  m_clock.cycle(4);
 }
 
 void cpu::add(const r16 rr) {
@@ -2382,11 +2383,11 @@ void cpu::sbc(const byte b) {
 void cpu::sbc(const n8 n) {
   const uint8 carry = F.c() == set ? 1 : 0;
 
-  n.value() + carry > A.value() ? F.z(set) : F.z(reset);
+  n.value() + carry > A.value() ? F.c(set) : F.c(reset);
   ((n.value() + carry) & 0b0000'1111) > A.loNibble() ? F.h(set) : F.h(reset);
   F.n(set);
 
-  A = A - (n.value() + 1);
+  A = A - (n.value() + carry);
 
   A == r8::zero ? F.z(set) : F.z(reset);
 
@@ -2419,7 +2420,7 @@ void cpu::sub(const byte b) {
 }
 
 void cpu::sub(const n8 n) {
-  n.value() > A.value() ? F.z(set) : F.z(reset);
+  n.value() > A.value() ? F.c(set) : F.c(reset);
 
   n.loNibble() > A.loNibble() ? F.h(set) : F.h(reset);
   F.n(set);
@@ -2464,7 +2465,7 @@ void cpu::xor_(const n8 n) {
 }
 
 void cpu::bit(const uint8 pos, const r8 r) {
-  uint8 test_bit_mask = 0b1 << pos;
+  const uint8 test_bit_mask = 0b1 << pos;
 
   (test_bit_mask & r.value()) ? F.z(set) : F.z(reset);
   F.n(reset);
@@ -2474,7 +2475,7 @@ void cpu::bit(const uint8 pos, const r8 r) {
 }
 
 void cpu::bit(const uint8 pos, const byte b) {
-  uint8 test_bit_mask = 0b1 << pos;
+  const uint8 test_bit_mask = 0b1 << pos;
 
   (test_bit_mask & b) ? F.z(set) : F.z(reset);
   F.n(reset);
@@ -2484,14 +2485,14 @@ void cpu::bit(const uint8 pos, const byte b) {
 }
 
 void cpu::res(const uint8 pos, r8 &r) {
-  uint8 reset_bit_mask = ~(0b1 << pos);
+  const uint8 reset_bit_mask = ~(0b1 << pos);
   r = r.value() & reset_bit_mask;
 
   m_clock.cycle(2);
 }
 
 void cpu::res(const uint8 pos, const uint16 uu) {
-  uint8 reset_bit_mask = ~(0b1 << pos);
+  const uint8 reset_bit_mask = ~(0b1 << pos);
 
   byte val = m_bus.readBus(uu);
   val = val & reset_bit_mask;
@@ -2502,17 +2503,17 @@ void cpu::res(const uint8 pos, const uint16 uu) {
 }
 
 void cpu::set_(const uint8 pos, r8 &r) {
-  uint8 set_bit_mask = (0b1 << pos);
-  r = r.value() & set_bit_mask;
+  const uint8 set_bit_mask = (0b1 << pos);
+  r = r.value() | set_bit_mask;
 
   m_clock.cycle(2);
 }
 
 void cpu::set_(const uint8 pos, const uint16 uu) {
-  uint8 set_bit_mask = (0b1 << pos);
+  const uint8 set_bit_mask = (0b1 << pos);
 
   byte val = m_bus.readBus(uu);
-  val = val & set_bit_mask;
+  val = val | set_bit_mask;
 
   m_bus.writeBus(uu, val);
 
@@ -2520,9 +2521,7 @@ void cpu::set_(const uint8 pos, const uint16 uu) {
 }
 
 void cpu::swap(r8 &r) {
-  // swap lower and upper nibble
-
-  r = r.loNibble() | r.hiNibble();
+  r = (r.loNibble() << 4) | r.hiNibble();
 
   r == r8::zero ? F.z(set) : F.z(reset);
   F.n(reset);
@@ -2546,48 +2545,52 @@ void cpu::swap(const uint16 uu) {
 }
 
 void cpu::rl(r8 &r) {
-  uint8 old_carry = F.c() == set ? 1 : 0;
+  const uint8 old_carry = F.c() == set ? 1 : 0;
+  cflag new_carry = r.value() & 0b1000'0000;
 
   r = (r.value() << 1) | old_carry;
 
   r == r8::zero ? F.z(set) : F.z(reset);
   F.n(reset);
   F.h(reset);
-  r.value() & 0b1000'0000 ? F.c(set) : F.c(reset);
+  new_carry ? F.c(set) : F.c(reset);
 
   m_clock.cycle(2);
 }
 
 void cpu::rl(const uint16 uu) {
-  uint8 old_carry = F.c() == set ? 1 : 0;
-
+  const uint8 old_carry = F.c() == set ? 1 : 0;
   byte val = m_bus.readBus(uu);
+
+  cflag new_carry = val & 0b1000'0000;
+
   val = (val << 1) | old_carry;
   m_bus.writeBus(uu, val);
 
   val == 0 ? F.z(set) : F.z(reset);
   F.n(reset);
   F.h(reset);
-  val & 0b1000'0000 ? F.c(set) : F.c(reset);
+  new_carry ? F.c(set) : F.c(reset);
 
   m_clock.cycle(4);
 }
 
 void cpu::rla() {
-  uint8 old_carry = F.c() == set ? 1 : 0;
+  const uint8 old_carry = F.c() == set ? 1 : 0;
+  cflag new_carry = A.value() & 0b1000'0000;
 
   A = (A.value() << 1) | old_carry;
 
   F.z(reset);
   F.n(reset);
   F.h(reset);
-  A.value() & 0b1000'0000 ? F.c(set) : F.c(reset);
+  new_carry ? F.c(set) : F.c(reset);
 
   m_clock.cycle(1);
 }
 
 void cpu::rlc(r8 &r) {
-  uint8 old_seventh_bit = r.value() >> 7;
+  const uint8 old_seventh_bit = r.value() >> 7;
   r = (r.value() << 1) | old_seventh_bit;
 
   r == r8::zero ? F.z(set) : F.z(reset);
@@ -2601,7 +2604,7 @@ void cpu::rlc(r8 &r) {
 void cpu::rlc(const uint16 uu) {
   byte val = m_bus.readBus(uu);
 
-  uint8 old_seventh_bit = val >> 7;
+  const uint8 old_seventh_bit = val >> 7;
   val = (val << 1) | old_seventh_bit;
   m_bus.writeBus(uu, val);
 
@@ -2614,8 +2617,7 @@ void cpu::rlc(const uint16 uu) {
 }
 
 void cpu::rlca() {
-
-  uint8 old_seventh_bit = A.value() >> 7;
+  const uint8 old_seventh_bit = A.value() >> 7;
   A = (A.value() << 1) | old_seventh_bit;
 
   F.z(reset);
@@ -2627,8 +2629,8 @@ void cpu::rlca() {
 }
 
 void cpu::rr(r8 &r) {
-  uint8 carry = F.c() == set ? 1 : 0;
-  uint8 old_first = r.value() & 0b0000'0001;
+  const uint8 carry = F.c() == set ? 1 : 0;
+  const uint8 old_first = r.value() & 0b0000'0001;
   r = (r.value() >> 1) | (carry << 7);
 
   r == r8::zero ? F.z(set) : F.z(reset);
@@ -2641,8 +2643,8 @@ void cpu::rr(r8 &r) {
 void cpu::rr(const uint16 uu) {
   byte val = m_bus.readBus(uu);
 
-  uint8 old_first = val & 0b0000'0001;
-  uint8 carry = F.c() == set ? 1 : 0;
+  const uint8 old_first = val & 0b0000'0001;
+  const uint8 carry = F.c() == set ? 1 : 0;
 
   val = (val >> 1) | (carry << 7);
 
@@ -2657,8 +2659,8 @@ void cpu::rr(const uint16 uu) {
 }
 
 void cpu::rra() {
-  uint8 carry = F.c() == set ? 1 : 0;
-  uint8 old_first = A.value() & 0b0000'0001;
+  const uint8 carry = F.c() == set ? 1 : 0;
+  const uint8 old_first = A.value() & 0b0000'0001;
   A = (A.value() >> 1) | (carry << 7);
 
   F.z(reset);
@@ -2670,9 +2672,9 @@ void cpu::rra() {
 }
 
 void cpu::rrc(r8 &r) {
-  uint8 old_first = r.value() & 0b0000'0001;
+  const uint8 old_first = r.value() & 0b0000'0001;
 
-  r = (r.value() >> 1) | (old_first << 7);
+  r = (r.value() >> 1);
 
   r == r8::zero ? F.z(set) : F.z(reset);
   F.n(reset);
@@ -2684,9 +2686,9 @@ void cpu::rrc(r8 &r) {
 
 void cpu::rrc(const uint16 uu) {
   byte val = m_bus.readBus(uu);
-  uint8 old_first = val & 0b0000'0001;
+  const uint8 old_first = val & 0b0000'0001;
 
-  val = (val >> 1) | (old_first << 7);
+  val = val >> 1;
   m_bus.writeBus(uu, val);
 
   val == 0 ? F.z(set) : F.z(reset);
@@ -2698,9 +2700,9 @@ void cpu::rrc(const uint16 uu) {
 }
 
 void cpu::rrca() {
-  uint8 old_first = A.value() & 0b0000'0001;
+  const uint8 old_first = A.value() & 0b0000'0001;
 
-  A = (A.value() >> 1) | (old_first << 7);
+  A = (A.value() >> 1);
 
   F.z(reset);
   F.n(reset);
@@ -2711,7 +2713,7 @@ void cpu::rrca() {
 }
 
 void cpu::sla(r8 &r) {
-  uint8 old_seventh_bit = r.value() >> 7;
+  const uint8 old_seventh_bit = r.value() >> 7;
 
   r = r.value() << 1;
 
@@ -2725,7 +2727,7 @@ void cpu::sla(r8 &r) {
 
 void cpu::sla(const uint16 uu) {
   byte val = m_bus.readBus(uu);
-  uint8 old_seventh_bit = val >> 7;
+  const uint8 old_seventh_bit = val >> 7;
 
   val = val << 1;
   m_bus.writeBus(uu, val);
@@ -2739,8 +2741,8 @@ void cpu::sla(const uint16 uu) {
 }
 
 void cpu::sra(r8 &r) {
-  uint8 old_first_bit = A.value() & 0b0000'0001;
-  uint8 old_seventh_bit = r.value() >> 7;
+  const uint8 old_first_bit = A.value() & 0b0000'0001;
+  const uint8 old_seventh_bit = r.value() >> 7;
 
   r = (r.value() >> 1) | (old_seventh_bit << 7);
 
@@ -2755,8 +2757,8 @@ void cpu::sra(r8 &r) {
 void cpu::sra(const uint16 uu) {
   byte val = m_bus.readBus(uu);
 
-  uint8 old_first_bit = val & 0b0000'0001;
-  uint8 old_seventh_bit = val >> 7;
+  const uint8 old_first_bit = val & 0b0000'0001;
+  const uint8 old_seventh_bit = val >> 7;
 
   val = (val >> 1) | (old_seventh_bit << 7);
   m_bus.writeBus(uu, val);
@@ -2770,7 +2772,7 @@ void cpu::sra(const uint16 uu) {
 }
 
 void cpu::srl(r8 &r) {
-  uint8 old_first_bit = A.value() & 0b0000'0001;
+  const uint8 old_first_bit = A.value() & 0b0000'0001;
 
   r = r.value() >> 1;
 
@@ -2785,7 +2787,7 @@ void cpu::srl(r8 &r) {
 void cpu::srl(const uint16 uu) {
   byte val = m_bus.readBus(uu);
 
-  uint8 old_first_bit = val & 0b0000'0001;
+  const uint8 old_first_bit = val & 0b0000'0001;
 
   val = val >> 1;
   m_bus.writeBus(uu, val);
