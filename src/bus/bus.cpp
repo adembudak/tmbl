@@ -131,9 +131,6 @@ void bus::writeBus(const std::size_t index, const byte val) noexcept {
       m_pintr.write(index, val);
     } else if (index == 0xFF46) {
       m_PPU.writeDMA(val);
-    } else if (index == 0xFF50 && (val & 0b0000'0001)) {
-      m_cart.disableBootROM();
-      (void)val;
     } else {
       m_regs.write(index - memory::io, val);
     }
