@@ -108,8 +108,8 @@ private:
   tmbl::cartridge m_cart;
   tmbl::registers m_regs;
   tmbl::interrupts m_intr;
-  tmbl::builtin m_builtin;
 
+  tmbl::builtin m_builtin{m_regs, m_cart};
   tmbl::ppu m_ppu{m_regs, m_cart, m_intr};
   tmbl::bus m_bus{m_cart, m_regs, m_intr, m_builtin, m_ppu};
   tmbl::cpu m_cpu{m_bus, m_regs, m_intr};
