@@ -198,6 +198,4 @@ bool cartridge::cgbSupport() const noexcept {
 }
 
 console cartridge::type() const noexcept { return m_type; }
-
-void cartridge::disableBootROM() noexcept { running_bootrom = false; }
 }
