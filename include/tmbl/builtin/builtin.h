@@ -28,6 +28,7 @@ private:
   byte &SVBK;
   registers &m_regs;
   cartridge &m_cart;
+  bool color_gameboy_support = false;
   std::vector<byte> m_wram;
   std::array<byte, 127_B> m_hram{};
 };
