@@ -38,16 +38,15 @@ public:
   //   0x8000              0x8800              0x9000              0x9800     0x9C00     0xA000
   //
   ////////////////////////////////////////////////////////////////////////////////////////////////////
-  //
+    
   //                                                                                   1 | 0  
   //--------------------------------------------------------------------------------------------------
   cflag                     lcdControllerStatus() const noexcept; // bit 7            on | off 
-  std::pair<uint16, uint16>    winTileMapSelect() const noexcept; // bit 6  [9C00, 9FFF) | [9800, 9C00) 
+  std::pair<uint16, uint16>    winTilemapSelect() const noexcept; // bit 6  [9C00, 9FFF) | [9800, 9C00) 
   cflag                        winDisplayStatus() const noexcept; // bit 5            on | off 
-  std::pair<uint16, bool>         bgBlockSelect() const noexcept; // bit 4  [8000, 9000) | [8800, 9800) 
-  std::pair<uint16, bool>        winBlockSelect() const noexcept; // bit 4  [8000, 9000) | [8800, 9800) 
-  std::pair<uint16, uint16>     bgTileMapSelect() const noexcept; // bit 3  [9C00, A000) | [9800, 9C00) 
-  std::pair<uint8, uint8>               objSize() const noexcept; // bit 2        8 x 16 | 8 x 8 
+  std::pair<uint16, bool>        tilesetBasePtr() const noexcept; // bit 4   8000, false | 9000, true
+  std::pair<uint16, uint16>     bgTilemapSelect() const noexcept; // bit 3  [9C00, A000) | [9800, 9C00) 
+  uint8                            spriteHeight() const noexcept; // bit 2            16 | 8 
   cflag                        objDisplayStatus() const noexcept; // bit 1            on | off 
   cflag                         bgDisplayStatus() const noexcept; // bit 0            on | off 
 
