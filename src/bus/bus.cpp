@@ -129,8 +129,6 @@ void bus::writeBus(const std::size_t index, const byte val) noexcept {
   else if (index >= memory::io && index <= memory::io_end) {
     if (index == 0xFF0F) {
       m_pintr.write(index, val);
-    } else if (index == 0xFF46) {
-      m_PPU.writeDMA(val);
     } else {
       m_regs.write(index - memory::io, val);
     }
