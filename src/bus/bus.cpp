@@ -6,13 +6,15 @@
 #include "tmbl/io/registers.h"
 #include "tmbl/memory_map.h"
 #include "tmbl/ppu/ppu.h"
+#include "tmbl/dma/dma.h"
 
-#include <iostream>
+#include <cassert>
 
 namespace tmbl {
 
-bus::bus(cartridge &pCart, registers &pRegs, interrupts &pIntr, builtin &pBuiltin, ppu &pPPU)
-    : m_cart(pCart), m_regs(pRegs), m_pintr(pIntr), m_builtin(pBuiltin), m_PPU(pPPU) {
+bus::bus(cartridge &cart_, registers &regs_, interrupts &intr_, builtin &builtin_, ppu &ppu_,
+         dma &dma_)
+    : m_cart(cart_), m_regs(regs_), m_pintr(intr_), m_builtin(builtin_), m_ppu(ppu_), m_dma(dma_) {
 
   writeBus(0xFF05, 0x00); //  TIMA
   writeBus(0xFF06, 0x00); //  TMA
@@ -53,7 +55,7 @@ byte bus::readBus(const std::size_t index) const noexcept {
   }
 
   else if (index >= memory::vram && index <= memory::vram_end) {
-    return m_PPU.readVRAM(index - memory::vram);
+    return m_ppu.readVRAM(index - memory::vram);
   }
 
   else if (index >= memory::xram && index <= memory::xram_end) {
@@ -69,7 +71,7 @@ byte bus::readBus(const std::size_t index) const noexcept {
   }
 
   else if (index >= memory::oam && index <= memory::oam_end) {
-    return m_PPU.readOAM(index - memory::oam);
+    return m_ppu.readOAM(index - memory::oam);
   }
 
   else if (index >= memory::noUsable && index <= memory::noUsable_end) {
@@ -92,7 +94,7 @@ byte bus::readBus(const std::size_t index) const noexcept {
   }
 
   else {
-    std::cerr << "read from illegal address: " << index << '\n';
+    assert(false && "read from illegal address.");
   }
 }
 
@@ -102,7 +104,7 @@ void bus::writeBus(const std::size_t index, const byte val) noexcept {
   }
 
   else if (index >= memory::vram && index <= memory::vram_end) {
-    m_PPU.writeVRAM(index - memory::vram, val);
+    m_ppu.writeVRAM(index - memory::vram, val);
   }
 
   else if (index >= memory::xram && index <= memory::xram_end) {
@@ -118,17 +120,21 @@ void bus::writeBus(const std::size_t index, const byte val) noexcept {
   }
 
   else if (index >= memory::oam && index <= memory::oam_end) {
-    m_PPU.writeOAM(index - memory::oam, val);
+    m_ppu.writeOAM(index - memory::oam, val);
   }
 
   else if (index >= memory::noUsable && index <= memory::noUsable_end) {
-    std::cerr << "write to no usable area\n";
+    assert(false && "write to no usable area.");
     (void)val;
   }
 
   else if (index >= memory::io && index <= memory::io_end) {
     if (index == 0xFF0F) {
       m_pintr.write(index, val);
+    } else if (index == 0xFF46) {
+      m_dma.dmaAction(val);
+    } else if (index == 0xFF55) {
+      m_dma.hdmaAction(val);
     } else {
       m_regs.write(index - memory::io, val);
     }
@@ -143,7 +149,7 @@ void bus::writeBus(const std::size_t index, const byte val) noexcept {
   }
 
   else {
-    std::cerr << "write illegal to address: " << index << '\n';
+    assert(false && "write illegal to address.");
   }
 }
 
