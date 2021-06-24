@@ -14,7 +14,8 @@ dma::dma(ppu &ppu_, registers &regs_, builtin &builtin_, cartridge &cart_)
       HDMA1(m_regs.getAt(0xFF51)), HDMA2(m_regs.getAt(0xFF52)), HDMA3(m_regs.getAt(0xFF53)),
       HDMA4(m_regs.getAt(0xFF54)), HDMA5(m_regs.getAt(0xFF55)) {}
 
-void dma::dmaAction() noexcept {
+void dma::dmaAction(const byte val) noexcept {
+  DMA = val;
 
   if (const std::size_t address = 0x100 * DMA; m_cart.cgbSupport()) { // CGB
     if (address >= memory::rom0 && address <= memory::romx_end) {     // ROM -> OAM
@@ -56,8 +57,24 @@ void dma::dmaAction() noexcept {
   //  m_clock.wait(160);
 }
 
-void dma::hdmaAction() noexcept {
-  // implement this
+void dma::hdmaAction(const byte val) noexcept { // ROM, XRAM, WRAM -> VRAM
+  HDMA5 = val;
+
+  const std::size_t transfer_source_address = hdmaSource();
+  const std::size_t transfer_destination_address = hdmaDestination();
+  const uint16 number_of_bytes_to_tranfer = hdmaAmountOfBytesToTranfer();
+
+  if (HDMA5 & 0b1000'0000) { // HBlank DMA
+    if (m_ppu.status() != statMode::HORIZONTAL_BLANKING) {
+      // implement this
+    }
+  }
+
+  else { // General DMA
+    if (m_ppu.status() == statMode::VERTICAL_BLANKING) {
+      // implement this
+    }
+  }
 }
 
 uint16 dma::hdmaSource() const noexcept {
@@ -69,4 +86,10 @@ uint16 dma::hdmaDestination() const noexcept {
   const uint16 destination = ((HDMA3 & 0b0001'1111) << 8U) | (HDMA4 & 0b1111'0000);
   return destination;
 }
+
+uint16 dma::hdmaAmountOfBytesToTranfer() const noexcept {
+  const uint8 blocks = HDMA5 & 0b0111'1111;
+  return (blocks + 1) * 16; // 16 is size of a tile
+}
+
 }
