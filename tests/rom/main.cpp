@@ -5,6 +5,7 @@
 #include "tmbl/ppu/ppu.h"
 #include "tmbl/bus/bus.h"
 #include "tmbl/cpu/cpu.h"
+#include "tmbl/dma/dma.h"
 
 #include <SDL2/SDL.h>
 
@@ -111,7 +112,8 @@ private:
 
   tmbl::builtin m_builtin{m_regs, m_cart};
   tmbl::ppu m_ppu{m_regs, m_cart, m_intr};
-  tmbl::bus m_bus{m_cart, m_regs, m_intr, m_builtin, m_ppu};
+  tmbl::dma m_dma{m_ppu, m_regs, m_builtin, m_cart};
+  tmbl::bus m_bus{m_cart, m_regs, m_intr, m_builtin, m_ppu, m_dma};
   tmbl::cpu m_cpu{m_bus, m_regs, m_intr};
 };
 
