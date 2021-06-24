@@ -113,7 +113,39 @@ void ppu::writeOAM(const std::size_t index, const byte val) noexcept { m_oam.at(
 statMode ppu::status() const noexcept { return STAT.modeFlag(); }
 
 void ppu::fetchBackground() noexcept {
-  // implement this
+  const uint16 y = (SCY + LY) % viewportHeight;
+
+  for (uint8 dx = 0; dx < screenWidth; ++dx) {
+    const uint16 x = (SCX + dx) % viewportWidth;
+
+    const uint16 tileIndex = (x / tileWidth) + ((y / tileHeight) * 32);
+    const auto [tilemap, _] = LCDC.bgTilemapSelect();
+    const byte value = readVRAM(tilemap + tileIndex);
+
+    std::size_t tileptr;
+    if (const auto [tileptrBase, isSigned] = LCDC.tilesetBasePtr(); isSigned) {
+      tileptr = tileptrBase + ((value - 128) * tileSize);
+    } else {
+      tileptr = tileptrBase + (value * tileSize);
+    }
+
+    const uint8 tileRowNumber = y % 8;
+    const byte tilelineLowByte = readVRAM(tileptr + (tileRowNumber * 2)); // why multiply by 2
+    const byte tilelineHighByte = readVRAM(tileptr + (tileRowNumber * 2) + 1);
+
+    // scan bits of tileline bytes from left to right
+    const uint8 shiftNthBitToTest = 7 - (dx % 8);
+    const uint8 loBit = (tilelineLowByte >> shiftNthBitToTest) & 0b0000'0001;
+    const uint8 hiBit = (tilelineHighByte >> shiftNthBitToTest) & 0b0000'0001;
+
+    const uint8 paletteIndex = (hiBit << 1) | loBit;
+
+    if (color_gameboy_support) {
+      // implement color gameboy palette things
+    } else {
+      framebuffer.at(y).at(x) = default_palette[BGP[paletteIndex]];
+    }
+  }
 }
 
 void ppu::fetchWindow() noexcept {
