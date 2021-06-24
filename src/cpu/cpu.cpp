@@ -2952,7 +2952,7 @@ void cpu::jp(const cc c, const n16 nn) {
   }
 }
 void cpu::jr(const e8 e) {
-  PC = PC + e.value() + 2;
+  PC = PC + e.value();
 
   m_clock.cycle(3);
 }
@@ -2964,7 +2964,8 @@ void cpu::jr(const cc c, const e8 e) {
       c == cc::C && F.c() == set    ||
       c == cc::NC && F.c() == reset) {
     // clang-format on
-    PC = PC + e.value() + 2;
+
+    PC = PC + e.value();
 
     m_clock.cycle(3);
   } else {
