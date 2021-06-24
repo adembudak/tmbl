@@ -70,6 +70,8 @@ public:
   byte readOAM(const std::size_t index) const noexcept;
   void writeOAM(const std::size_t index, [[maybe_unused]] const byte val) noexcept;
 
+  statMode status() const noexcept;
+
 private:
   void fetchBackground() noexcept; // on bottom
   void fetchWindow() noexcept;

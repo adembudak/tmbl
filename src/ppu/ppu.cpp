@@ -59,7 +59,7 @@ void ppu::update(std::function<void(const tmbl::ppu::frame framebuffer)> drawCal
         // drawing scanline has finished,
         // now if not vertical blanking, scan other line
 
-        if (STAT.match_flag()) { // LY == LYC
+        if (STAT.matchFlag()) { // LY == LYC
           m_intr.LCDC_Status_IRQ = STAT.matchCoincidence();
         }
 
@@ -109,6 +109,8 @@ void ppu::writeVRAM(const std::size_t index, const byte val) noexcept {
 byte ppu::readOAM(const std::size_t index) const noexcept { return m_oam.at(index); }
 
 void ppu::writeOAM(const std::size_t index, const byte val) noexcept { m_oam.at(index) = val; }
+
+statMode ppu::status() const noexcept { return STAT.modeFlag(); }
 
 void ppu::fetchBackground() noexcept {
   // implement this
