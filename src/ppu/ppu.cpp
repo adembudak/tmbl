@@ -88,9 +88,9 @@ void ppu::update(std::function<void(const tmbl::ppu::frame framebuffer)> drawCal
   } else {
     LY = 0;
     if (color_gameboy_support) {
-      std::fill(framebuffer.at(LY).begin(), {}, color_t{255, 255, 255, 255});
+      std::fill(framebuffer.at(LY).begin(), framebuffer.at(LY).end(), color_t{255, 255, 255, 255});
     } else {
-      std::fill(framebuffer.at(LY).begin(), {}, default_palette.at(4));
+      std::fill(framebuffer.at(LY).begin(), framebuffer.at(LY).end(), default_palette.at(4));
     }
     STAT.modeFlag(statMode::VERTICAL_BLANKING);
   }
@@ -113,7 +113,6 @@ void ppu::writeOAM(const std::size_t index, const byte val) noexcept { m_oam.at(
 statMode ppu::status() const noexcept { return STAT.modeFlag(); }
 
 void ppu::fetchBackground() noexcept {
-  puts("void ppu::fetchBackground() noexcept ");
   const uint16 y = (SCY + LY) % viewportHeight;
 
   for (uint8 dx = 0; dx < screenWidth; ++dx) {
@@ -150,7 +149,6 @@ void ppu::fetchBackground() noexcept {
 }
 
 void ppu::fetchWindow() noexcept {
-  puts("void ppu::fetchWindow() noexcept");
   const uint16 y = LY - WY;
 
   for (uint8 dx = 0; dx < screenWidth; ++dx) {
@@ -191,7 +189,6 @@ void ppu::fetchWindow() noexcept {
 }
 
 void ppu::fetchSprite() noexcept {
-  puts("void ppu::fetchSprite() noexcept {");
   // implement this
 }
 
