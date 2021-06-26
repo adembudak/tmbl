@@ -88,9 +88,9 @@ void ppu::update(std::function<void(const tmbl::ppu::frame framebuffer)> drawCal
   } else {
     LY = 0;
     if (color_gameboy_support) {
-      std::fill(framebuffer.at(LY).begin(), framebuffer.at(LY).end(), color_t{255, 255, 255, 255});
+      std::fill(framebuffer.at(LY).begin(), {}, color_t{255, 255, 255, 255});
     } else {
-      std::fill(framebuffer.at(LY).begin(), framebuffer.at(LY).end(), default_palette.at(4));
+      std::fill(framebuffer.at(LY).begin(), {}, default_palette.at(4));
     }
     STAT.modeFlag(statMode::VERTICAL_BLANKING);
   }
@@ -113,28 +113,29 @@ void ppu::writeOAM(const std::size_t index, const byte val) noexcept { m_oam.at(
 statMode ppu::status() const noexcept { return STAT.modeFlag(); }
 
 void ppu::fetchBackground() noexcept {
+  puts("void ppu::fetchBackground() noexcept ");
   const uint16 y = (SCY + LY) % viewportHeight;
 
   for (uint8 dx = 0; dx < screenWidth; ++dx) {
     const uint16 x = (SCX + dx) % viewportWidth;
-
     const uint16 tileIndex = (x / tileWidth) + ((y / tileHeight) * 32);
+
     const auto [tilemap, _] = LCDC.bgTilemapSelect();
+    const auto [tileptrBase, isSigned] = LCDC.tilesetBasePtr();
     const byte value = readVRAM(tilemap + tileIndex);
 
-    std::size_t tileptr;
-    if (const auto [tileptrBase, isSigned] = LCDC.tilesetBasePtr(); isSigned) {
-      tileptr = tileptrBase + ((value - 128) * tileSize);
-    } else {
-      tileptr = tileptrBase + (value * tileSize);
-    }
+    // clang-format off
+    const uint16 tileptr = isSigned 
+	    ? (tileptrBase + ((value - 128) * tileSize))
+	    : (tileptrBase + (value * tileSize));
+    // clang-format on
 
     const uint8 tileRowNumber = y % 8;
-    const byte tilelineLowByte = readVRAM(tileptr + (tileRowNumber * 2)); // why multiply by 2
+    const byte tilelineLowByte = readVRAM(tileptr + (tileRowNumber * 2)); // 2 is # of byte tilerow
     const byte tilelineHighByte = readVRAM(tileptr + (tileRowNumber * 2) + 1);
 
     // scan bits of tileline bytes from left to right
-    const uint8 shiftNthBitToTest = 7 - (dx % 8);
+    const uint8 shiftNthBitToTest = 7 - (x % 8);
     const uint8 loBit = (tilelineLowByte >> shiftNthBitToTest) & 0b0000'0001;
     const uint8 hiBit = (tilelineHighByte >> shiftNthBitToTest) & 0b0000'0001;
 
@@ -143,16 +144,54 @@ void ppu::fetchBackground() noexcept {
     if (color_gameboy_support) {
       // implement color gameboy palette things
     } else {
-      framebuffer.at(y).at(x) = default_palette[BGP[paletteIndex]];
+      framebuffer.at(LY).at(dx) = default_palette[BGP[paletteIndex]];
     }
   }
 }
 
 void ppu::fetchWindow() noexcept {
-  // implement this
+  puts("void ppu::fetchWindow() noexcept");
+  const uint16 y = LY - WY;
+
+  for (uint8 dx = 0; dx < screenWidth; ++dx) {
+    if (dx >= WX - 7) {
+      const uint16 x = dx - WX + 7;
+
+      const uint16 tileIndex = (x / tileWidth) + ((y / tileHeight) * 32);
+
+      const auto [tilemap, _] = LCDC.winTilemapSelect();
+      const auto [tileptrBase, isSigned] = LCDC.tilesetBasePtr();
+      const byte value = readVRAM(tilemap + tileIndex);
+
+      // clang-format off
+    const uint16 tileptr = isSigned 
+	    ? (tileptrBase + ((value - 128) * tileSize))
+	    : (tileptrBase + (value * tileSize));
+      // clang-format on
+
+      const uint8 tileRowNumber = y % 8;
+      const byte tilelineLowByte =
+          readVRAM(tileptr + (tileRowNumber * 2)); // 2 is # of byte tilerow
+      const byte tilelineHighByte = readVRAM(tileptr + (tileRowNumber * 2) + 1);
+
+      // scan bits of tileline bytes from left to right
+      const uint8 shiftNthBitToTest = 7 - (x % 8);
+      const uint8 loBit = (tilelineLowByte >> shiftNthBitToTest) & 0b0000'0001;
+      const uint8 hiBit = (tilelineHighByte >> shiftNthBitToTest) & 0b0000'0001;
+
+      const uint8 paletteIndex = (hiBit << 1) | loBit;
+
+      if (color_gameboy_support) {
+        // implement color gameboy palette things
+      } else {
+        framebuffer.at(LY).at(dx) = default_palette[BGP[paletteIndex]];
+      }
+    }
+  }
 }
 
 void ppu::fetchSprite() noexcept {
+  puts("void ppu::fetchSprite() noexcept {");
   // implement this
 }
 
@@ -171,5 +210,4 @@ void ppu::scanline() noexcept {
 }
 
 uint8 ppu::vbk() const noexcept { return color_gameboy_support ? (VBK & 0b0000'0001) : 0; }
-
 }
