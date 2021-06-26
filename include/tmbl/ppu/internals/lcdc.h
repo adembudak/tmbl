@@ -2,26 +2,20 @@
 #define LCDC_H
 
 #include "tmbl/config.h"
-#include "../../io/registers.h"
+#include "tmbl/io/registers.h"
 
-namespace tmbl {
+// https://archive.org/details/GameBoyProgManVer1.1/page/n56/mode/1up
+// terminology:
+// Gameboy Programming Manual | Gameboy PanDocs
+// -------------------------------------
+// Object(OBJ)                | Sprite
+// Character(CHR)             | Window
+// Background(BG)             | <-
+// Code area                  | tile map
+// Code block                 | tile set
+//
 
-class lcdc {
-public:
-  explicit lcdc(byte &val_, bool cgb_support);
-
-  // https://archive.org/details/GameBoyProgManVer1.1/page/n56/mode/1up
-  // terminology:
-  // Gameboy Programming Manual | Gameboy PanDocs
-  // -------------------------------------
-  // Object(OBJ)                | Sprite
-  // Character(CHR)             | Window
-  // Background(BG)             | <-
-  // Code area                  | tile map
-  // Code block                 | tile set
-  //
-
-  // clang-format off
+// clang-format off
   
   // VRAM structure
   //   |                  (each tile is 16 bytes)                  | (1KB = 32x32 = [0,1024) indexes)
@@ -34,9 +28,12 @@ public:
   //   |                   |~~tile [-128,0)~~~~~~tile [0,128)~~~~~~|          |          |
   //   [------------------)[------------------)[------------------)[---------)[----------)
   //   0x8000              0x8800              0x9000              0x9800     0x9C00     0xA000
-  //
-  ////////////////////////////////////////////////////////////////////////////////////////////////////
-    
+ 
+namespace tmbl {
+class lcdc {
+public:
+  explicit lcdc(byte &val_, bool cgb_support);
+
   //                                                                                   1 | 0  
   //--------------------------------------------------------------------------------------------------
   cflag                     lcdControllerStatus() const noexcept; // bit 7            on | off 
