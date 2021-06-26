@@ -36,12 +36,16 @@ public:
     }
   }
 
-  void handleKeyboard(const SDL_KeyboardEvent &e) {
+  void handleKeyboard(const SDL_KeyboardEvent &e, bool &status) {
     switch (e.type) {
       case SDL_KEYDOWN:
         switch (e.keysym.sym) {
           case SDLK_j:
             /*handle event*/
+            break;
+
+          case SDLK_q:
+            status = false;
             break;
         }
         break;
@@ -60,7 +64,7 @@ public:
     bool status = true;
     while (SDL_PollEvent(&event)) {
       handleQuit(event.quit, status);
-      handleKeyboard(event.key);
+      handleKeyboard(event.key, status);
     }
 
     return status;
