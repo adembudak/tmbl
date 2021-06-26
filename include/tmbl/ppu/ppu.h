@@ -16,8 +16,6 @@
 #include "internals/ocps.h"
 #include "internals/ocpd.h"
 
-#include "data/obj.h"
-
 #include <cstddef>
 #include <array>
 #include <vector>
@@ -101,8 +99,8 @@ private:
   obp OBP0;
   obp OBP1;
 
-  byte &WY;
-  byte &WX;
+  byte &WY; // [0,143]
+  byte &WX; // [7, 166]
 
   byte &VBK;
 
