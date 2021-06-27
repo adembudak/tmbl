@@ -44,5 +44,6 @@ Serial_Transfer_Completion_Enabled = val & 0b0000'1000;
 uint8 interrupts::IF() const noexcept { return read(0xFF0F); }
 uint8 interrupts::IE() const noexcept { return read(0xFFFF); }
 
-}
+bool interrupts::isThereAnAwaitingInterrupt() const noexcept { return IE() & IF() & 0b0001'1111; }
 
+}

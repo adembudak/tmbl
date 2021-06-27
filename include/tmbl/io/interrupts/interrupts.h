@@ -18,6 +18,8 @@ public:
   uint8 IF() const noexcept; // 0xFF0F, interrupt request flag
   uint8 IE() const noexcept; // 0xFFFF, interrupt enabled flag
 
+  bool isThereAnAwaitingInterrupt() const noexcept;
+
   bool Button_Pressed_IRQ = false;             //  button pressed intr requested, bit4
   bool Serial_Transfer_Completion_IRQ = false; //  serial completion intr requested, bit3
   bool Timer_Overflow_IRQ = false;             //  timer overflowed intr requested, bit2
