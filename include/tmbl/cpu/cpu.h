@@ -168,6 +168,9 @@ private:
   void stop();
 
 private:
+  void serveInterrupts() noexcept;
+
+private:
   bus &m_bus;
   registers &m_regs;
   interrupts &m_intr;
