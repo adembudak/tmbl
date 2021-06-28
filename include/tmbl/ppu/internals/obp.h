@@ -2,17 +2,14 @@
 #define OBP_H
 
 #include "tmbl/config.h"
-#include "../../io/registers.h"
-
-#include <array>
+#include "tmbl/io/registers.h"
 
 namespace tmbl {
 
 class obp {
 public:
   explicit obp(byte &val_);
-  int objPalette(const uint8 val);
-  std::array<int, 4> objPalette();
+  [[nodiscard]] std::size_t operator[](const std::size_t val) const noexcept;
 
 private:
   byte &m_value;
