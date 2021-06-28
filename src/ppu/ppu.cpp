@@ -203,13 +203,15 @@ void ppu::fetchSprite() noexcept {
 
       const uint8 spriteHeight = LCDC.spriteHeight();
 
+      const uint8 tileLine = (LY - yPos) * 2;
+
       if (color_gameboy_support) {
         const uint8 vramBank = attribute & 0b0000'1000;
         const uint8 palette = attribute & 0b0000'0111;
 
         const std::size_t banked_index = vramBank * 8_KB;
-        const byte lo = m_vram.at(banked_index + (tileNumber * tileSize));
-        const byte hi = m_vram.at(banked_index + (tileNumber * tileSize) + 1);
+        const byte lo = m_vram.at(banked_index + (tileNumber * tileSize) + tileLine);
+        const byte hi = m_vram.at(banked_index + (tileNumber * tileSize) + tileLine + 1);
 
         // what now?
         // implement this
@@ -217,8 +219,8 @@ void ppu::fetchSprite() noexcept {
       } else {
         const uint8 palette = attribute & 0b0001'0000;
 
-        const byte lo = m_vram.at(tileNumber * tileSize);
-        const byte hi = m_vram.at(tileNumber * tileSize + 1);
+        const byte lo = m_vram.at((tileNumber * tileSize) + tileLine);
+        const byte hi = m_vram.at((tileNumber * tileSize) + tileLine + 1);
 
         // what now?
         // implement this
