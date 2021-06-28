@@ -190,36 +190,39 @@ void ppu::fetchWindow() noexcept {
 void ppu::fetchSprite() noexcept {
   for (std::size_t sprite = 0; sprite < m_oam.size(); sprite += 4) {
     const byte yPos = readOAM(sprite) - 16;
-    const byte xPos = readOAM(sprite + 1) - 8;
 
-    const byte tileNumber = readOAM(sprite + 2);
+    if (LY >= yPos && LY < (yPos + LCDC.spriteHeight())) {
+      const byte xPos = readOAM(sprite + 1) - 8;
 
-    const byte attribute = readOAM(sprite + 3);
-    const flag bgHasPriority = attribute & 0b1000'0000;
-    const flag yFlip = attribute & 0b0100'0000;
-    const flag xFlip = attribute & 0b0010'0000;
+      const byte tileNumber = readOAM(sprite + 2);
 
-    const uint8 spriteHeight = LCDC.spriteHeight();
+      const byte attribute = readOAM(sprite + 3);
+      const flag bgHasPriority = attribute & 0b1000'0000;
+      const flag yFlip = attribute & 0b0100'0000;
+      const flag xFlip = attribute & 0b0010'0000;
 
-    if (color_gameboy_support) {
-      const uint8 vramBank = attribute & 0b0000'1000;
-      const uint8 palette = attribute & 0b0000'0111;
+      const uint8 spriteHeight = LCDC.spriteHeight();
 
-      const std::size_t banked_index = vramBank * 8_KB;
-      const byte lo = m_vram.at(banked_index + (tileNumber * tileSize));
-      const byte hi = m_vram.at(banked_index + (tileNumber * tileSize) + 1);
+      if (color_gameboy_support) {
+        const uint8 vramBank = attribute & 0b0000'1000;
+        const uint8 palette = attribute & 0b0000'0111;
 
-      // what now?
-      // implement this
+        const std::size_t banked_index = vramBank * 8_KB;
+        const byte lo = m_vram.at(banked_index + (tileNumber * tileSize));
+        const byte hi = m_vram.at(banked_index + (tileNumber * tileSize) + 1);
 
-    } else {
-      const uint8 palette = attribute & 0b0001'0000;
+        // what now?
+        // implement this
 
-      const byte lo = m_vram.at(tileNumber * tileSize);
-      const byte hi = m_vram.at(tileNumber * tileSize + 1);
+      } else {
+        const uint8 palette = attribute & 0b0001'0000;
 
-      // what now?
-      // implement this
+        const byte lo = m_vram.at(tileNumber * tileSize);
+        const byte hi = m_vram.at(tileNumber * tileSize + 1);
+
+        // what now?
+        // implement this
+      }
     }
   }
 }
