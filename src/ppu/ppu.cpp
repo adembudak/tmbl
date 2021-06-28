@@ -165,6 +165,7 @@ void ppu::fetchWindow() noexcept {
       const uint16 tileptr = isSigned 
 	                     ? (tileptrBase + ((value - 128) * tileSize))
 	                     : (tileptrBase + (value * tileSize));
+      // clang-format on
 
       const uint8 tileRowNumber = y % tileHeight;
       const byte tilelineLowByte = readVRAM(tileptr + (tileRowNumber * 2));
@@ -187,7 +188,40 @@ void ppu::fetchWindow() noexcept {
 }
 
 void ppu::fetchSprite() noexcept {
-  // implement this
+  for (std::size_t sprite = 0; sprite < m_oam.size(); sprite += 4) {
+    const byte yPos = readOAM(sprite) - 16;
+    const byte xPos = readOAM(sprite + 1) - 8;
+
+    const byte tileNumber = readOAM(sprite + 2);
+
+    const byte attribute = readOAM(sprite + 3);
+    const flag bgHasPriority = attribute & 0b1000'0000;
+    const flag yFlip = attribute & 0b0100'0000;
+    const flag xFlip = attribute & 0b0010'0000;
+
+    const uint8 spriteHeight = LCDC.spriteHeight();
+
+    if (color_gameboy_support) {
+      const uint8 vramBank = attribute & 0b0000'1000;
+      const uint8 palette = attribute & 0b0000'0111;
+
+      const std::size_t banked_index = vramBank * 8_KB;
+      const byte lo = m_vram.at(banked_index + (tileNumber * tileSize));
+      const byte hi = m_vram.at(banked_index + (tileNumber * tileSize) + 1);
+
+      // what now?
+      // implement this
+
+    } else {
+      const uint8 palette = attribute & 0b0001'0000;
+
+      const byte lo = m_vram.at(tileNumber * tileSize);
+      const byte hi = m_vram.at(tileNumber * tileSize + 1);
+
+      // what now?
+      // implement this
+    }
+  }
 }
 
 void ppu::scanline() noexcept {
