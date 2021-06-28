@@ -10,16 +10,16 @@
 namespace tmbl {
 
 dma::dma(ppu &ppu_, registers &regs_, builtin &builtin_, cartridge &cart_)
-    : m_ppu(ppu_), m_regs(regs_), m_builtin(builtin_), m_cart(cart_), DMA(m_regs.getAt(0xFF46)),
-      HDMA1(m_regs.getAt(0xFF51)), HDMA2(m_regs.getAt(0xFF52)), HDMA3(m_regs.getAt(0xFF53)),
-      HDMA4(m_regs.getAt(0xFF54)), HDMA5(m_regs.getAt(0xFF55)) {}
+    : m_ppu(ppu_), m_regs(regs_), m_builtin(builtin_), m_cart(cart_), DMA(regs_.getAt(0xFF46)),
+      HDMA1(regs_.getAt(0xFF51)), HDMA2(regs_.getAt(0xFF52)), HDMA3(regs_.getAt(0xFF53)),
+      HDMA4(regs_.getAt(0xFF54)), HDMA5(regs_.getAt(0xFF55)) {}
 
 void dma::dmaAction(const byte val) noexcept {
   DMA = val;
+  const std::size_t address = 0x100 * DMA;
 
-  if (const std::size_t address = 0x100 * DMA; m_cart.cgbSupport()) { // CGB
-    if (address >= memory::rom0 && address <= memory::romx_end) {     // ROM -> OAM
-      // reading rom in cgb involves banking so raw loop is required
+  if (m_cart.cgbSupport()) {                                      //// on CGB
+    if (address >= memory::rom0 && address <= memory::romx_end) { // ROM -> OAM
       for (int i = 0; i < 160; ++i) {
         m_ppu.writeOAM(i, m_cart.readROM(address + i));
       }
@@ -48,7 +48,7 @@ void dma::dmaAction(const byte val) noexcept {
     }
   }
 
-  else { // DMG
+  else { //// on DMG
     for (int i = 0; i < 160; ++i) {
       m_ppu.writeOAM(i, m_ppu.readVRAM((address - memory::vram) + i)); // VRAM -> OAM
     }
