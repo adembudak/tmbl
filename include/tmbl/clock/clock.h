@@ -19,7 +19,7 @@ public:
   using double_speed_cycle_period = std::chrono::duration<double, double_speed_frequency>;
 
 public:
-  clock(registers &reg_, interrupts &intr);
+  clock(registers &regs_, interrupts &intr_);
 
   void cycle(const uint8 n) noexcept;
   void wait(const uint8 n) noexcept;

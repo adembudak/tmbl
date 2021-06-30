@@ -11,8 +11,8 @@
 #include "tmbl/io/registers.h"
 
 namespace tmbl {
-cpu::cpu(bus &bus_, registers &reg_, interrupts &intr_)
-    : m_bus(bus_), m_regs(reg_), m_intr(intr_), KEY1(m_regs.getAt(0xFF4D)), SP(0xFFFE), PC(0x0100) {
+cpu::cpu(bus &bus_, registers &regs_, interrupts &intr_)
+    : m_bus(bus_), m_regs(regs_), m_intr(intr_), KEY1(regs_.getAt(0xFF4D)), SP(0xFFFE), PC(0x0100) {
   A = 0x01;
   F = 0xB0;
   BC = 0x0013;
