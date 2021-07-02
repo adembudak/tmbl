@@ -16,8 +16,6 @@
 #include "internals/ocps.h"
 #include "internals/ocpd.h"
 
-#include "data/obj.h"
-
 #include <cstddef>
 #include <array>
 #include <vector>
@@ -27,6 +25,9 @@ namespace tmbl {
 
 class cartridge;
 class interrupts;
+
+constexpr const uint8 viewportWidth = 255;
+constexpr const uint8 viewportHeight = 255;
 
 constexpr const uint8 screenWidth = 160;
 constexpr const uint8 screenHeight = 144;
@@ -67,7 +68,7 @@ public:
   byte readOAM(const std::size_t index) const noexcept;
   void writeOAM(const std::size_t index, [[maybe_unused]] const byte val) noexcept;
 
-  void writeDMA(const byte val);
+  statMode status() const noexcept;
 
 private:
   void fetchBackground() noexcept; // on bottom
@@ -93,22 +94,15 @@ private:
   byte &LY; // in range [0,153]. [144, 153] is vblank period
   byte &LYC;
 
-  byte &DMA;
   bgp BGP;
 
   obp OBP0;
   obp OBP1;
 
-  byte &WY;
-  byte &WX;
+  byte &WY; // [0,143]
+  byte &WX; // [7, 166]
 
   byte &VBK;
-
-  byte &HDMA1;
-  byte &HDMA2;
-  byte &HDMA3;
-  byte &HDMA4;
-  byte &HDMA5;
 
   byte &BCPS;
   byte &BCPD;
@@ -124,7 +118,7 @@ private:
   uint8 tileHeight = 8;
   uint8 tileSize = 16_B;
 
-  bool cgb_support = false;
+  bool color_gameboy_support = false;
 
   static constexpr palette_t default_palette{color{155, 188, 15, 255},  // light green
                                              color{139, 172, 15, 255},  //

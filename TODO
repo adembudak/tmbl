@@ -1,5 +1,9 @@
-- figure out how to make use of PPU registers for draw
-- implement timer functions, TMA, TAC and the frequency stuff
-- implement DMA functionality for wram
+- implement PPU sprite rendering
+- implement HDMA functionality
+- verify timer functions, TMA, TAC and the frequency stuff, write test ROMs?
+- does clock cycles in ppu increase effects DIV and other time registers
+- does clock increaments need to be in t-cycles?
 - create ARCHITECTURE.md
 - move functions in CMakeLists.txt files into cmake/ folder
+- move tooling related options to a cmake toolchain file
+- move variables not directly related to build ion to CMakePresets.json file

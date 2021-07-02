@@ -2,8 +2,6 @@
 
 namespace tmbl {
 
-class registers;
-
 lcdc::lcdc(byte &val_, bool cgb_support) : m_value(val_), cgb_support(cgb_support) {}
 
 cflag lcdc::lcdControllerStatus() const noexcept { return m_value & 0b1000'0000 ? on : off; }

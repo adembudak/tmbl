@@ -30,11 +30,11 @@ Registers:
 namespace tmbl {
 
 // clang-format off
-clock::clock(registers &reg_, interrupts &intr):
-        m_reg(reg_), 
-        m_intr(intr), 
-        DIV(m_reg.getAt(0xFF04)), TIMA(m_reg.getAt(0xFF05)), 
-        TMA(m_reg.getAt(0xFF06)), TAC(m_reg.getAt(0xFF07)) {}
+clock::clock(registers &regs_, interrupts &intr_):
+        m_reg(regs_), 
+        m_intr(intr_), 
+        DIV(regs_.getAt(0xFF04)), TIMA(regs_.getAt(0xFF05)), 
+        TMA(regs_.getAt(0xFF06)), TAC(regs_.getAt(0xFF07)) {}
 // clang-format on
 
 void clock::cycle(const uint8 n) noexcept {

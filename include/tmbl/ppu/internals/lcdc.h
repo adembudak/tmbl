@@ -2,43 +2,38 @@
 #define LCDC_H
 
 #include "tmbl/config.h"
-#include "../../io/registers.h"
+#include "tmbl/io/registers.h"
 
-namespace tmbl {
+// https://archive.org/details/GameBoyProgManVer1.1/page/n56/mode/1up
+// terminology:
+// Gameboy Programming Manual | Gameboy PanDocs
+// -------------------------------------
+// Object(OBJ)                | Sprite
+// Character(CHR)             | Window
+// Background(BG)             | <-
+// Code area                  | tile map
+// Code block                 | tile set
+//
 
-class lcdc {
-public:
-  explicit lcdc(byte &val_, bool cgb_support);
-
-  // https://archive.org/details/GameBoyProgManVer1.1/page/n56/mode/1up
-  // terminology:
-  // Gameboy Programming Manual | Gameboy PanDocs
-  // -------------------------------------
-  // Object(OBJ)                | Sprite
-  // Character(CHR)             | Window
-  // Background(BG)             | <-
-  // Code area                  | tile map
-  // Code block                 | tile set
-  //
-
-  // clang-format off
+// clang-format off
   
   // VRAM structure
   //   |                  (each tile is 16 bytes)                  | (1KB = 32x32 = [0,1024) indexes)
   //   |  2KB = 128 tiles  |  2KB = 128 tiles  |  2KB = 128 tiles  | 1KB      | 1KB      | = 8KB total
   //   |                   |                   |                   |          |          |
-  //   |   Block 0         |    Block 1        |    Block 2        |*LCDC.3=0*|*LCDC.3=1*|
-  //   |              W I N D O W              |                   |          |          |
+  //   |   Block 0         |    Block 1        |    Block 2        |*LCDC.3=0*|*LCDC.3=1*| (Background)
   //   |+++++++++++++++LCDC.4=1++++++++++++++++|                   |          |          |
-  //   |++tile [0,128)+++++++++tile [128,256)++|                   |,LCDC.6=0,|,LCDC.6=1,|
-  //   |                   |          B A C K G R O U N D          |          |          |
+  //   |++tile [0,128)+++++++++tile [128,256)++|                   |,LCDC.6=0,|,LCDC.6=1,| (Window)
   //   |                   |~~~~~~~~~~~~~~~~LCDC.4=0~~~~~~~~~~~~~~~|          |          |
   //   |                   |~~tile [-128,0)~~~~~~tile [0,128)~~~~~~|          |          |
   //   [------------------)[------------------)[------------------)[---------)[----------)
   //   0x8000              0x8800              0x9000              0x9800     0x9C00     0xA000
-  //
-  ////////////////////////////////////////////////////////////////////////////////////////////////////
-    
+ 
+namespace tmbl {
+class lcdc {
+public:
+  explicit lcdc(byte &val_, bool cgb_support);
+
   //                                                                                   1 | 0  
   //--------------------------------------------------------------------------------------------------
   cflag                     lcdControllerStatus() const noexcept; // bit 7            on | off 

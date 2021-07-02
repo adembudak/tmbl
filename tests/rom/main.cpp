@@ -1,10 +1,12 @@
 #include "tmbl/cartridge/cartridge.h"
 #include "tmbl/io/registers.h"
 #include "tmbl/io/interrupts/interrupts.h"
+#include "tmbl/io/joypad/joypad.h"
 #include "tmbl/builtin/builtin.h"
 #include "tmbl/ppu/ppu.h"
 #include "tmbl/bus/bus.h"
 #include "tmbl/cpu/cpu.h"
+#include "tmbl/dma/dma.h"
 
 #include <SDL2/SDL.h>
 
@@ -35,20 +37,96 @@ public:
     }
   }
 
-  void handleKeyboard(const SDL_KeyboardEvent &e) {
+  void handleKeyboard(const SDL_KeyboardEvent &e, bool &status) {
     switch (e.type) {
       case SDL_KEYDOWN:
         switch (e.keysym.sym) {
+          case SDLK_w:
+            m_joypad.dpadUp(tmbl::button::Pressed);
+            puts("m_joypad.dpadUp(tmbl::button::Pressed);");
+            break;
+
+          case SDLK_d:
+            m_joypad.dpadRight(tmbl::button::Pressed);
+            puts("m_joypad.dpadRight(tmbl::button::Pressed);");
+            break;
+
+          case SDLK_s:
+            m_joypad.dpadDown(tmbl::button::Pressed);
+            puts("m_joypad.dpadDown(tmbl::button::Pressed);");
+            break;
+
+          case SDLK_a:
+            m_joypad.dpadLeft(tmbl::button::Pressed);
+            puts("m_joypad.dpadLeft(tmbl::button::Pressed);");
+            break;
+
+          case SDLK_k:
+            m_joypad.a(tmbl::button::Pressed);
+            puts("m_joypad.a(tmbl::button::Pressed);");
+            break;
+
           case SDLK_j:
-            /*handle event*/
+            m_joypad.b(tmbl::button::Pressed);
+            puts("m_joypad.b(tmbl::button::Pressed);");
+            break;
+
+          case SDLK_RETURN:
+            m_joypad.select(tmbl::button::Pressed);
+            puts("m_joypad.select(tmbl::button::Pressed);");
+            break;
+
+          case SDLK_SPACE:
+            m_joypad.start(tmbl::button::Pressed);
+            puts("m_joypad.start(tmbl::button::Pressed);");
+            break;
+
+          case SDLK_ESCAPE:
+            status = false;
             break;
         }
         break;
 
       case SDL_KEYUP:
         switch (e.keysym.sym) {
+          case SDLK_w:
+            m_joypad.dpadUp(tmbl::button::Released);
+            puts("m_joypad.dpadUp(tmbl::button::Released);");
+            break;
+
+          case SDLK_d:
+            m_joypad.dpadRight(tmbl::button::Released);
+            puts("m_joypad.dpadRight(tmbl::button::Released);");
+            break;
+
+          case SDLK_s:
+            m_joypad.dpadDown(tmbl::button::Released);
+            puts("m_joypad.dpadDown(tmbl::button::Released);");
+            break;
+
+          case SDLK_a:
+            m_joypad.dpadLeft(tmbl::button::Released);
+            puts("m_joypad.dpadLeft(tmbl::button::Released);");
+            break;
+
+          case SDLK_k:
+            m_joypad.a(tmbl::button::Released);
+            puts("m_joypad.a(tmbl::button::Released);");
+            break;
+
           case SDLK_j:
-            /*handle event*/
+            m_joypad.b(tmbl::button::Released);
+            puts("m_joypad.b(tmbl::button::Released);");
+            break;
+
+          case SDLK_RETURN:
+            m_joypad.select(tmbl::button::Released);
+            puts("m_joypad.select(tmbl::button::Released);");
+            break;
+
+          case SDLK_SPACE:
+            m_joypad.start(tmbl::button::Released);
+            puts("m_joypad.start(tmbl::button::Released);");
             break;
         }
         break;
@@ -59,7 +137,7 @@ public:
     bool status = true;
     while (SDL_PollEvent(&event)) {
       handleQuit(event.quit, status);
-      handleKeyboard(event.key);
+      handleKeyboard(event.key, status);
     }
 
     return status;
@@ -90,7 +168,7 @@ public:
                   }
                   std::putchar('\n');
                 }
-        */
+      */
 
         SDL_UpdateTexture(sdl_texture, /*rect=*/nullptr, framebuffer.data(), tmbl::screenWidth * sizeof(tmbl::ppu::color));
       });
@@ -109,9 +187,11 @@ private:
   tmbl::registers m_regs;
   tmbl::interrupts m_intr;
 
+  tmbl::joypad m_joypad{m_regs};
   tmbl::builtin m_builtin{m_regs, m_cart};
   tmbl::ppu m_ppu{m_regs, m_cart, m_intr};
-  tmbl::bus m_bus{m_cart, m_regs, m_intr, m_builtin, m_ppu};
+  tmbl::dma m_dma{m_ppu, m_regs, m_builtin, m_cart};
+  tmbl::bus m_bus{m_cart, m_regs, m_intr, m_builtin, m_ppu, m_dma};
   tmbl::cpu m_cpu{m_bus, m_regs, m_intr};
 };
 

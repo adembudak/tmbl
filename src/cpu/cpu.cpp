@@ -11,8 +11,8 @@
 #include "tmbl/io/registers.h"
 
 namespace tmbl {
-cpu::cpu(bus &bus_, registers &reg_, interrupts &intr_)
-    : m_bus(bus_), m_regs(reg_), m_intr(intr_), KEY1(m_regs.getAt(0xFF4D)), SP(0xFFFE), PC(0x0100) {
+cpu::cpu(bus &bus_, registers &regs_, interrupts &intr_)
+    : m_bus(bus_), m_regs(regs_), m_intr(intr_), KEY1(regs_.getAt(0xFF4D)), SP(0xFFFE), PC(0x0100) {
   A = 0x01;
   F = 0xB0;
   BC = 0x0013;
@@ -47,40 +47,8 @@ void cpu::run() {
   auto fetch_byte = [&]() -> uint8 { return m_bus.readBus(PC++); };
   auto fetch_word = [&]() -> uint16 { return fetch_byte() | (fetch_byte() << 8); };
 
-  if (IME) {
-    if (m_intr.IE() & m_intr.IF() & 0b0001'1111) {
-
-      r16 pc;
-      pc = PC;
-
-      if (m_intr.VBlank_IRQ && m_intr.VBlank_Enabled) {
-        m_intr.VBlank_IRQ = false;
-        di();
-        push(pc);
-        call(intr_vec[0]);
-      } else if (m_intr.LCDC_Status_IRQ && m_intr.LCDC_Status_Enabled) {
-        m_intr.LCDC_Status_IRQ = false;
-        di();
-        push(pc);
-        call(intr_vec[1]);
-      } else if (m_intr.Timer_Overflow_IRQ && m_intr.Timer_Overflow_Enabled) {
-        m_intr.Timer_Overflow_IRQ = false;
-        di();
-        push(pc);
-        call(intr_vec[2]);
-      } else if (m_intr.Serial_Transfer_Completion_IRQ &&
-                 m_intr.Serial_Transfer_Completion_Enabled) {
-        m_intr.Serial_Transfer_Completion_IRQ = false;
-        di();
-        push(pc);
-        call(intr_vec[3]);
-      } else if (m_intr.Button_Pressed_IRQ && m_intr.Button_Pressed_Enabled) {
-        m_intr.Button_Pressed_IRQ = false;
-        di();
-        push(pc);
-        call(intr_vec[4]);
-      }
-    }
+  if (IME && m_intr.isThereAnAwaitingInterrupt()) {
+    serveInterrupts();
   }
 
   switch (fetch_byte()) {
@@ -2952,7 +2920,7 @@ void cpu::jp(const cc c, const n16 nn) {
   }
 }
 void cpu::jr(const e8 e) {
-  PC = PC + e.value() + 2;
+  PC = PC + e.value();
 
   m_clock.cycle(3);
 }
@@ -2964,7 +2932,8 @@ void cpu::jr(const cc c, const e8 e) {
       c == cc::C && F.c() == set    ||
       c == cc::NC && F.c() == reset) {
     // clang-format on
-    PC = PC + e.value() + 2;
+
+    PC = PC + e.value();
 
     m_clock.cycle(3);
   } else {
@@ -3128,4 +3097,37 @@ void cpu::stop() {
   // implement this.
   m_clock.resetDIV();
 }
+
+void cpu::serveInterrupts() noexcept {
+  r16 pc;
+  pc = PC;
+
+  if (m_intr.VBlank_IRQ && m_intr.VBlank_Enabled) {
+    m_intr.VBlank_IRQ = false;
+    di();
+    push(pc);
+    call(intr_vec[0]);
+  } else if (m_intr.LCDC_Status_IRQ && m_intr.LCDC_Status_Enabled) {
+    m_intr.LCDC_Status_IRQ = false;
+    di();
+    push(pc);
+    call(intr_vec[1]);
+  } else if (m_intr.Timer_Overflow_IRQ && m_intr.Timer_Overflow_Enabled) {
+    m_intr.Timer_Overflow_IRQ = false;
+    di();
+    push(pc);
+    call(intr_vec[2]);
+  } else if (m_intr.Serial_Transfer_Completion_IRQ && m_intr.Serial_Transfer_Completion_Enabled) {
+    m_intr.Serial_Transfer_Completion_IRQ = false;
+    di();
+    push(pc);
+    call(intr_vec[3]);
+  } else if (m_intr.Button_Pressed_IRQ && m_intr.Button_Pressed_Enabled) {
+    m_intr.Button_Pressed_IRQ = false;
+    di();
+    push(pc);
+    call(intr_vec[4]);
+  }
+}
+
 } // namespace tmbl

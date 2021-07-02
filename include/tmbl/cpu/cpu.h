@@ -18,7 +18,7 @@ namespace tmbl {
 
 class cpu {
 public:
-  cpu(bus &bus_, registers &reg_, interrupts &intr_);
+  cpu(bus &bus_, registers &regs_, interrupts &intr_);
 
   void enableDoubleSpeedMode();
 
@@ -166,6 +166,9 @@ private:
   void nop();
   void scf();
   void stop();
+
+private:
+  void serveInterrupts() noexcept;
 
 private:
   bus &m_bus;

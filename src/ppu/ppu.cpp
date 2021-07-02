@@ -3,7 +3,6 @@
 #include "tmbl/cartridge/cartridge.h"
 #include "tmbl/io/interrupts/interrupts.h"
 
-#include <array>
 #include <cstddef>
 
 namespace tmbl {
@@ -11,20 +10,17 @@ namespace tmbl {
 class registers;
 
 ppu::ppu(registers &regs_, cartridge &cart_, interrupts &intr_)
-    : m_regs(regs_), m_cart(cart_), m_intr(intr_), cgb_support(m_cart.cgbSupport()),
-      STAT(m_regs.getAt(0xFF41), /*ly*/ m_regs.getAt(0xFF44), /*lyc*/ m_regs.getAt(0xFF45)),
-      LCDC(m_regs.getAt(0xFF40), m_cart.cgbSupport()),      // lcd controller
-      SCY(m_regs.getAt(0xFF42)), SCX(m_regs.getAt(0xFF43)), // screen (viewport) scroll
-      LY(m_regs.getAt(0xFF44)), LYC(m_regs.getAt(0xFF45)),
-      DMA(m_regs.getAt(0xFF46)),                              // direct memory access
-      BGP(m_regs.getAt(0xFF47)),                              // background palette
-      OBP0(m_regs.getAt(0xFF48)), OBP1(m_regs.getAt(0xFF49)), // object palettes
-      WY(m_regs.getAt(0xFF4A)), WX(m_regs.getAt(0xFF4B)),     // window position
-      VBK(m_regs.getAt(0xFF4F)),                              // color gameboy vram bank control
-      HDMA1(m_regs.getAt(0xFF51)), HDMA2(m_regs.getAt(0xFF52)), HDMA3(m_regs.getAt(0xFF53)),
-      HDMA4(m_regs.getAt(0xFF54)), HDMA5(m_regs.getAt(0xFF55)), // cgb DMAs
-      BCPS(m_regs.getAt(0xFF68)), BCPD(m_regs.getAt(0xFF69)),   // cgb background palettes
-      OCPS(m_regs.getAt(0xFF6A)), OCPD(m_regs.getAt(0xFF6B))    // cgb object palettes
+    : m_regs(regs_), m_cart(cart_), m_intr(intr_), color_gameboy_support(cart_.cgbSupport()),
+      STAT(regs_.getAt(0xFF41), /*ly*/ regs_.getAt(0xFF44), /*lyc*/ regs_.getAt(0xFF45)),
+      LCDC(regs_.getAt(0xFF40), cart_.cgbSupport()),      // lcd controller
+      SCY(regs_.getAt(0xFF42)), SCX(regs_.getAt(0xFF43)), // screen (viewport) scroll
+      LY(regs_.getAt(0xFF44)), LYC(regs_.getAt(0xFF45)),
+      BGP(regs_.getAt(0xFF47)),                             // background palette
+      OBP0(regs_.getAt(0xFF48)), OBP1(regs_.getAt(0xFF49)), // object palettes
+      WY(regs_.getAt(0xFF4A)), WX(regs_.getAt(0xFF4B)),     // window position
+      VBK(regs_.getAt(0xFF4F)),                             // color gameboy vram bank control
+      BCPS(regs_.getAt(0xFF68)), BCPD(regs_.getAt(0xFF69)), // cgb background palettes
+      OCPS(regs_.getAt(0xFF6A)), OCPD(regs_.getAt(0xFF6B))  // cgb object palettes
 {
 
   if (m_cart.cgbSupport()) {
@@ -37,23 +33,25 @@ ppu::ppu(registers &regs_, cartridge &cart_, interrupts &intr_)
 void ppu::update(std::function<void(const tmbl::ppu::frame framebuffer)> drawCallback) {
   if (LCDC.lcdControllerStatus() == on) {
 
-    switch (STAT.mode_flag()) {
-      case stat::mode::SEARCHING_OAM: //////////////////////////////////////// mode 2
+    switch (STAT.modeFlag()) {
+      case statMode::SEARCHING_OAM: //////////////////////////////////////// mode 2
+      {
         m_intr.LCDC_Status_IRQ = STAT.matchSearchOAM();
+
         scanline();
 
         m_clock.wait(oamCycles);
-        STAT.mode_flag(stat::mode::TRANSFERING_DATA_TO_LCD);
-        break;
+        STAT.modeFlag(statMode::TRANSFERING_DATA_TO_LCD);
+      } break;
 
-      case stat::mode::TRANSFERING_DATA_TO_LCD: ////////////////////////////// mode 3
+      case statMode::TRANSFERING_DATA_TO_LCD: ////////////////////////////// mode 3
         drawCallback(framebuffer);
 
         m_clock.wait(vramCycles);
-        STAT.mode_flag(stat::mode::HORIZONTAL_BLANKING);
+        STAT.modeFlag(statMode::HORIZONTAL_BLANKING);
         break;
 
-      case stat::mode::HORIZONTAL_BLANKING: ////////////////////////////////// mode 0
+      case statMode::HORIZONTAL_BLANKING: ////////////////////////////////// mode 0
         ++LY;
         m_intr.LCDC_Status_IRQ = STAT.matchHblank();
 
@@ -61,18 +59,18 @@ void ppu::update(std::function<void(const tmbl::ppu::frame framebuffer)> drawCal
         // drawing scanline has finished,
         // now if not vertical blanking, scan other line
 
-        if (STAT.match_flag()) { // LY == LYC
+        if (STAT.matchFlag()) { // LY == LYC
           m_intr.LCDC_Status_IRQ = STAT.matchCoincidence();
         }
 
         if (LY == screenHeight) {
-          STAT.mode_flag(stat::mode::VERTICAL_BLANKING);
+          STAT.modeFlag(statMode::VERTICAL_BLANKING);
         } else {
-          STAT.mode_flag(stat::mode::SEARCHING_OAM);
+          STAT.modeFlag(statMode::SEARCHING_OAM);
         }
         break;
 
-      case stat::mode::VERTICAL_BLANKING: //////////////////////////////////// mode 1
+      case statMode::VERTICAL_BLANKING: //////////////////////////////////// mode 1
         m_intr.VBlank_IRQ = STAT.matchVblank();
 
         for (uint8 i = 0; i < 10; ++i) { // 10 scanlines of vertical blank
@@ -84,13 +82,17 @@ void ppu::update(std::function<void(const tmbl::ppu::frame framebuffer)> drawCal
           LY = 0;
         }
 
-        STAT.mode_flag(stat::mode::SEARCHING_OAM);
+        STAT.modeFlag(statMode::SEARCHING_OAM);
         break;
     }
   } else {
     LY = 0;
-    std::fill(framebuffer.at(LY).begin(), framebuffer.at(LY).end(), default_palette.at(4));
-    STAT.mode_flag(stat::mode::VERTICAL_BLANKING);
+    if (color_gameboy_support) {
+      std::fill(framebuffer.at(LY).begin(), framebuffer.at(LY).end(), color_t{255, 255, 255, 255});
+    } else {
+      std::fill(framebuffer.at(LY).begin(), framebuffer.at(LY).end(), default_palette.at(4));
+    }
+    STAT.modeFlag(statMode::VERTICAL_BLANKING);
   }
 }
 
@@ -108,25 +110,140 @@ byte ppu::readOAM(const std::size_t index) const noexcept { return m_oam.at(inde
 
 void ppu::writeOAM(const std::size_t index, const byte val) noexcept { m_oam.at(index) = val; }
 
-void ppu::writeDMA(const byte val) {
-  DMA = val;
-
-  const std::size_t offset = 0x100 * val;
-  std::copy_n(m_vram.begin() + offset, 160_B, m_oam.begin());
-
-  m_clock.wait(160);
-}
+statMode ppu::status() const noexcept { return STAT.modeFlag(); }
 
 void ppu::fetchBackground() noexcept {
-  // implement this
+
+  const uint16 y = (SCY + LY) % viewportHeight;
+
+  for (uint8 dx = 0; dx < screenWidth; ++dx) {
+    const uint16 x = (SCX + dx) % viewportWidth;
+    const uint16 tileIndex = (x / tileWidth) + ((y / tileHeight) * 32);
+
+    const auto [tilemap, _] = LCDC.bgTilemapSelect();
+    const auto [tileptrBase, isSigned] = LCDC.tilesetBasePtr();
+    const byte value = readVRAM(tilemap + tileIndex);
+
+    // clang-format off
+    const uint16 tileptr = isSigned 
+	                   ? (tileptrBase + ((value - 128) * tileSize))
+	                   : (tileptrBase + (value * tileSize));
+
+    const uint8 tileRowNumber = y % tileHeight;
+    const byte tilelineLowByte = readVRAM(tileptr + (tileRowNumber * 2)); // 2 is # of bytes in tilerow
+    const byte tilelineHighByte = readVRAM(tileptr + (tileRowNumber * 2) + 1);
+
+    // scan bits of tileline bytes from left to right
+    const uint8 tileColumnNumber = x % tileWidth;
+    const uint8 shiftNthBitToTest = 7 - tileColumnNumber;
+    const uint8 loBit = (tilelineLowByte >> shiftNthBitToTest) & 0b0000'0001;
+    const uint8 hiBit = (tilelineHighByte >> shiftNthBitToTest) & 0b0000'0001;
+
+    const uint8 paletteIndex = (hiBit << 1) | loBit;
+
+    if (color_gameboy_support) {
+      // implement color gameboy palette things
+    } else {
+      framebuffer.at(LY).at(dx) = default_palette[BGP[paletteIndex]];
+    }
+  }
 }
 
 void ppu::fetchWindow() noexcept {
-  // implement this
+  const uint16 y = LY - WY;
+
+  for (uint8 dx = 0; dx < screenWidth; ++dx) {
+    if (dx >= WX - 7) {
+      const uint16 x = dx - WX + 7; // 7 is window offset 
+
+      const uint16 tileIndex = (x / tileWidth) + ((y / tileHeight) * 32);
+
+      const auto [tilemap, _] = LCDC.winTilemapSelect();
+      const auto [tileptrBase, isSigned] = LCDC.tilesetBasePtr();
+      const byte value = readVRAM(tilemap + tileIndex);
+
+      // clang-format off
+      const uint16 tileptr = isSigned 
+	                     ? (tileptrBase + ((value - 128) * tileSize))
+	                     : (tileptrBase + (value * tileSize));
+      // clang-format on
+
+      const uint8 tileRowNumber = y % tileHeight;
+      const byte tilelineLowByte = readVRAM(tileptr + (tileRowNumber * 2));
+      const byte tilelineHighByte = readVRAM(tileptr + (tileRowNumber * 2) + 1);
+
+      const uint8 tileColumnNumber = x % tileWidth;
+      const uint8 shiftNthBitToTest = 7 - tileColumnNumber;
+      const uint8 loBit = (tilelineLowByte >> shiftNthBitToTest) & 0b0000'0001;
+      const uint8 hiBit = (tilelineHighByte >> shiftNthBitToTest) & 0b0000'0001;
+
+      const uint8 paletteIndex = (hiBit << 1) | loBit;
+
+      if (color_gameboy_support) {
+        // implement color gameboy palette things
+      } else {
+        framebuffer.at(LY).at(dx) = default_palette[BGP[paletteIndex]];
+      }
+    }
+  }
 }
 
 void ppu::fetchSprite() noexcept {
-  // implement this
+  for (std::size_t oamIndex = 0; oamIndex < m_oam.size(); oamIndex += 4) {
+    const uint8 spriteHeight = LCDC.spriteHeight();
+
+    const byte yPos = readOAM(oamIndex) - 16;
+    const byte xPos = readOAM(oamIndex + 1) - 8;
+
+    if ((yPos <= LY) && ((yPos + spriteHeight) > LY) && (xPos >= 0) && (xPos < screenWidth)) {
+      byte tileNumber = readOAM(oamIndex + 2);
+      const byte attribute = readOAM(oamIndex + 3);
+
+      const flag bgHasPriority = attribute & 0b1000'0000;
+      const flag yFlip = attribute & 0b0100'0000;
+      const flag xFlip = attribute & 0b0010'0000;
+      const uint8 dmgPalette = attribute & 0b0001'0000;
+
+      uint8 tileRow = (LY - yPos) % spriteHeight;
+      if (yFlip) {
+        tileRow = (spriteHeight - 1) - tileRow;
+      }
+
+      if (spriteHeight == 16) {
+        if (tileRow >= 8) {
+          tileNumber |= 0b0000'0001;
+          tileRow -= tileHeight;
+        } else {
+          tileNumber &= 0b1111'1110;
+        }
+      }
+
+      const byte tilelineLowByte = m_vram.at((tileNumber * tileSize) + (tileRow * 2));
+      const byte tilelineHighByte = m_vram.at((tileNumber * tileSize) + (tileRow * 2) + 1);
+
+      for (uint8 tileLineColumn = 0; tileLineColumn < tileWidth; ++tileLineColumn) {
+
+        if (tileLineColumn + xPos < screenWidth) {
+          bool loBit, hiBit;
+          if (xFlip) {
+            loBit = (tilelineLowByte >> tileLineColumn) & 0b1;
+            hiBit = (tilelineHighByte >> tileLineColumn) & 0b1;
+          } else {
+            loBit = (tilelineLowByte >> (7 - tileLineColumn)) & 0b1;
+            hiBit = (tilelineHighByte >> (7 - tileLineColumn)) & 0b1;
+          }
+
+          const std::size_t paletteIndex = (hiBit << 1) | loBit;
+
+          if (dmgPalette == 1) {
+            framebuffer.at(LY).at(tileLineColumn + xPos) = default_palette[OBP1[paletteIndex]];
+          } else {
+            framebuffer.at(LY).at(tileLineColumn + xPos) = default_palette[OBP0[paletteIndex]];
+          }
+        }
+      }
+    }
+  }
 }
 
 void ppu::scanline() noexcept {
@@ -143,5 +260,5 @@ void ppu::scanline() noexcept {
   }
 }
 
-uint8 ppu::vbk() const noexcept { return cgb_support ? (VBK & 0b0000'0001) : 0; }
+uint8 ppu::vbk() const noexcept { return color_gameboy_support ? (VBK & 0b0000'0001) : 0; }
 }

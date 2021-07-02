@@ -13,7 +13,7 @@ class cartridge;
 
 class builtin {
 public:
-  builtin(registers &regs, cartridge &cart);
+  builtin(registers &regs_, cartridge &cart_);
 
   byte readWRAM(const std::size_t index) const noexcept;
   void writeWRAM(const std::size_t index, const byte val) noexcept;
