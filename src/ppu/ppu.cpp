@@ -10,7 +10,7 @@ namespace tmbl {
 class registers;
 
 ppu::ppu(registers &regs_, cartridge &cart_, interrupts &intr_)
-    : m_regs(regs_), m_cart(cart_), m_intr(intr_), color_gameboy_support(m_cart.cgbSupport()),
+    : m_regs(regs_), m_cart(cart_), m_intr(intr_), color_gameboy_support(cart_.cgbSupport()),
       STAT(regs_.getAt(0xFF41), /*ly*/ regs_.getAt(0xFF44), /*lyc*/ regs_.getAt(0xFF45)),
       LCDC(regs_.getAt(0xFF40), cart_.cgbSupport()),      // lcd controller
       SCY(regs_.getAt(0xFF42)), SCX(regs_.getAt(0xFF43)), // screen (viewport) scroll
@@ -113,6 +113,7 @@ void ppu::writeOAM(const std::size_t index, const byte val) noexcept { m_oam.at(
 statMode ppu::status() const noexcept { return STAT.modeFlag(); }
 
 void ppu::fetchBackground() noexcept {
+
   const uint16 y = (SCY + LY) % viewportHeight;
 
   for (uint8 dx = 0; dx < screenWidth; ++dx) {
@@ -188,42 +189,58 @@ void ppu::fetchWindow() noexcept {
 }
 
 void ppu::fetchSprite() noexcept {
-  for (std::size_t sprite = 0; sprite < m_oam.size(); sprite += 4) {
-    const byte yPos = readOAM(sprite) - 16;
+  for (std::size_t oamIndex = 0; oamIndex < m_oam.size(); oamIndex += 4) {
+    const uint8 spriteHeight = LCDC.spriteHeight();
 
-    if (LY >= yPos && LY < (yPos + LCDC.spriteHeight())) {
-      const byte xPos = readOAM(sprite + 1) - 8;
+    const byte yPos = readOAM(oamIndex) - 16;
+    const byte xPos = readOAM(oamIndex + 1) - 8;
 
-      const byte tileNumber = readOAM(sprite + 2);
+    if ((yPos <= LY) && ((yPos + spriteHeight) > LY) && (xPos >= 0) && (xPos < screenWidth)) {
+      byte tileNumber = readOAM(oamIndex + 2);
+      const byte attribute = readOAM(oamIndex + 3);
 
-      const byte attribute = readOAM(sprite + 3);
       const flag bgHasPriority = attribute & 0b1000'0000;
       const flag yFlip = attribute & 0b0100'0000;
       const flag xFlip = attribute & 0b0010'0000;
+      const uint8 dmgPalette = attribute & 0b0001'0000;
 
-      const uint8 spriteHeight = LCDC.spriteHeight();
+      uint8 tileRow = (LY - yPos) % spriteHeight;
+      if (yFlip) {
+        tileRow = (spriteHeight - 1) - tileRow;
+      }
 
-      const uint8 tileLine = (LY - yPos) * 2;
+      if (spriteHeight == 16) {
+        if (tileRow >= 8) {
+          tileNumber |= 0b0000'0001;
+          tileRow -= tileHeight;
+        } else {
+          tileNumber &= 0b1111'1110;
+        }
+      }
 
-      if (color_gameboy_support) {
-        const uint8 vramBank = attribute & 0b0000'1000;
-        const uint8 palette = attribute & 0b0000'0111;
+      const byte tilelineLowByte = m_vram.at((tileNumber * tileSize) + (tileRow * 2));
+      const byte tilelineHighByte = m_vram.at((tileNumber * tileSize) + (tileRow * 2) + 1);
 
-        const std::size_t banked_index = vramBank * 8_KB;
-        const byte lo = m_vram.at(banked_index + (tileNumber * tileSize) + tileLine);
-        const byte hi = m_vram.at(banked_index + (tileNumber * tileSize) + tileLine + 1);
+      for (uint8 tileLineColumn = 0; tileLineColumn < tileWidth; ++tileLineColumn) {
 
-        // what now?
-        // implement this
+        if (tileLineColumn + xPos < screenWidth) {
+          bool loBit, hiBit;
+          if (xFlip) {
+            loBit = (tilelineLowByte >> tileLineColumn) & 0b1;
+            hiBit = (tilelineHighByte >> tileLineColumn) & 0b1;
+          } else {
+            loBit = (tilelineLowByte >> (7 - tileLineColumn)) & 0b1;
+            hiBit = (tilelineHighByte >> (7 - tileLineColumn)) & 0b1;
+          }
 
-      } else {
-        const uint8 palette = attribute & 0b0001'0000;
+          const std::size_t paletteIndex = (hiBit << 1) | loBit;
 
-        const byte lo = m_vram.at((tileNumber * tileSize) + tileLine);
-        const byte hi = m_vram.at((tileNumber * tileSize) + tileLine + 1);
-
-        // what now?
-        // implement this
+          if (dmgPalette == 1) {
+            framebuffer.at(LY).at(tileLineColumn + xPos) = default_palette[OBP1[paletteIndex]];
+          } else {
+            framebuffer.at(LY).at(tileLineColumn + xPos) = default_palette[OBP0[paletteIndex]];
+          }
+        }
       }
     }
   }
