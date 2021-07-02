@@ -9,6 +9,9 @@ class n16 final {
 public:
   n16(const uint16 nn);
 
+  uint8 hi() noexcept;
+  uint8 lo() noexcept;
+
   const uint8 hi() const noexcept;
   const uint8 lo() const noexcept;
 
