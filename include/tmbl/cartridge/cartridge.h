@@ -22,7 +22,7 @@ namespace tmbl {
 enum class console : uint8 { dmg, cgb_compatible, cgb_only };
 class cartridge {
 public:
-  bool init(const std::filesystem::path p) noexcept;
+  void init(const std::filesystem::path p) noexcept;
 
   byte readXRAM(const std::size_t index) const noexcept;
   void writeXRAM(const std::size_t index, const byte val) noexcept;

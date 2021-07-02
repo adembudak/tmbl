@@ -43,42 +43,34 @@ public:
         switch (e.keysym.sym) {
           case SDLK_w:
             m_joypad.dpadUp(tmbl::button::Pressed);
-            puts("m_joypad.dpadUp(tmbl::button::Pressed);");
             break;
 
           case SDLK_d:
             m_joypad.dpadRight(tmbl::button::Pressed);
-            puts("m_joypad.dpadRight(tmbl::button::Pressed);");
             break;
 
           case SDLK_s:
             m_joypad.dpadDown(tmbl::button::Pressed);
-            puts("m_joypad.dpadDown(tmbl::button::Pressed);");
             break;
 
           case SDLK_a:
             m_joypad.dpadLeft(tmbl::button::Pressed);
-            puts("m_joypad.dpadLeft(tmbl::button::Pressed);");
             break;
 
           case SDLK_k:
             m_joypad.a(tmbl::button::Pressed);
-            puts("m_joypad.a(tmbl::button::Pressed);");
             break;
 
           case SDLK_j:
             m_joypad.b(tmbl::button::Pressed);
-            puts("m_joypad.b(tmbl::button::Pressed);");
             break;
 
           case SDLK_RETURN:
             m_joypad.select(tmbl::button::Pressed);
-            puts("m_joypad.select(tmbl::button::Pressed);");
             break;
 
           case SDLK_SPACE:
             m_joypad.start(tmbl::button::Pressed);
-            puts("m_joypad.start(tmbl::button::Pressed);");
             break;
 
           case SDLK_ESCAPE:
@@ -91,42 +83,34 @@ public:
         switch (e.keysym.sym) {
           case SDLK_w:
             m_joypad.dpadUp(tmbl::button::Released);
-            puts("m_joypad.dpadUp(tmbl::button::Released);");
             break;
 
           case SDLK_d:
             m_joypad.dpadRight(tmbl::button::Released);
-            puts("m_joypad.dpadRight(tmbl::button::Released);");
             break;
 
           case SDLK_s:
             m_joypad.dpadDown(tmbl::button::Released);
-            puts("m_joypad.dpadDown(tmbl::button::Released);");
             break;
 
           case SDLK_a:
             m_joypad.dpadLeft(tmbl::button::Released);
-            puts("m_joypad.dpadLeft(tmbl::button::Released);");
             break;
 
           case SDLK_k:
             m_joypad.a(tmbl::button::Released);
-            puts("m_joypad.a(tmbl::button::Released);");
             break;
 
           case SDLK_j:
             m_joypad.b(tmbl::button::Released);
-            puts("m_joypad.b(tmbl::button::Released);");
             break;
 
           case SDLK_RETURN:
             m_joypad.select(tmbl::button::Released);
-            puts("m_joypad.select(tmbl::button::Released);");
             break;
 
           case SDLK_SPACE:
             m_joypad.start(tmbl::button::Released);
-            puts("m_joypad.start(tmbl::button::Released);");
             break;
         }
         break;
@@ -197,10 +181,16 @@ private:
 
 int main(int argc, const char *const argv[]) {
   if (argc > 1) {
-    gameboy attaboy;
-    attaboy.plugCart(std::filesystem::path{argv[1]});
-    attaboy.run();
+    if (const auto cartridge = std::filesystem::path{argv[1]}; std::filesystem::exists(cartridge)) {
+      gameboy attaboy;
+      attaboy.plugCart(cartridge);
+      attaboy.run();
+    } else {
+      std::printf("File not exist: %s\n", cartridge.string().c_str());
+      return 1;
+    }
   } else {
     std::puts("Usage: tombul [ROM file]");
+    return 0;
   }
 }
