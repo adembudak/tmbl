@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20.1)
+cmake_minimum_required(VERSION 3.20.5)
 
 project(
   tombul
@@ -20,29 +20,30 @@ if(PROJECT_IS_TOP_LEVEL)
 endif()
 include(CMakeDependentOption)
 
-option(ENABLE_INCLUDE_WHAT_YOU_USE "Run iwyu on source" OFF)
-option(ENABLE_CLANG_TIDY "Run clang-tidy on source" OFF)
-option(ENABLE_CPPCHECK "Run cppcheck on source" OFF)
-option(ENABLE_CCACHE "Cache build with ccache" OFF)
-option(LOG_PAK_METADATA "Interpret and print out cartridge header" OFF)
-option(ENABLE_UNIT_TESTS "Build unit tests" OFF)
+option(ENABLE_INCLUDE_WHAT_YOU_USE "Run iwyu on source"         OFF)
+option(ENABLE_CLANG_TIDY           "Run clang-tidy on source"   OFF)
+option(ENABLE_CPPCHECK             "Run cppcheck on source"     OFF)
+option(ENABLE_CCACHE               "Cache build with ccache"    OFF)
 
-option(ENABLE_ROM_TESTS "Run test ROMs" OFF)
-option(BLARGG_TEST_ROMs "Blargg test ROMs" OFF)
-option(CGB_ACID2_TEST_ROM "CGB Acid2 test ROM" OFF)
-option(DMG_ACID2_TEST_ROM "DMG Acid2 test ROM" OFF)
-option(GAMBATTE_TEST_ROMs "Gambette test ROM" OFF)
-option(MEALYBUG_TEAROOM_TEST_ROMs "Mealybug teardown test ROMs" OFF)
-option(MOONEYE_GB_TEST_ROMs "Mooneye GB ROMs" OFF)
+option(LOG_PAK_METADATA            "Interpret cartridge header" OFF)
+option(ENABLE_UNIT_TESTS           "Build unit tests"           OFF)
 
-cmake_dependent_option(ENABLE_UNIT_TESTS "" ON BUILD_TESTING OFF)
-cmake_dependent_option(ENABLE_ROM_TESTS "" ON BUILD_TESTING OFF)
-cmake_dependent_option(BLARGG_TEST_ROMs "" ON ENABLE_ROM_TESTS OFF)
-cmake_dependent_option(CGB_ACID2_TEST_ROM "" ON ENABLE_ROM_TESTS OFF)
-cmake_dependent_option(DMG_ACID2_TEST_ROM "" ON ENABLE_ROM_TESTS OFF)
-cmake_dependent_option(GAMBATTE_TEST_ROMs "" ON ENABLE_ROM_TESTS OFF)
+option(ENABLE_ROM_TESTS            "Run test ROMs"              OFF)
+option(BLARGG_TEST_ROMs            "Blargg test ROMs"           OFF)
+option(CGB_ACID2_TEST_ROM          "CGB Acid2 test ROM"         OFF)
+option(DMG_ACID2_TEST_ROM          "DMG Acid2 test ROM"         OFF)
+option(GAMBATTE_TEST_ROMs          "Gambette test ROM"          OFF)
+option(MEALYBUG_TEAROOM_TEST_ROMs  "Mealybug tearoom test ROMs" OFF)
+option(MOONEYE_GB_TEST_ROMs        "Mooneye GB ROMs"            OFF)
+
+cmake_dependent_option(ENABLE_UNIT_TESTS          "" ON BUILD_TESTING    OFF)
+cmake_dependent_option(ENABLE_ROM_TESTS           "" ON BUILD_TESTING    OFF)
+cmake_dependent_option(BLARGG_TEST_ROMs           "" ON ENABLE_ROM_TESTS OFF)
+cmake_dependent_option(CGB_ACID2_TEST_ROM         "" ON ENABLE_ROM_TESTS OFF)
+cmake_dependent_option(DMG_ACID2_TEST_ROM         "" ON ENABLE_ROM_TESTS OFF)
+cmake_dependent_option(GAMBATTE_TEST_ROMs         "" ON ENABLE_ROM_TESTS OFF)
 cmake_dependent_option(MEALYBUG_TEAROOM_TEST_ROMs "" ON ENABLE_ROM_TESTS OFF)
-cmake_dependent_option(MOONEYE_GB_TEST_ROMs "" ON ENABLE_ROM_TESTS OFF)
+cmake_dependent_option(MOONEYE_GB_TEST_ROMs       "" ON ENABLE_ROM_TESTS OFF)
 
 set(CMAKE_CXX_STANDARD 17 CACHE STRING "")
 set(CMAKE_CXX_STANDARD_REQUIRED YES CACHE BOOL "")
@@ -89,12 +90,15 @@ endif()
 
 if(ENABLE_UNIT_TESTS)
   enable_testing()
-  set(FETCHCONTENT_BASE_DIR ${tmbl_SOURCE_DIR}/external)
-  set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 
-  fetchcontent_declare(googletest
-    URL https://github.com/google/googletest/archive/609281088cfefc76f9d0ce82e1ff6c30cc3591e5.zip)
-  fetchcontent_makeavailable(googletest)
+  if(NOT TARGET GTest::gtest_main)
+    set(FETCHCONTENT_BASE_DIR ${tmbl_SOURCE_DIR}/external)
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+
+    fetchcontent_declare(googletest
+      URL https://github.com/google/googletest/archive/609281088cfefc76f9d0ce82e1ff6c30cc3591e5.zip)
+    fetchcontent_makeavailable(googletest)
+  endif()
 
   add_subdirectory(tests/unit)
 endif()
