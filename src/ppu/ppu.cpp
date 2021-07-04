@@ -113,38 +113,37 @@ void ppu::writeOAM(const std::size_t index, const byte val) noexcept { m_oam.at(
 statMode ppu::status() const noexcept { return STAT.modeFlag(); }
 
 void ppu::fetchBackground() noexcept {
-
-  const uint16 y = (SCY + LY) % viewportHeight;
-
+  const uint16 y = SCY + LY;
   for (uint8 dx = 0; dx < screenWidth; ++dx) {
-    const uint16 x = (SCX + dx) % viewportWidth;
-    const uint16 tileIndex = (x / tileWidth) + ((y / tileHeight) * 32);
+    if (y >= 0 && y < screenHeight && SCX + dx < screenWidth) {
+      const uint16 x = SCX + dx;
+      const uint16 tileIndex = (x / tileWidth) + ((y / tileHeight) * 32);
 
-    const auto [tilemap, _] = LCDC.bgTilemapSelect();
-    const auto [tileptrBase, isSigned] = LCDC.tilesetBasePtr();
-    const byte value = readVRAM(tilemap + tileIndex);
+      const auto [tilemap, _] = LCDC.bgTilemapSelect();
+      const byte value = readVRAM(tilemap + tileIndex);
 
-    // clang-format off
-    const uint16 tileptr = isSigned 
-	                   ? (tileptrBase + ((value - 128) * tileSize))
-	                   : (tileptrBase + (value * tileSize));
+      const auto [tileptrBase, isSigned] = LCDC.tilesetBasePtr();
+      const uint16 tileptr = isSigned ? (tileptrBase + ((value - 128) * tileSize))
+                                      : (tileptrBase + (value * tileSize));
 
-    const uint8 tileRowNumber = y % tileHeight;
-    const byte tilelineLowByte = readVRAM(tileptr + (tileRowNumber * 2)); // 2 is # of bytes in tilerow
-    const byte tilelineHighByte = readVRAM(tileptr + (tileRowNumber * 2) + 1);
+      const uint8 tileRowNumber = y % tileHeight;
+      const byte tilelineLowByte =
+          readVRAM(tileptr + (tileRowNumber * 2)); // 2 is # of bytes in tilerow
+      const byte tilelineHighByte = readVRAM(tileptr + (tileRowNumber * 2) + 1);
 
-    // scan bits of tileline bytes from left to right
-    const uint8 tileColumnNumber = x % tileWidth;
-    const uint8 shiftNthBitToTest = 7 - tileColumnNumber;
-    const uint8 loBit = (tilelineLowByte >> shiftNthBitToTest) & 0b0000'0001;
-    const uint8 hiBit = (tilelineHighByte >> shiftNthBitToTest) & 0b0000'0001;
+      // scan bits of tileline bytes from left to right
+      const uint8 tileColumnNumber = x % tileWidth;
+      const uint8 shiftNthBitToTest = 7 - tileColumnNumber;
+      const bool loBit = (tilelineLowByte >> shiftNthBitToTest) & 0b0000'0001;
+      const bool hiBit = (tilelineHighByte >> shiftNthBitToTest) & 0b0000'0001;
 
-    const uint8 paletteIndex = (hiBit << 1) | loBit;
+      const uint8 paletteIndex = (hiBit << 1) | loBit;
 
-    if (color_gameboy_support) {
-      // implement color gameboy palette things
-    } else {
-      framebuffer.at(LY).at(dx) = default_palette[BGP[paletteIndex]];
+      if (color_gameboy_support) {
+        // implement color gameboy palette things
+      } else {
+        framebuffer.at(LY).at(dx) = default_palette[BGP[paletteIndex]];
+      }
     }
   }
 }
@@ -154,7 +153,7 @@ void ppu::fetchWindow() noexcept {
 
   for (uint8 dx = 0; dx < screenWidth; ++dx) {
     if (dx >= WX - 7) {
-      const uint16 x = dx - WX + 7; // 7 is window offset 
+      const uint16 x = dx - WX + 7; // 7 is window offset
 
       const uint16 tileIndex = (x / tileWidth) + ((y / tileHeight) * 32);
 
@@ -174,8 +173,8 @@ void ppu::fetchWindow() noexcept {
 
       const uint8 tileColumnNumber = x % tileWidth;
       const uint8 shiftNthBitToTest = 7 - tileColumnNumber;
-      const uint8 loBit = (tilelineLowByte >> shiftNthBitToTest) & 0b0000'0001;
-      const uint8 hiBit = (tilelineHighByte >> shiftNthBitToTest) & 0b0000'0001;
+      const bool loBit = (tilelineLowByte >> shiftNthBitToTest) & 0b0000'0001;
+      const bool hiBit = (tilelineHighByte >> shiftNthBitToTest) & 0b0000'0001;
 
       const uint8 paletteIndex = (hiBit << 1) | loBit;
 
