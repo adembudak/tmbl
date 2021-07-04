@@ -18,14 +18,8 @@
       "displayName": "MacOS",
       "binaryDir": "${sourceDir}/build/MacOS_build",
       "cacheVariables": {
-        "CMAKE_CXX_FLAGS": {
-          "type": "STRING",
-          "value": "-stdlib=libc++"
-        },
-        "CMAKE_BUILD_TYPE": {
-          "type": "STRING",
-          "value": "Release"
-        }
+        "CMAKE_CXX_FLAGS": "-stdlib=libc++",
+        "CMAKE_BUILD_TYPE": "Release"
       }
     },
     {
@@ -34,26 +28,17 @@
       "displayName": "MacOS-debug",
       "binaryDir": "${sourceDir}/build/MacOS_debug_build",
       "cacheVariables": {
-        "CMAKE_CXX_FLAGS": {
-          "type": "STRING",
-          "value": "-stdlib=libc++"
-        },
-        "CMAKE_BUILD_TYPE": {
-          "type": "STRING",
-          "value": "Debug"
-        }
+        "CMAKE_CXX_FLAGS": "-stdlib=libc++",
+        "CMAKE_BUILD_TYPE": "Debug"
       }
-    },
+     },
     {
       "name": "Linux",
       "inherits": "Unix",
       "displayName": "Linux",
       "binaryDir": "${sourceDir}/build/Linux_build",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": {
-          "type": "STRING",
-          "value": "Release"
-        }
+        "CMAKE_BUILD_TYPE": "Release"
       }
     },
     {
@@ -61,11 +46,8 @@
       "inherits": "Unix",
       "displayName": "Linux-debug",
       "binaryDir": "${sourceDir}/build/Linux_debug_build",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": {
-          "type": "STRING",
-          "value": "Debug"
-        }
+      "cacheVariables": { 
+		  "CMAKE_BUILD_TYPE":"Debug"
       }
     },
     {
@@ -82,11 +64,8 @@
       "architecture": "x64",
       "toolset": "host=x64",
       "binaryDir": "${sourceDir}/build/win32x64_build",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": {
-          "type": "STRING",
-          "value": "Release"
-        }
+      "cacheVariables": { 
+		  "CMAKE_BUILD_TYPE": "Release"
       }
     },
     {
@@ -98,10 +77,7 @@
       "toolset": "host=x64",
       "binaryDir": "${sourceDir}/build/win32x64_debug_build",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": {
-          "type": "STRING",
-          "value": "Debug"
-        }
+         "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
@@ -112,11 +88,8 @@
       "architecture": "Win32",
       "toolset": "host=x86",
       "binaryDir": "${sourceDir}/build/win32x86_build",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": {
-          "type": "STRING",
-          "value": "Release"
-        }
+      "cacheVariables": { 
+		  "CMAKE_BUILD_TYPE": "Release"
       }
     },
     {
@@ -128,13 +101,9 @@
       "toolset": "host=x86",
       "binaryDir": "${sourceDir}/build/win32x86_debug_build",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": {
-          "type": "STRING",
-          "value": "Debug"
-        }
+        "CMAKE_BUILD_TYPE":  "Debug"
       }
     }
-
   ],
   "buildPresets": [],
   "testPresets": []
