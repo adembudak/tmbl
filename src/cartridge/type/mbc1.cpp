@@ -1,4 +1,5 @@
 #include "tmbl/config.h"
+#include "tmbl/utils/utils.h"
 #include "tmbl/cartridge/type/mbc1.h"
 
 #include <cstddef>
@@ -34,7 +35,7 @@ byte mbc1::read(const std::size_t index) const noexcept {
           (effective_xram_bank_number << 13) | (index & 0b1'1111'1111'1111);
       return m_xram.at(effective_index);
     } else {
-      return randomByte();
+      return utils::randomByte();
     }
   }
 

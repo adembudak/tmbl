@@ -6,9 +6,10 @@ add_subdirectory(cartridge)
 add_subdirectory(io)
 add_subdirectory(ppu)
 add_subdirectory(dma)
+add_subdirectory(utils)
 
 add_library(tmbl INTERFACE)
 target_link_libraries(tmbl INTERFACE 
-	bus builtin cpu clock cartridge io ppu dma)
+	bus builtin cpu clock cartridge io ppu dma utils)
 
 add_library(tmbl::tmbl ALIAS tmbl)

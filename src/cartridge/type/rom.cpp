@@ -1,4 +1,5 @@
 #include "tmbl/config.h"
+#include "tmbl/utils/utils.h"
 #include "tmbl/cartridge/type/rom.h"
 
 #include <utility>
@@ -24,7 +25,7 @@ byte rom::read_xram(const std::size_t index) const noexcept {
   if (has_xram) {
     return m_xram.at(index);
   } else {
-    return randomByte();
+    return utils::randomByte();
   }
 }
 

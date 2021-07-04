@@ -1,8 +1,9 @@
+#include "tmbl/config.h"
+#include "tmbl/memory_map.h"
+#include "tmbl/utils/utils.h"
 #include "tmbl/builtin/builtin.h"
 #include "tmbl/io/registers.h"
 #include "tmbl/cartridge/cartridge.h"
-#include "tmbl/config.h"
-#include "tmbl/memory_map.h"
 
 #include <algorithm>
 
@@ -17,7 +18,7 @@ builtin::builtin(registers &regs_, cartridge &cart_)
     m_wram.resize(8_KB);
   }
 
-  std::generate(m_wram.begin(), m_wram.end(), []() { return randomByte(); });
+  std::generate(m_wram.begin(), m_wram.end(), []() { return utils::randomByte(); });
 }
 
 byte builtin::readWRAM(const std::size_t index) const noexcept {

@@ -1,4 +1,5 @@
 #include "tmbl/config.h"
+#include "tmbl/utils/utils.h"
 #include <tmbl/cartridge/type/mbc2.h>
 
 namespace tmbl {
@@ -23,7 +24,7 @@ byte mbc2::read(const std::size_t index) const noexcept { // ROM Bank 0 (Read on
       const byte data = m_xram.at(index % 512) & 0b0000'1111;
       return data;
     } else {
-      return randomByte();
+      return utils::randomByte();
     }
   }
 

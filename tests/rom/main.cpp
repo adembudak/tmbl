@@ -11,6 +11,7 @@
 #include <SDL2/SDL.h>
 
 #include <filesystem>
+#include <functional>
 #include <cstdio>
 
 class gameboy final {
@@ -131,35 +132,23 @@ public:
     m_cart.init(p);
   }
 
+  void draw(const tmbl::ppu::frame &framebuffer) {
+    SDL_UpdateTexture(sdl_texture, /*rect=*/nullptr, framebuffer.data(), tmbl::screenWidth * sizeof(tmbl::ppu::color));
+  }
+
   void run() {
     SDL_Event event;
     for (bool running = true; running; /**/) {
       running = processInput(event);
       m_cpu.run();
-      m_ppu.update([&](const tmbl::ppu::frame &framebuffer) {
-        /*
-                for (const tmbl::ppu::screenline &line : framebuffer) {
-                  for (const tmbl::ppu::color &color : line) {
-                    if (color.r == 155) {
-                      std::putchar('a');
-                    } else if (color.r == 139) {
-                      std::putchar('o');
-                    } else if (color.r == 48) {
-                      std::putchar('i');
-                    } else if (color.r == 15) {
-                      std::putchar('i');
-                    }
-                  }
-                  std::putchar('\n');
-                }
-      */
-
-        SDL_UpdateTexture(sdl_texture, /*rect=*/nullptr, framebuffer.data(), tmbl::screenWidth * sizeof(tmbl::ppu::color));
-      });
+      m_ppu.update(std::bind(&gameboy::draw, this, std::placeholders::_1));
       SDL_RenderCopy(sdl_renderer, sdl_texture, /*srcrect=*/nullptr, /*dstrect=*/nullptr);
       SDL_RenderPresent(sdl_renderer);
     }
   }
+
+private:
+  tmbl::ppu::frame m_framebuffer{};
 
 private:
   SDL_Texture *sdl_texture = nullptr;
