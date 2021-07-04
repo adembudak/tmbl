@@ -60,8 +60,7 @@ public:
   using frame = std::array<screenline, screenHeight>;
 
   ppu(registers &regs_, cartridge &cart_, interrupts &intr_);
-  void update(std::function<void(const tmbl::ppu::frame framebuffer)> drawCallback);
-
+  void update(const std::function<void(const tmbl::ppu::frame &framebuffer)> &drawCallback);
   byte readVRAM(const std::size_t index) const noexcept;
   void writeVRAM(const std::size_t index, [[maybe_unused]] const byte val) noexcept;
 
