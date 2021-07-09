@@ -22,7 +22,7 @@ namespace tmbl {
 enum class console : uint8 { dmg, cgb_compatible, cgb_only };
 class cartridge {
 public:
-  void init(const std::filesystem::path p) noexcept;
+  void init(const std::filesystem::path &p) noexcept;
 
   byte readXRAM(const std::size_t index) const noexcept;
   void writeXRAM(const std::size_t index, const byte val) noexcept;
@@ -30,11 +30,13 @@ public:
   byte readROM(const std::size_t index) const noexcept;
   void writeROM(const std::size_t index, const byte val) noexcept;
 
-  bool cgbSupport() const noexcept;
+  cflag &cgbSupport() const noexcept;
   console type() const noexcept;
 
 private:
   console m_type;
+  flag m_color_gameboy_support;
+
   std::variant<std::monostate, rom, mbc1, mbc2, mbc5 /*, mbc3, mbc6, mbc7*/> pak;
 };
 }

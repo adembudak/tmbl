@@ -2,7 +2,7 @@
 
 namespace tmbl {
 
-lcdc::lcdc(byte &val_, bool cgb_support) : m_value(val_), cgb_support(cgb_support) {}
+lcdc::lcdc(byte &val_, cflag &cgb_support) : m_value(val_), color_gameboy_support(cgb_support) {}
 
 cflag lcdc::lcdControllerStatus() const noexcept { return m_value & 0b1000'0000 ? on : off; }
 
@@ -24,6 +24,8 @@ uint8 lcdc::spriteHeight() const noexcept { return m_value & 0b0000'0100 ? 16 : 
 
 cflag lcdc::objDisplayStatus() const noexcept { return m_value & 0b0000'0010 ? on : off; }
 
-cflag lcdc::bgDisplayStatus() const noexcept { return cgb_support ? on : m_value & 0b0000'0001; }
+cflag lcdc::bgDisplayStatus() const noexcept {
+  return color_gameboy_support ? on : m_value & 0b0000'0001;
+}
 
 }

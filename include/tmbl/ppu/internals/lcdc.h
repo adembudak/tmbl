@@ -32,7 +32,7 @@
 namespace tmbl {
 class lcdc {
 public:
-  explicit lcdc(byte &val_, bool cgb_support);
+  explicit lcdc(byte &val_, cflag &cgb_support);
 
   //                                                                                   1 | 0  
   //--------------------------------------------------------------------------------------------------
@@ -47,7 +47,7 @@ public:
 
 private:
   byte &m_value;
-  bool cgb_support = false;
+  cflag &color_gameboy_support; 
 };
 
 }

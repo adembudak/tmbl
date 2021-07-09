@@ -29,7 +29,7 @@ namespace tmbl {
 // see: https://archive.org/details/GameBoyProgManVer1.1/page/n126/mode/1up
 // see: https://archive.org/details/GameBoyProgManVer1.1/page/n294/mode/1up
 
-void cartridge::init(const std::filesystem::path p) noexcept {
+void cartridge::init(const std::filesystem::path &p) noexcept {
   std::ifstream fin(p, std::ios::binary);
 
   auto dumpedGamePak = std::vector<byte>(std::istreambuf_iterator<char>(fin), {});
@@ -46,6 +46,10 @@ void cartridge::init(const std::filesystem::path p) noexcept {
   m_type = dumpedGamePak[CGB_support_code] == 0xC0   ? console::cgb_only
            : dumpedGamePak[CGB_support_code] == 0x80 ? console::cgb_compatible
                                                      : console::dmg;
+
+  if (m_type == console::cgb_only || m_type == console::cgb_compatible) {
+    m_color_gameboy_support = set;
+  }
 
   // header checksum:  https://gbdev.io/pandocs/#_014d-header-checksum
   const std::size_t checksum_begin = 0x0134;
@@ -182,9 +186,7 @@ void cartridge::writeROM(const std::size_t index, const byte val) noexcept {
   }
 }
 
-bool cartridge::cgbSupport() const noexcept {
-  return m_type == console::cgb_compatible || m_type == console::cgb_only;
-}
+cflag &cartridge::cgbSupport() const noexcept { return m_color_gameboy_support; }
 
 console cartridge::type() const noexcept { return m_type; }
 }
