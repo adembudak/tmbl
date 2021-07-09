@@ -54,7 +54,7 @@ public:
   };
 
   using color_t = color;
-  using palette_t = std::array<color_t, 5>; // 5th color for idle screen, i.e. LCDC.bit7 is 0
+  using palette_t = std::array<color_t, 4>;
 
   using screenline = std::array<color_t, screenWidth>;
   using frame = std::array<screenline, screenHeight>;
@@ -119,11 +119,10 @@ private:
 
   cflag &color_gameboy_support;
 
-  static constexpr palette_t default_palette{color{155, 188, 15, 255},  // light green
-                                             color{139, 172, 15, 255},  //
-                                             color{48, 98, 48, 255},    //
-                                             color{15, 56, 15, 255},    // dark green
-                                             color{161, 193, 19, 255}}; // idle screen color
+  static constexpr palette_t default_palette{color{155, 188, 15, 255}, // light green
+                                             color{139, 172, 15, 255}, //
+                                             color{48, 98, 48, 255},   //
+                                             color{15, 56, 15, 255}};  // dark green
 
   clock m_clock{m_regs, m_intr};
 };

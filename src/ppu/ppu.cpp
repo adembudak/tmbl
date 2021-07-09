@@ -87,11 +87,6 @@ void ppu::update(const std::function<void(tmbl::ppu::frame &framebuffer)> &drawC
     }
   } else {
     LY = 0;
-    if (color_gameboy_support) {
-      std::fill(framebuffer.at(LY).begin(), framebuffer.at(LY).end(), color_t{255, 255, 255, 255});
-    } else {
-      std::fill(framebuffer.at(LY).begin(), framebuffer.at(LY).end(), default_palette.at(4));
-    }
     STAT.modeFlag(statMode::VERTICAL_BLANKING);
   }
 }
