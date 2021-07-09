@@ -60,7 +60,7 @@ public:
   using frame = std::array<screenline, screenHeight>;
 
   ppu(registers &regs_, cartridge &cart_, interrupts &intr_);
-  void update(const std::function<void(const tmbl::ppu::frame &framebuffer)> &drawCallback);
+  void update(const std::function<void(tmbl::ppu::frame &framebuffer)> &drawCallback);
   byte readVRAM(const std::size_t index) const noexcept;
   void writeVRAM(const std::size_t index, [[maybe_unused]] const byte val) noexcept;
 
@@ -111,13 +111,13 @@ private:
 
   std::vector<byte> m_vram{};
   std::array<byte, 160_B> m_oam{};
-  frame framebuffer{};
+  frame framebuffer;
 
   uint8 tileWidth = 8;
   uint8 tileHeight = 8;
   uint8 tileSize = 16_B;
 
-  bool color_gameboy_support = false;
+  cflag &color_gameboy_support;
 
   static constexpr palette_t default_palette{color{155, 188, 15, 255},  // light green
                                              color{139, 172, 15, 255},  //

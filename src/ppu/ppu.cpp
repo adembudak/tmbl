@@ -30,7 +30,7 @@ ppu::ppu(registers &regs_, cartridge &cart_, interrupts &intr_)
   }
 }
 
-void ppu::update(const std::function<void(const tmbl::ppu::frame &framebuffer)> &drawCallback) {
+void ppu::update(const std::function<void(tmbl::ppu::frame &framebuffer)> &drawCallback) {
   if (LCDC.lcdControllerStatus() == on) {
 
     switch (STAT.modeFlag()) {

@@ -128,11 +128,11 @@ public:
     return status;
   }
 
-  void plugCart(std::filesystem::path p) {
+  void plugCart(const std::filesystem::path &p) {
     m_cart.init(p);
   }
 
-  void draw(const tmbl::ppu::frame &framebuffer) {
+  void draw(tmbl::ppu::frame &framebuffer) {
     SDL_UpdateTexture(sdl_texture, /*rect=*/nullptr, framebuffer.data(), tmbl::screenWidth * sizeof(tmbl::ppu::color));
   }
 
@@ -148,7 +148,7 @@ public:
   }
 
 private:
-  tmbl::ppu::frame m_framebuffer{};
+  tmbl::ppu::frame m_framebuffer;
 
 private:
   SDL_Texture *sdl_texture = nullptr;
