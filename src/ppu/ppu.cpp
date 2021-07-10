@@ -45,7 +45,7 @@ void ppu::update(const std::function<void(tmbl::ppu::frame &framebuffer)> &drawC
       } break;
 
       case statMode::TRANSFERING_DATA_TO_LCD: ////////////////////////////// mode 3
-        drawCallback(framebuffer);
+        drawCallback(m_frame);
 
         m_clock.wait(vramCycles);
         STAT.modeFlag(statMode::HORIZONTAL_BLANKING);
@@ -85,7 +85,7 @@ void ppu::update(const std::function<void(tmbl::ppu::frame &framebuffer)> &drawC
         STAT.modeFlag(statMode::SEARCHING_OAM);
         break;
     }
-  } else {
+  } else { // lcdc off
     LY = 0;
     STAT.modeFlag(statMode::VERTICAL_BLANKING);
   }
@@ -137,7 +137,7 @@ void ppu::fetchBackground() noexcept {
       if (color_gameboy_support) {
         // implement color gameboy palette things
       } else {
-        framebuffer.at(LY).at(dx) = default_palette[BGP[paletteIndex]];
+        m_frame.at(LY).at(dx) = dmg_palette[BGP[paletteIndex]];
       }
     }
   }
@@ -176,7 +176,7 @@ void ppu::fetchWindow() noexcept {
       if (color_gameboy_support) {
         // implement color gameboy palette things
       } else {
-        framebuffer.at(LY).at(dx) = default_palette[BGP[paletteIndex]];
+        m_frame.at(LY).at(dx) = dmg_palette[BGP[paletteIndex]];
       }
     }
   }
@@ -215,30 +215,34 @@ void ppu::fetchSprite() noexcept {
       const byte tilelineLowByte = m_vram.at((tileNumber * tileSize) + (tileRow * 2));
       const byte tilelineHighByte = m_vram.at((tileNumber * tileSize) + (tileRow * 2) + 1);
 
-      for (uint8 tileLineColumn = 0; tileLineColumn < tileWidth; ++tileLineColumn) {
+      if (color_gameboy_support) {
+        //
+      } else {
+        for (uint8 tileLineColumn = 0; tileLineColumn < tileWidth; ++tileLineColumn) {
 
-        if (tileLineColumn + xPos < screenWidth) {
-          bool loBit, hiBit;
-          if (xFlip) {
-            loBit = (tilelineLowByte >> tileLineColumn) & 0b1;
-            hiBit = (tilelineHighByte >> tileLineColumn) & 0b1;
-          } else {
-            loBit = (tilelineLowByte >> (7 - tileLineColumn)) & 0b1;
-            hiBit = (tilelineHighByte >> (7 - tileLineColumn)) & 0b1;
-          }
+          if (tileLineColumn + xPos < screenWidth) {
+            bool loBit, hiBit;
+            if (xFlip) {
+              loBit = (tilelineLowByte >> tileLineColumn) & 0b1;
+              hiBit = (tilelineHighByte >> tileLineColumn) & 0b1;
+            } else {
+              loBit = (tilelineLowByte >> (7 - tileLineColumn)) & 0b1;
+              hiBit = (tilelineHighByte >> (7 - tileLineColumn)) & 0b1;
+            }
 
-          const std::size_t paletteIndex = (hiBit << 1) | loBit;
+            const std::size_t paletteIndex = (hiBit << 1) | loBit;
 
-          if (dmgPalette == 1) {
-            framebuffer.at(LY).at(tileLineColumn + xPos) = default_palette[OBP1[paletteIndex]];
-          } else {
-            framebuffer.at(LY).at(tileLineColumn + xPos) = default_palette[OBP0[paletteIndex]];
+            if (dmgPalette == 1) {
+              m_frame.at(LY).at(tileLineColumn + xPos) = dmg_palette[OBP1[paletteIndex]];
+            } else {
+              m_frame.at(LY).at(tileLineColumn + xPos) = dmg_palette[OBP0[paletteIndex]];
+            }
           }
         }
       }
     }
   }
-}
+} // :(
 
 void ppu::scanline() noexcept {
   if (LCDC.bgDisplayStatus() == on) {

@@ -40,26 +40,37 @@ constexpr const uint8 scanlineCycles = 114;
 
 class ppu {
 public:
-  struct color {
-    using subpixel = uint8;
+  ppu(registers &regs_, cartridge &cart_, interrupts &intr_);
 
-    subpixel r{};
-    subpixel g{};
-    subpixel b{};
-    uint8 a{}; // alpha
+  // rgb555 pixel format, 5 bits per subpixel
+  // can represent (2^5)^3 = 32'768 color
+  // used in color gameboy, without backlight :(
+
+  class color {
+  public:
+    color() = default;
+
+    color(const uint8 red, const uint8 green, const uint8 blue) {
+      r(red);
+      g(green);
+      b(blue);
+    }
+
+    void r(const uint8 val) { m_data |= (0b0001'1111 & val); };
+    void g(const uint8 val) { m_data |= ((0b0001'1111 & val) << 5); };
+    void b(const uint8 val) { m_data |= ((0b0001'1111 & val) << 10); };
 
     friend bool operator==(const color &left, const color &right) {
-      return left.r == right.r && left.g == right.g && left.b == right.b && left.a == right.a;
+      return left.m_data == right.m_data;
     }
+
+  private:
+    uint16 m_data = 0;
   };
 
-  using color_t = color;
-  using palette_t = std::array<color_t, 4>;
-
-  using screenline = std::array<color_t, screenWidth>;
+  using screenline = std::array<color, screenWidth>;
   using frame = std::array<screenline, screenHeight>;
 
-  ppu(registers &regs_, cartridge &cart_, interrupts &intr_);
   void update(const std::function<void(tmbl::ppu::frame &framebuffer)> &drawCallback);
   byte readVRAM(const std::size_t index) const noexcept;
   void writeVRAM(const std::size_t index, [[maybe_unused]] const byte val) noexcept;
@@ -109,9 +120,9 @@ private:
   byte &OCPS;
   byte &OCPD;
 
-  std::vector<byte> m_vram{};
-  std::array<byte, 160_B> m_oam{};
-  frame framebuffer;
+  std::vector<byte> m_vram;
+  std::array<byte, 160_B> m_oam;
+  frame m_frame;
 
   uint8 tileWidth = 8;
   uint8 tileHeight = 8;
@@ -119,10 +130,10 @@ private:
 
   cflag &color_gameboy_support;
 
-  static constexpr palette_t default_palette{color{155, 188, 15, 255}, // light green
-                                             color{139, 172, 15, 255}, //
-                                             color{48, 98, 48, 255},   //
-                                             color{15, 56, 15, 255}};  // dark green
+  std::array<color, 4> dmg_palette{color{18, 23, 2}, // light green
+                                   color{17, 21, 2}, //
+                                   color{6, 12, 6},  //
+                                   color{2, 7, 2}};  // dark green
 
   clock m_clock{m_regs, m_intr};
 };

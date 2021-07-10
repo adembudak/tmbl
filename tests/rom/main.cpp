@@ -18,9 +18,9 @@ class gameboy final {
 public:
   gameboy() {
     SDL_InitSubSystem(SDL_INIT_VIDEO | SDL_INIT_EVENTS);
-    sdl_window = SDL_CreateWindow(/*title=*/"", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, tmbl::screenWidth, tmbl::screenHeight, SDL_WINDOW_SHOWN);
+    sdl_window = SDL_CreateWindow(/*title=*/"", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, tmbl::screenWidth, tmbl::screenHeight, SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS);
     sdl_renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
-    sdl_texture = SDL_CreateTexture(sdl_renderer, SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_STREAMING, tmbl::screenWidth, tmbl::screenHeight);
+    sdl_texture = SDL_CreateTexture(sdl_renderer, SDL_PixelFormatEnum::SDL_PIXELFORMAT_RGB555, SDL_TEXTUREACCESS_STREAMING, tmbl::screenWidth, tmbl::screenHeight);
   }
 
   ~gameboy() {
@@ -146,9 +146,6 @@ public:
       SDL_RenderPresent(sdl_renderer);
     }
   }
-
-private:
-  tmbl::ppu::frame m_framebuffer;
 
 private:
   SDL_Texture *sdl_texture = nullptr;
