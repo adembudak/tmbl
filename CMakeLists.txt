@@ -20,9 +20,6 @@ if(PROJECT_IS_TOP_LEVEL)
 endif()
 include(CMakeDependentOption)
 
-option(ENABLE_INCLUDE_WHAT_YOU_USE "Run iwyu on source"         OFF)
-option(ENABLE_CLANG_TIDY           "Run clang-tidy on source"   OFF)
-option(ENABLE_CPPCHECK             "Run cppcheck on source"     OFF)
 option(ENABLE_CCACHE               "Cache build with ccache"    OFF)
 
 option(LOG_PAK_METADATA            "Interpret cartridge header" OFF)
@@ -56,27 +53,6 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type" FORCE)
 endif()
 set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug;Release;RelWithDebInfo;MinSizeRel")
-
-if(ENABLE_INCLUDE_WHAT_YOU_USE)
-  find_package(Python REQUIRED)
-  find_program(iwyu iwyu_tool.py REQUIRED)
-  if(WIN32)
-    execute_process(COMMAND ${Python_EXECUTABLE} ${iwyu} -p ${tmbl_BINARY_DIR})
-  else()
-    execute_process(COMMAND ${iwyu} -p ${tmbl_BINARY_DIR})
-  endif()
-endif()
-
-if(ENABLE_CLANG_TIDY)
-  find_program(CLANG_TIDY NAMES clang-tidy-12 clang-tidy-11 clang-tidy-10 clang-tidy REQUIRED)
-  set(CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY} "-checks=-*,bugprone-*")
-endif()
-
-if(ENABLE_CPPCHECK)
-  find_program(CPPCHECK cppcheck REQUIRED)
-  set(CMAKE_CXX_CPPCHECK
-      ${CPPCHECK} "--language=c++;--std=c++17;--inconclusive;--enable=all;-q;--cppcheck-build-dir=${tmbl_BINARY_DIR}")
-endif()
 
 if(ENABLE_CCACHE)
   find_program(CCACHE ccache REQUIRED)

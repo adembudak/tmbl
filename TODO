@@ -5,5 +5,3 @@
 - does clock increaments need to be in t-cycles?
 - create ARCHITECTURE.md
 - move functions in CMakeLists.txt files into cmake/ folder
-- move tooling related options to a cmake toolchain file
-- move variables not directly related to build ion to CMakePresets.json file
