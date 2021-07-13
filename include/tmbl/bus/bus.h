@@ -24,9 +24,9 @@ public:
 private:
   cartridge &m_cart;
   registers &m_regs;
-  ppu &m_ppu;
-  builtin &m_builtin;
   interrupts &m_pintr;
+  builtin &m_builtin;
+  ppu &m_ppu;
   dma &m_dma;
 };
 

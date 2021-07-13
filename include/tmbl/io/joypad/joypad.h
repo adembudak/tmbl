@@ -22,8 +22,8 @@ public:
   void b(const button b) noexcept;
 
 private:
-  byte &P1;
   registers &m_regs;
+  byte &P1;
 };
 
 }

@@ -12,7 +12,7 @@
 
 namespace tmbl {
 cpu::cpu(bus &bus_, registers &regs_, interrupts &intr_)
-    : m_bus(bus_), m_regs(regs_), m_intr(intr_), KEY1(regs_.getAt(0xFF4D)), SP(0xFFFE), PC(0x0100) {
+    : m_bus(bus_), m_regs(regs_), m_intr(intr_), KEY1(regs_.getAt(0xFF4D)), PC(0x0100), SP(0xFFFE) {
   A = 0x01;
   F = 0xB0;
   BC = 0x0013;

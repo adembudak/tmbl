@@ -174,8 +174,12 @@ private:
   bus &m_bus;
   registers &m_regs;
   interrupts &m_intr;
+  byte &KEY1;
 
 private:
+  uint16 PC;
+  uint16 SP;
+
   r8 A;
   flags F;
 
@@ -183,15 +187,11 @@ private:
   r16 DE;
   r16 HL;
 
-  uint16 PC;
-  uint16 SP;
-
   const std::array<int, 8> rst_vec{0x00, 0x08, 0x10, 0x18, 0x20, 0x28, 0x30, 0x38};
   const std::array<int, 5> intr_vec{0x40, 0x48, 0x50, 0x58, 0x60};
 
   clock m_clock{m_regs, m_intr};
   flag IME = reset; // interrupt master enable
-  byte &KEY1;
 };
 }
 

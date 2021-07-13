@@ -11,7 +11,6 @@ namespace tmbl {
 builtin::builtin(registers &regs_, cartridge &cart_)
     : m_regs(regs_), SVBK(regs_.getAt(0xFF70)), m_cart(cart_),
       color_gameboy_support(cart_.cgbSupport()) {
-
   if (color_gameboy_support) {
     m_wram.resize(32_KB);
   } else {

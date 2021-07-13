@@ -25,8 +25,9 @@ public:
   void writeEcho(const std::size_t index, const byte val) noexcept;
 
 private:
-  byte &SVBK;
   registers &m_regs;
+  byte &SVBK;
+
   cartridge &m_cart;
   cflag &color_gameboy_support;
 
