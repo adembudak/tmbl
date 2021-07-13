@@ -22,7 +22,7 @@ public:
   clock(registers &regs_, interrupts &intr_);
 
   void cycle(const uint8 n) noexcept;
-  void wait(const uint8 n) noexcept;
+  void wait(const uint8 n) const noexcept;
   void resetDIV() noexcept;
   void enableDoubleSpeedMode(const bool b) noexcept;
 

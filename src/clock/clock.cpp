@@ -68,7 +68,7 @@ void clock::cycle(const uint8 n) noexcept {
   wait(n);
 }
 
-void clock::wait(const uint8 n) noexcept {
+void clock::wait(const uint8 n) const noexcept {
   using namespace std::this_thread;
   if (m_double_speed_mode) {
     sleep_for(double_speed_cycle_period{n});
