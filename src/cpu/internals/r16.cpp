@@ -17,7 +17,7 @@ r16 &r16::operator=(const n16 &nn) {
   return *this;
 }
 
-const r16 r16::operator++(int dummy) noexcept {
+const r16 r16::operator++(int /*dummy*/) noexcept {
   if (m_hi != r8::max && m_lo == r8::max) {
     m_lo = r8::min;
     m_hi++;
@@ -31,7 +31,7 @@ const r16 r16::operator++(int dummy) noexcept {
   return *this;
 }
 
-const r16 r16::operator--(int dummy) noexcept {
+const r16 r16::operator--(int /*dummy*/) noexcept {
   if (m_lo != r8::min) {
     m_lo--;
   } else if (m_lo == r8::min && m_hi != r8::min) {
