@@ -5,7 +5,7 @@
 
 namespace tmbl::metadata {
 
-pakInfo::pakInfo(std::array<byte, 336_B> &&vec) : cartridge_header(std::move(vec)) {
+pakInfo::pakInfo(const std::array<byte, 336_B> &vec) : cartridge_header(vec) {
 
   nintendo_logo_check = std::equal(begin(nintendo_logo), end(nintendo_logo),
                                    &cartridge_header[0x104], &cartridge_header[0x133 + 1]);

@@ -37,7 +37,7 @@ void cartridge::init(const std::filesystem::path &p) noexcept {
 #if PRINT_PAK_INFO
   std::array<byte, 336_B> cartridge_header;
   std::copy_n(begin(dumpedGamePak), 0x014F + 1, begin(cartridge_header));
-  std::cerr << metadata::pakInfo(std::move(cartridge_header));
+  std::cerr << metadata::pakInfo(cartridge_header);
 #endif
 
   // whether the cart support color gameboy functionalities
@@ -57,7 +57,7 @@ void cartridge::init(const std::filesystem::path &p) noexcept {
   const std::size_t checksum_result = 0x014D;
 
   int checksum = std::accumulate(&dumpedGamePak[checksum_begin], &dumpedGamePak[checksum_end], 0,
-                                 [this](const byte x, const byte y) { return x - y - 1; });
+                                 [](const byte x, const byte y) { return x - y - 1; });
 
   assert((dumpedGamePak.at(checksum_result) == checksum) && "ROM Checksum failed\n");
 
