@@ -1,5 +1,5 @@
-- implement PPU sprite rendering
-- implement HDMA functionality
+- implement color gameboy registers 
+- implement color gameboy DMA functionalities 
 - verify timer functions, TMA, TAC and the frequency stuff, write test ROMs?
 - does clock cycles in ppu increase effects DIV and other time registers
 - does clock increaments need to be in t-cycles?
