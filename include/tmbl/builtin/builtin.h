@@ -13,7 +13,7 @@ class cartridge;
 
 class builtin {
 public:
-  builtin(registers &regs_, cartridge &cart_);
+  builtin(cartridge &cart_, registers &regs_);
 
   byte readWRAM(const std::size_t index) const noexcept;
   void writeWRAM(const std::size_t index, const byte val) noexcept;
@@ -23,6 +23,8 @@ public:
 
   byte readEcho(const std::size_t index) const noexcept;
   void writeEcho(const std::size_t index, const byte val) noexcept;
+
+  void adjustWRAMSize() noexcept;
 
 private:
   registers &m_regs;

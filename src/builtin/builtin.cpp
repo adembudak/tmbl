@@ -8,17 +8,9 @@
 #include <algorithm>
 
 namespace tmbl {
-builtin::builtin(registers &regs_, cartridge &cart_)
+builtin::builtin(cartridge &cart_, registers &regs_)
     : m_regs(regs_), SVBK(regs_.getAt(0xFF70)), m_cart(cart_),
-      color_gameboy_support(cart_.cgbSupport()) {
-  if (color_gameboy_support) {
-    m_wram.resize(32_KB);
-  } else {
-    m_wram.resize(8_KB);
-  }
-
-  std::generate(m_wram.begin(), m_wram.end(), []() { return utils::randomByte(); });
-}
+      color_gameboy_support(cart_.cgbSupport()) {}
 
 byte builtin::readWRAM(const std::size_t index) const noexcept {
   if (color_gameboy_support) {
@@ -61,6 +53,16 @@ byte builtin::readEcho(const std::size_t index) const noexcept { return readWRAM
 
 void builtin::writeEcho(const std::size_t index, const byte val) noexcept {
   writeWRAM(index + 512_B, val);
+}
+
+void builtin::adjustWRAMSize() noexcept {
+  if (color_gameboy_support) {
+    m_wram.resize(32_KB);
+  } else {
+    m_wram.resize(8_KB);
+  }
+
+  std::generate(m_wram.begin(), m_wram.end(), []() { return utils::randomByte(); });
 }
 
 }
