@@ -11,7 +11,7 @@ enum class hdmaStatus : uint8 { InProgress = 0, Done };
 
 class dma {
 public:
-  dma(ppu &ppu_, registers &regs_, builtin &builtin_, cartridge &cart_);
+  dma(cartridge &cart_, ppu &ppu_, registers &regs_, builtin &builtin_);
 
   void dmaAction(const byte val) noexcept;
   void hdmaAction(const byte val) noexcept;

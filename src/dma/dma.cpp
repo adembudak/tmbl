@@ -9,7 +9,7 @@
 
 namespace tmbl {
 
-dma::dma(ppu &ppu_, registers &regs_, builtin &builtin_, cartridge &cart_)
+dma::dma(cartridge &cart_, ppu &ppu_, registers &regs_, builtin &builtin_)
     : m_ppu(ppu_), m_regs(regs_), m_builtin(builtin_), m_cart(cart_), DMA(regs_.getAt(0xFF46)),
       HDMA1(regs_.getAt(0xFF51)), HDMA2(regs_.getAt(0xFF52)), HDMA3(regs_.getAt(0xFF53)),
       HDMA4(regs_.getAt(0xFF54)), HDMA5(regs_.getAt(0xFF55)) {}
