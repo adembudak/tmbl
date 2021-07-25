@@ -2942,8 +2942,8 @@ void cpu::jr(const cc c, const e8 e) {
 }
 
 void cpu::ret() {
-  byte lo = m_bus.readBus(SP);
-  byte hi = m_bus.readBus(SP + 1);
+  const byte lo = m_bus.readBus(SP);
+  const byte hi = m_bus.readBus(SP + 1);
   PC = (hi << 8U) | lo;
 
   SP += 2;
@@ -2959,8 +2959,8 @@ void cpu::ret(cc c) {
       c == cc::NC && F.c() == reset) {
     // clang-format on
 
-    byte lo = m_bus.readBus(SP);
-    byte hi = m_bus.readBus(SP + 1);
+    const byte lo = m_bus.readBus(SP);
+    const byte hi = m_bus.readBus(SP + 1);
     PC = (hi << 8U) | lo;
 
     SP += 2;
@@ -2973,8 +2973,8 @@ void cpu::ret(cc c) {
 
 void cpu::reti() {
   IME = set;
-  byte lo = m_bus.readBus(SP);
-  byte hi = m_bus.readBus(SP + 1);
+  const byte lo = m_bus.readBus(SP);
+  const byte hi = m_bus.readBus(SP + 1);
   PC = (hi << 8U) | lo;
 
   SP += 2;
