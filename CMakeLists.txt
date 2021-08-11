@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20.5)
+cmake_minimum_required(VERSION 3.21.1)
 
 project(
   tombul
@@ -8,10 +8,6 @@ project(
   LANGUAGES CXX)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
-
-if(${CMAKE_VERSION} VERSION_LESS 3.21)
-  include(project-is-top-level)
-endif()
 
 if(PROJECT_IS_TOP_LEVEL)
   include(CTest)
@@ -41,10 +37,6 @@ cmake_dependent_option(DMG_ACID2_TEST_ROM         "" ON ENABLE_ROM_TESTS OFF)
 cmake_dependent_option(GAMBATTE_TEST_ROMs         "" ON ENABLE_ROM_TESTS OFF)
 cmake_dependent_option(MEALYBUG_TEAROOM_TEST_ROMs "" ON ENABLE_ROM_TESTS OFF)
 cmake_dependent_option(MOONEYE_GB_TEST_ROMs       "" ON ENABLE_ROM_TESTS OFF)
-
-set(CMAKE_CXX_STANDARD 17 CACHE STRING "")
-set(CMAKE_CXX_STANDARD_REQUIRED YES CACHE BOOL "")
-set(CMAKE_CXX_EXTENSIONS NO CACHE BOOL "")
 
 set(tmbl_SOURCE_DIR ${PROJECT_SOURCE_DIR})
 set(tmbl_BINARY_DIR ${PROJECT_BINARY_DIR})
