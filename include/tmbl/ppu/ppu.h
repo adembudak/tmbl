@@ -10,6 +10,7 @@
 // dmg palettes
 #include "internals/bgp.h"
 #include "internals/obp.h"
+
 // cgb palettes
 #include "internals/bcps.h"
 #include "internals/bcpd.h"
@@ -38,9 +39,9 @@ constexpr const uint8 vramCycles = 43;
 constexpr const uint8 hblankCycles = 22;
 constexpr const uint8 scanlineCycles = 114;
 
-class ppu {
+class ppu final {
 public:
-  ppu(registers &regs_, cartridge &cart_, interrupts &intr_);
+  ppu(cartridge &cart_, registers &regs_, interrupts &intr_);
 
   // rgb555 pixel format, 5 bits per subpixel
   // can represent (2^5)^3 = 32'768 color
@@ -50,6 +51,7 @@ public:
   public:
     color() = default;
 
+    color(const uint16 rgb555Val) : m_data(rgb555Val) {}
     color(const uint8 red, const uint8 green, const uint8 blue) {
       r(red);
       g(green);
@@ -67,6 +69,7 @@ public:
   private:
     uint16 m_data = 0;
   };
+  using palette_t = std::array<color, 4>;
 
   using screenline = std::array<color, screenWidth>;
   using frame = std::array<screenline, screenHeight>;
@@ -79,6 +82,7 @@ public:
   void writeOAM(const std::size_t index, [[maybe_unused]] const byte val) noexcept;
 
   statMode status() const noexcept;
+  void adjustVRAMSize() noexcept;
 
 private:
   void fetchBackground() noexcept; // on bottom
@@ -88,15 +92,20 @@ private:
 
   uint8 vbk() const noexcept;
 
-private:
-  registers &m_regs;
-  cartridge &m_cart;
-  interrupts &m_intr;
+  byte ly() const noexcept;
+  void updateLY() noexcept;
+  void resetLY() noexcept;
 
 private:
-  // see: https://archive.org/details/GameBoyProgManVer1.1/page/n16/mode/1up
-  lcdc LCDC;
+  cartridge &m_cart;
+  registers &m_regs;
+  interrupts &m_intr;
+  cflag &color_gameboy_support;
+
+private:
+  // https://archive.org/details/GameBoyProgManVer1.1/page/n16/mode/1up
   stat STAT;
+  lcdc LCDC;
 
   byte &SCY;
   byte &SCX;
@@ -114,7 +123,7 @@ private:
 
   byte &VBK;
 
-  byte &BCPS;
+  bcps BCPS;
   byte &BCPD;
 
   byte &OCPS;
@@ -128,12 +137,13 @@ private:
   uint8 tileHeight = 8;
   uint8 tileSize = 16_B;
 
-  cflag &color_gameboy_support;
+  std::array<palette_t, 8> cgb_bg_palette{};
+  std::array<palette_t, 8> cgb_sprite_palette{};
 
-  std::array<color, 4> dmg_palette{color{18, 23, 2}, // light green
-                                   color{17, 21, 2}, //
-                                   color{6, 12, 6},  //
-                                   color{2, 7, 2}};  // dark green
+  const palette_t dmg_palette{color{1217},   // light green
+                              color{5477},   //
+                              color{17025},  //
+                              color{19137}}; // dark green
 
   clock m_clock{m_regs, m_intr};
 };

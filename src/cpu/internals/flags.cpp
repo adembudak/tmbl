@@ -8,10 +8,10 @@ void flags::n(flag f) { m_n = f; }
 void flags::h(flag f) { m_h = f; }
 void flags::c(flag f) { m_c = f; }
 
-cflag flags::z() const noexcept { return m_z; }
-cflag flags::n() const noexcept { return m_n; }
-cflag flags::h() const noexcept { return m_h; }
-cflag flags::c() const noexcept { return m_c; }
+flag flags::z() const noexcept { return m_z; }
+flag flags::n() const noexcept { return m_n; }
+flag flags::h() const noexcept { return m_h; }
+flag flags::c() const noexcept { return m_c; }
 
 flags &flags::operator=(const byte b) {
   m_z = (b & 0b1000'0000) >> 7;

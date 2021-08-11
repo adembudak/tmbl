@@ -43,7 +43,7 @@ void stat::modeFlag(const statMode m) noexcept {
   }
 }
 
-cflag stat::matchFlag() const noexcept { return LY == LYC; }
+flag stat::matchFlag() const noexcept { return LY == LYC; }
 void stat::matchFlag(cflag val) noexcept { val ? m_value |= 0b0000'0100 : m_value &= 0b1111'1011; }
 
 bool stat::matchHblank() const noexcept { return m_value & 0b0000'1000; }

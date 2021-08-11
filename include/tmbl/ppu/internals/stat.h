@@ -22,7 +22,7 @@ public:
   statMode modeFlag() const noexcept;       // bit0 bit1
   void modeFlag(const statMode m) noexcept; // bit0 bit1
 
-  cflag matchFlag() const noexcept;   // bit2
+  flag matchFlag() const noexcept;    // bit2
   void matchFlag(cflag val) noexcept; // bit2
 
   bool matchHblank() const noexcept;      // bit3

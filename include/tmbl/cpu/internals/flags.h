@@ -12,10 +12,10 @@ public:
   void h(flag f);
   void c(flag f);
 
-  [[nodiscard]] cflag z() const noexcept;
-  [[nodiscard]] cflag n() const noexcept;
-  [[nodiscard]] cflag h() const noexcept;
-  [[nodiscard]] cflag c() const noexcept;
+  [[nodiscard]] flag z() const noexcept;
+  [[nodiscard]] flag n() const noexcept;
+  [[nodiscard]] flag h() const noexcept;
+  [[nodiscard]] flag c() const noexcept;
 
   flags &operator=(const byte b);
 

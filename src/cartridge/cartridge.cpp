@@ -63,7 +63,8 @@ void cartridge::init(const std::filesystem::path &p) noexcept {
 
   // decide to mbc type
   const std::size_t pak_type = 0x0147;
-  const std::size_t pak_rom_size = 0x0148; // equals to dumpedGamePak size, so no need to check
+  [[maybe_unused]] const std::size_t pak_rom_size =
+      0x0148; // equals to dumpedGamePak size, so no need to check
   const std::size_t pak_xram_size = 0x0149;
 
   auto recognize_xram_size = [&]() noexcept -> std::size_t {

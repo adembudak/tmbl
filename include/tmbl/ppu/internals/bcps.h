@@ -3,7 +3,11 @@
 
 #include "tmbl/config.h"
 
-namespace tmbl {}
+namespace tmbl {
+struct bcps {
+  byte m_data{};
+};
+
+}
 
 #endif
-
