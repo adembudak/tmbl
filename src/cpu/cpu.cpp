@@ -2986,7 +2986,7 @@ void cpu::rst(const uint8 u) {
   m_bus.writeBus(--SP, (PC & r16::reset_lower) >> 8);
   m_bus.writeBus(--SP, PC & r16::reset_upper);
 
-  PC = rst_vec.at(u);
+  PC = rst_vec[u];
 
   m_clock.cycle(4);
 }

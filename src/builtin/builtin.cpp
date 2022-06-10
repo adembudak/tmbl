@@ -22,9 +22,9 @@ byte builtin::readWRAM(const std::size_t index) const noexcept {
     // 4KB is wram bank size
     const std::size_t effective_index = (wram_bank * 4_KB) + index;
 
-    return m_wram.at(effective_index);
+    return m_wram[effective_index];
   } else {
-    return m_wram.at(index);
+    return m_wram[index];
   }
 }
 
@@ -37,17 +37,15 @@ void builtin::writeWRAM(const std::size_t index, const byte val) noexcept {
 
     const std::size_t effective_index = (wram_bank * 4_KB) + index;
 
-    m_wram.at(effective_index) = val;
+    m_wram[effective_index] = val;
   } else {
-    m_wram.at(index) = val;
+    m_wram[index] = val;
   }
 }
 
-byte builtin::readHRAM(const std::size_t index) const noexcept { return m_hram.at(index); }
+byte builtin::readHRAM(const std::size_t index) const noexcept { return m_hram[index]; }
 
-void builtin::writeHRAM(const std::size_t index, const byte val) noexcept {
-  m_hram.at(index) = val;
-}
+void builtin::writeHRAM(const std::size_t index, const byte val) noexcept { m_hram[index] = val; }
 
 byte builtin::readEcho(const std::size_t index) const noexcept { return readWRAM(index + 512_B); }
 

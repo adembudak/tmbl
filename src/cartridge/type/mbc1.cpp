@@ -18,14 +18,14 @@ byte mbc1::read(const std::size_t index) const noexcept {
     byte effective_rom_bank_number = (mode == 0b0) ? 0 : (bank2 << 5);
     std::size_t effective_index = (effective_rom_bank_number << 14) | (index & 0b11'1111'1111'1111);
 
-    return m_rom.at(effective_index);
+    return m_rom[effective_index];
   }
 
   else if (index >= 0x4000 && index <= 0x7FFF) { // Additional ROM Banks (Read Only)
     byte effective_rom_bank_number = (bank2 << 5) | bank1;
     std::size_t effective_index = (effective_rom_bank_number << 14) | (index & 0b11'1111'1111'1111);
 
-    return m_rom.at(effective_index);
+    return m_rom[effective_index];
   }
 
   else if (index >= 0xA000 && index <= 0xBFFF) { // RAM Bank, if present ('Read'/Write)
@@ -33,7 +33,7 @@ byte mbc1::read(const std::size_t index) const noexcept {
       byte effective_xram_bank_number = (mode == 0b0) ? 0 : bank2;
       std::size_t effective_index =
           (effective_xram_bank_number << 13) | (index & 0b1'1111'1111'1111);
-      return m_xram.at(effective_index);
+      return m_xram[effective_index];
     } else {
       return utils::randomByte();
     }
@@ -66,7 +66,7 @@ void mbc1::write(const std::size_t index, const byte val) noexcept {
       byte effective_xram_bank_number = (mode == 0b0) ? 0 : bank2;
       std::size_t effective_index =
           (effective_xram_bank_number << 13) | (index & 0b1'1111'1111'1111);
-      m_xram.at(effective_index) = val;
+      m_xram[effective_index] = val;
     } else {
       (void)val; // ignored, write has no effect
     }

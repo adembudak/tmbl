@@ -59,7 +59,7 @@ void cartridge::init(const std::filesystem::path &p) noexcept {
   int checksum = std::accumulate(&dumpedGamePak[checksum_begin], &dumpedGamePak[checksum_end], 0,
                                  [](const byte x, const byte y) { return x - y - 1; });
 
-  assert((dumpedGamePak.at(checksum_result) == checksum) && "ROM Checksum failed\n");
+  assert((dumpedGamePak[checksum_result] == checksum) && "ROM Checksum failed\n");
 
   // decide to mbc type
   const std::size_t pak_type = 0x0147;
@@ -69,7 +69,7 @@ void cartridge::init(const std::filesystem::path &p) noexcept {
 
   auto recognize_xram_size = [&]() noexcept -> std::size_t {
     // clang-format off
-       switch (const size_t i = dumpedGamePak.at(pak_xram_size); i) {
+       switch (const size_t i = dumpedGamePak[pak_xram_size]; i) {
           case 0: return 0_KB;
           case 1: return 2_KB;
           case 2: return 8_KB;
@@ -81,7 +81,7 @@ void cartridge::init(const std::filesystem::path &p) noexcept {
     }
   };
 
-  switch (dumpedGamePak.at(pak_type)) { // decide pak type
+  switch (dumpedGamePak[pak_type]) { // decide pak type
     case 0x00:
       pak = rom(std::move(dumpedGamePak));
       break;

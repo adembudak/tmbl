@@ -11,7 +11,7 @@ namespace tmbl {
 
 class registers {
 public:
-  byte &getAt(const std::size_t index);
+  byte &getAt(const std::size_t index) noexcept;
 
   byte read(const std::size_t index) const noexcept;
   void write(const std::size_t index, const byte val) noexcept;

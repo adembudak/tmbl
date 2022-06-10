@@ -14,7 +14,7 @@ rom::rom(std::vector<byte> &&rom_, std::size_t xram_size) : m_rom(std::move(rom_
   }
 }
 
-byte rom::read(const std::size_t index) const noexcept { return m_rom.at(index); }
+byte rom::read(const std::size_t index) const noexcept { return m_rom[index]; }
 
 void rom::write(const std::size_t index, const byte val) noexcept {
   (void)index;
@@ -23,7 +23,7 @@ void rom::write(const std::size_t index, const byte val) noexcept {
 
 byte rom::read_xram(const std::size_t index) const noexcept {
   if (has_xram) {
-    return m_xram.at(index);
+    return m_xram[index];
   } else {
     return utils::randomByte();
   }
@@ -31,7 +31,7 @@ byte rom::read_xram(const std::size_t index) const noexcept {
 
 void rom::write_xram(const std::size_t index, const byte val) noexcept {
   if (has_xram) {
-    m_xram.at(index) = val;
+    m_xram[index] = val;
   } else {
     (void)val;
   }

@@ -10,18 +10,18 @@ mbc2::mbc2(std::vector<byte> &&rom) : m_rom(std::move(rom)) {
 
 byte mbc2::read(const std::size_t index) const noexcept { // ROM Bank 0 (Read only)
   if (index >= 0x0000 && index <= 0x3FFF) {               // bank 0
-    return m_rom.at(index);
+    return m_rom[index];
   }
 
   else if (index >= 0x4000 && index <= 0x7FFF) { // ROM Bank 1-15
     std::size_t effective_index = (romb << 14) | (index & 0b11'1111'1111'1111);
 
-    return m_rom.at(effective_index);
+    return m_rom[effective_index];
   }
 
   else if (index >= 0xA000 && index <= 0xBFFF) { // RAM ('read'/write)
     if (xram_access_enabled) {
-      const byte data = m_xram.at(index % 512) & 0b0000'1111;
+      const byte data = m_xram[index % 512] & 0b0000'1111;
       return data;
     } else {
       return utils::randomByte();
@@ -45,7 +45,7 @@ void mbc2::write(const std::size_t index, const byte val) noexcept {
   else if (index >= 0xA000 && index <= 0xBFFF) { // RAM (read/'write')
     if (xram_access_enabled) {
       const byte data = val & 0b0000'1111; // mbc2 ram has only 4 bit of datum
-      m_xram.at(index % 512) = data;
+      m_xram[index % 512] = data;
     } else {
       (void)val;
     }

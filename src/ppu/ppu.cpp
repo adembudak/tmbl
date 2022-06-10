@@ -86,17 +86,17 @@ void ppu::update(const std::function<void(tmbl::ppu::frame &framebuffer)> &drawC
 
 byte ppu::readVRAM(const std::size_t index) const noexcept {
   const std::size_t effective_index = 8_KB * vbk() + index; // 8KB is VRAM bank size
-  return m_vram.at(effective_index);
+  return m_vram[effective_index];
 }
 
 void ppu::writeVRAM(const std::size_t index, const byte val) noexcept {
   const std::size_t effective_index = 8_KB * vbk() + index;
-  m_vram.at(effective_index) = val;
+  m_vram[effective_index] = val;
 }
 
-byte ppu::readOAM(const std::size_t index) const noexcept { return m_oam.at(index); }
+byte ppu::readOAM(const std::size_t index) const noexcept { return m_oam[index]; }
 
-void ppu::writeOAM(const std::size_t index, const byte val) noexcept { m_oam.at(index) = val; }
+void ppu::writeOAM(const std::size_t index, const byte val) noexcept { m_oam[index] = val; }
 
 statMode ppu::status() const noexcept { return STAT.modeFlag(); }
 
@@ -138,9 +138,9 @@ void ppu::fetchBackground() noexcept {
 
       if (color_gameboy_support) {
         const uint8 cgbPalette = attribute & 0b0000'0111;
-        m_frame.at(LY).at(dx) = cgb_bg_palette[cgbPalette][paletteIndex];
+        m_frame[LY][dx] = cgb_bg_palette[cgbPalette][paletteIndex];
       } else {
-        m_frame.at(LY).at(dx) = dmg_palette[BGP[paletteIndex]];
+        m_frame[LY][dx] = dmg_palette[BGP[paletteIndex]];
       }
     }
   }
@@ -178,9 +178,9 @@ void ppu::fetchWindow() noexcept {
 
       if (color_gameboy_support) {
         const uint8 cgbPalette = attribute & 0b0000'0111;
-        m_frame.at(LY).at(dx) = cgb_bg_palette[cgbPalette][paletteIndex];
+        m_frame[LY][dx] = cgb_bg_palette[cgbPalette][paletteIndex];
       } else {
-        m_frame.at(LY).at(dx) = dmg_palette[BGP[paletteIndex]];
+        m_frame[LY][dx] = dmg_palette[BGP[paletteIndex]];
       }
     }
   }
@@ -256,13 +256,13 @@ void ppu::fetchSprite() noexcept {
         const std::size_t paletteIndex = (hiBit << 1) | loBit;
 
         if (color_gameboy_support) {
-          m_frame.at(LY).at(xPos + tileLineColumn) = cgb_sprite_palette[cgbPalette][paletteIndex];
+          m_frame[LY][xPos + tileLineColumn] = cgb_sprite_palette[cgbPalette][paletteIndex];
         } else {
           // clang-format off
           if (paletteIndex == 0b00) continue; // transparent colors are not drawn on sprites
 
-          if(dmgPalette == 1) m_frame.at(LY).at(xPos + tileLineColumn) = dmg_palette[OBP1[paletteIndex]];
-          else                m_frame.at(LY).at(xPos + tileLineColumn) = dmg_palette[OBP0[paletteIndex]];
+          if(dmgPalette == 1) m_frame[LY][xPos + tileLineColumn] = dmg_palette[OBP1[paletteIndex]];
+          else                m_frame[LY][xPos + tileLineColumn] = dmg_palette[OBP0[paletteIndex]];
           // clang-format on
         }
       }
