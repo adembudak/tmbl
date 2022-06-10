@@ -2,6 +2,6 @@
 
 namespace tmbl::utils {
 
-byte randomByte() noexcept;
+[[nodiscard]] byte randomByte() noexcept;
 
 }

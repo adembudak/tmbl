@@ -51,7 +51,7 @@ public:
   public:
     color() = default;
 
-    color(const uint16 rgb555Val) : m_data(rgb555Val) {}
+    explicit color(const uint16 rgb555Val) : m_data(rgb555Val) {}
     color(const uint8 red, const uint8 green, const uint8 blue) {
       r(red);
       g(green);
@@ -69,6 +69,8 @@ public:
   private:
     uint16 m_data = 0;
   };
+  static_assert(sizeof(color) == sizeof(uint16));
+
   using palette_t = std::array<color, 4>;
 
   using screenline = std::array<color, screenWidth>;

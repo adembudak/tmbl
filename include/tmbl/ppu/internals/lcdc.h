@@ -36,14 +36,14 @@ public:
 
   //                                                                                   1 | 0  
   //--------------------------------------------------------------------------------------------------
-  flag                     lcdControllerStatus() const noexcept; // bit 7            on | off 
+  flag                     lcdControllerStatus() const noexcept; // bit 7             on | off 
   std::pair<uint16, uint16>    winTilemapSelect() const noexcept; // bit 6  [9C00, 9FFF) | [9800, 9C00) 
-  flag                        winDisplayStatus() const noexcept; // bit 5            on | off 
+  flag                        winDisplayStatus() const noexcept; // bit 5             on | off 
   std::pair<uint16, bool>        tilesetBasePtr() const noexcept; // bit 4   8000, false | 9000, true
   std::pair<uint16, uint16>     bgTilemapSelect() const noexcept; // bit 3  [9C00, A000) | [9800, 9C00) 
   uint8                            spriteHeight() const noexcept; // bit 2            16 | 8 
-  flag                        objDisplayStatus() const noexcept; // bit 1            on | off 
-  flag                         bgDisplayStatus() const noexcept; // bit 0            on | off 
+  flag                        objDisplayStatus() const noexcept; // bit 1             on | off 
+  flag                         bgDisplayStatus() const noexcept; // bit 0             on | off 
 
 private:
   byte &m_value;
